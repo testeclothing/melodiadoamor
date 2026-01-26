@@ -6,21 +6,24 @@ import {
   Music, 
   Clock, 
   ShieldCheck, 
-  Gift,
-  ArrowRight
+  Gift
 } from 'lucide-react';
 
 import { Button } from './components/Button';
 import { Countdown } from './components/Countdown';
 import { AudioPlayer } from './components/AudioPlayer';
 import { Faq } from './components/Faq';
-import { Wizard } from './components/Wizard';
+
+// --- IMPORTAÇÕES CORRIGIDAS ---
+// O Wizard é exportado como { Wizard }, por isso leva chaves
+import { Wizard } from './components/Wizard'; 
+// O Planos é exportado como default, por isso NÃO leva chaves
+import Planos from './components/Planos';
+// ------------------------------
+
 import { SongSample, FaqItem } from './types';
 
-// IMPORTAÇÃO NOVA: O teu componente de preços
-import Planos from './components/Planos';
-
-// Data
+// Dados
 const SAMPLES: SongSample[] = [
   { id: 1, title: "A Nossa Viagem a Paris", genre: "Pop Acústico Romântico", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
   { id: 2, title: "5 Anos de Amor", genre: "Piano & Voz Emocional", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
@@ -30,7 +33,7 @@ const SAMPLES: SongSample[] = [
 const FAQS: FaqItem[] = [
   { 
     question: "Como funciona a personalização?", 
-    answer: "É muito simples! Escolhes o teu plano abaixo, fazes o pagamento e depois recebes um formulário para nos contares a vossa história, nomes e datas especiais." 
+    answer: "É muito simples! Podes escolher o plano direto ou preencher o nosso questionário interativo. Depois do pagamento, nós tratamos de tudo!" 
   },
   { 
     question: "Quanto tempo demora a entrega?", 
@@ -61,16 +64,16 @@ function App() {
   };
 
   const startWizard = () => {
-    // Se quiseres que o botão "Criar Agora" vá para os preços em vez do questionário:
-    scrollToPricing();
-    // Se preferires manter o questionário antes do pagamento, descomenta a linha abaixo:
-    // setView('wizard');
+    window.scrollTo(0, 0);
+    setView('wizard');
   };
 
+  // Se a view for wizard, mostra o questionário
   if (view === 'wizard') {
     return <Wizard onBack={() => setView('landing')} />;
   }
 
+  // Caso contrário, mostra a Landing Page
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-brand-100 selection:text-brand-900">
       
@@ -87,10 +90,10 @@ function App() {
              <Countdown />
           </div>
           <button 
-            onClick={scrollToPricing}
+            onClick={startWizard}
             className="md:hidden bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-bold"
           >
-            Ver Preços
+            Criar Agora
           </button>
         </div>
         <div className="md:hidden bg-brand-50 py-2 flex justify-center border-b border-brand-100">
@@ -121,8 +124,7 @@ function App() {
               </p>
               
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start pt-4">
-                {/* Alterei para fazer scroll para os preços */}
-                <Button onClick={scrollToPricing} pulse className="w-full sm:w-auto">
+                <Button onClick={startWizard} pulse className="w-full sm:w-auto">
                   Quero Emocionar a Minha Cara-Metade
                 </Button>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -200,37 +202,36 @@ function App() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
-             {/* Connector Line (Desktop) */}
             <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
 
             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative">
               <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm">
                 <Heart size={40} />
               </div>
-              <h3 className="text-xl font-bold mb-3">1. Escolhe o Plano</h3>
-              <p className="text-gray-600">Escolhe entre apenas música ou música + vídeo e completa o pagamento seguro.</p>
+              <h3 className="text-xl font-bold mb-3">1. Conta a História</h3>
+              <p className="text-gray-600">Preenche o questionário ou escolhe o plano direto.</p>
             </div>
 
             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative">
               <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm">
-                <Headphones size={40} />
+                <Clock size={40} />
               </div>
-              <h3 className="text-xl font-bold mb-3">2. Personaliza</h3>
-              <p className="text-gray-600">Preenche o formulário com a vossa história, nomes e estilo musical preferido.</p>
+              <h3 className="text-xl font-bold mb-3">2. Produção 24h</h3>
+              <p className="text-gray-600">A nossa equipa cria a letra e a melodia em tempo recorde.</p>
             </div>
 
             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative">
               <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm">
                 <Gift size={40} />
               </div>
-              <h3 className="text-xl font-bold mb-3">3. Recebe em 24h</h3>
-              <p className="text-gray-600">Recebe o ficheiro MP3 e o cartão digital com QR Code no teu e-mail e WhatsApp.</p>
+              <h3 className="text-xl font-bold mb-3">3. Recebe e Oferece</h3>
+              <p className="text-gray-600">Recebe no e-mail e WhatsApp. Prepara os lenços!</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* AUDIO SAMPLES & BENEFITS */}
+      {/* AUDIO SAMPLES */}
       <section className="bg-gray-900 text-white py-20 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10">
@@ -241,7 +242,6 @@ function App() {
             
             <div className="flex-1 space-y-8">
               <h2 className="text-3xl md:text-4xl font-serif font-bold">Mais do que uma música, uma memória eterna.</h2>
-              
               <ul className="space-y-6">
                 {[
                   { icon: Clock, title: "Entrega Ultra-Rápida", desc: "Perfeito se deixaste a prenda para a última hora. Recebe em menos de 24h." },
@@ -260,18 +260,12 @@ function App() {
                   </li>
                 ))}
               </ul>
-              
-              <div className="pt-4">
-                <Button onClick={scrollToPricing} variant="primary" className="shadow-brand-500/50">
-                  Ouvir a Minha História
-                </Button>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* PRICING SECTION - AQUI ENTRA O TEU NOVO COMPONENTE */}
+      {/* PRICING SECTION - PLANOS */}
       <section id="pricing">
          <Planos />
       </section>
@@ -310,10 +304,10 @@ function App() {
         </div>
       </footer>
       
-      {/* STICKY MOBILE CTA */}
+      {/* MOBILE STICKY BUTTON */}
       <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
-         <Button fullWidth className="shadow-xl border border-white/20" onClick={scrollToPricing}>
-           Ver Planos (desde 29,99€)
+         <Button fullWidth className="shadow-xl border border-white/20" onClick={startWizard}>
+           Criar Música Agora
          </Button>
       </div>
 
