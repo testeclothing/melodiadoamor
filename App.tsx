@@ -140,7 +140,7 @@ function App() {
                 
                 {/* AQUI ESTÁ O TRUQUE: max-h-[500px] impede que fique gigante */}
                 <img 
-                  src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                  src="12qwq.jpeg" 
                   alt="Casal feliz a ouvir música" 
                   className="w-full h-auto max-h-[450px] lg:max-h-[550px] object-cover"
                 />
