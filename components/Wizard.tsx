@@ -8,7 +8,8 @@ import {
   Check, 
   Lock,
   CreditCard,
-  Gift
+  Gift,
+  Loader2
 } from 'lucide-react';
 import { Button } from './Button';
 import { FormData } from '../types';
@@ -49,6 +50,7 @@ const SelectionButton = ({
 
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     recipient: '',
     genre: '',
@@ -63,8 +65,10 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     email: ''
   });
 
-  // LINKS DO STRIPE (Configurados para o modo TEST)
-  // Quando passares para produção, substitui pelos links 'live_'
+  // O TEU LINK DA GOOGLE SHEET
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykBouHdqolWmVwi1FDmpk04M901WTyl_JImxUAI3yHfb3TLJPzLVo1zFc8oun-FqjJ/exec";
+
+  // Links do Stripe
   const STRIPE_LINK_MUSIC = "https://buy.stripe.com/test_5kQbIUgkWaiUh0n7Or8Zq00";
   const STRIPE_LINK_VIDEO = "https://buy.stripe.com/test_28E9AM5Gi1Mo6lJb0D8Zq01";
 
@@ -72,12 +76,40 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handlePayment = () => {
-    // Escolhe o link com base na seleção do utilizador
-    const linkToOpen = formData.includeVideo ? STRIPE_LINK_VIDEO : STRIPE_LINK_MUSIC;
-    
-    // Abre o link do Stripe na mesma aba para iniciar o pagamento
-    window.location.href = linkToOpen;
+  const handlePayment = async () => {
+    // Validação simples do email
+    if (!formData.email || !formData.email.includes('@')) {
+      alert("Por favor preenche um email válido para receberes a música.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // 1. Enviar dados para a Google Sheet
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      // 2. Preparar link do Stripe
+      const linkToOpen = formData.includeVideo ? STRIPE_LINK_VIDEO : STRIPE_LINK_MUSIC;
+      
+      // 3. Adicionar email ao link para preencher automático no Stripe
+      const finalLink = `${linkToOpen}?prefilled_email=${encodeURIComponent(formData.email)}`;
+      
+      // 4. Redirecionar
+      window.location.href = finalLink;
+
+    } catch (error) {
+      console.error("Erro ao guardar pedido", error);
+      // Se falhar o Google Sheets, manda para o pagamento na mesma para não perder a venda
+      window.location.href = formData.includeVideo ? STRIPE_LINK_VIDEO : STRIPE_LINK_MUSIC;
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const nextStep = () => {
@@ -97,9 +129,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const renderProgressBar = () => (
     <div className="w-full max-w-2xl mx-auto mb-8 px-4">
       <div className="relative flex justify-between items-center">
-        {/* Line background */}
         <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-10 rounded-full"></div>
-        {/* Progress line */}
         <div 
           className="absolute top-1/2 left-0 h-1 bg-brand-500 -z-10 rounded-full transition-all duration-500"
           style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
@@ -140,13 +170,11 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           {/* STEP 1: STYLE */}
           {currentStep === 1 && (
             <div className="p-6 md:p-10 space-y-10">
-              
               <div className="space-y-4 text-center">
                 <h2 className="text-3xl font-serif font-bold text-gray-900">Vamos começar!</h2>
                 <p className="text-gray-500">Conta-nos o básico para criarmos a base perfeita.</p>
               </div>
 
-              {/* Who is it for */}
               <div className="space-y-3">
                 <label className="block font-bold text-gray-800 text-lg">Para quem é esta música?</label>
                 <input 
@@ -158,7 +186,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 />
               </div>
 
-              {/* Genre */}
               <div className="space-y-3">
                 <label className="block font-bold text-gray-800 text-lg">Estilo Musical</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -179,7 +206,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 </div>
               </div>
 
-              {/* Mood */}
               <div className="space-y-3">
                 <label className="block font-bold text-gray-800 text-lg">Vibe / Mood</label>
                 <div className="grid grid-cols-3 gap-3">
@@ -199,7 +225,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 </div>
               </div>
 
-               {/* Vocals */}
                <div className="space-y-3">
                 <label className="block font-bold text-gray-800 text-lg">Voz</label>
                 <div className="grid grid-cols-3 gap-3">
@@ -229,7 +254,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 <p className="text-gray-500">Os detalhes que tornam a música única.</p>
               </div>
 
-               {/* Occasion */}
                <div className="space-y-3">
                 <label className="block font-bold text-gray-800 text-lg">Qual a ocasião?</label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -252,7 +276,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 </div>
               </div>
 
-              {/* Story Questions */}
               {[
                 { label: 'Onde se conheceram?', field: 'storyMeet', placeholder: 'Ex: Na faculdade, num café em Lisboa, online...' },
                 { label: 'Qual a vossa memória favorita?', field: 'storyMemory', placeholder: 'Ex: A viagem aos Açores, o dia em que adotamos o cão...' },
@@ -273,7 +296,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 </div>
               ))}
 
-              {/* Extra Phrase */}
               <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
                 <div className="flex items-start gap-4">
                   <div className="mt-1">
@@ -318,7 +340,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 </p>
               </div>
 
-              {/* Summary */}
               <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-4">
                 <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Gift size={20} className="text-brand-500" />
@@ -329,7 +350,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                   <span className="font-bold text-gray-900">29,99€</span>
                 </div>
                 
-                {/* UPSELL */}
                 <div className="bg-white p-4 rounded-lg border-2 border-brand-100 relative overflow-hidden">
                   <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] px-2 py-0.5 font-bold rounded-bl-lg">
                     RECOMENDADO
@@ -363,16 +383,41 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 </div>
               </div>
 
-              {/* Payment Info */}
+              {/* Email REQUIRED */}
+              <div className="space-y-3">
+                <label className="block font-bold text-gray-800">O teu Email (Obrigatório)</label>
+                <input 
+                  type="email" 
+                  placeholder="Para onde enviamos a música?"
+                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all"
+                  value={formData.email}
+                  onChange={(e) => handleChange('email', e.target.value)}
+                />
+              </div>
+
               <div className="text-center text-sm text-gray-500 pb-2">
                 Ao clicar em Pagar, serás redirecionado para a página segura do Stripe.
               </div>
 
-              {/* Payment Button */}
               <div className="space-y-4 pt-2">
-                 <Button fullWidth pulse className="text-lg" onClick={handlePayment}>
-                   <CreditCard className="mr-2" />
-                   Pagar {formData.includeVideo ? '39,98€' : '29,99€'} com Segurança
+                 <Button 
+                   fullWidth 
+                   pulse={!isSubmitting} 
+                   className="text-lg" 
+                   onClick={handlePayment}
+                   disabled={isSubmitting}
+                 >
+                   {isSubmitting ? (
+                     <>
+                        <Loader2 className="mr-2 animate-spin" />
+                        A Processar...
+                     </>
+                   ) : (
+                     <>
+                        <CreditCard className="mr-2" />
+                        Pagar {formData.includeVideo ? '39,98€' : '29,99€'} com Segurança
+                     </>
+                   )}
                  </Button>
                  
                  <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
@@ -391,11 +436,11 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
             </div>
           )}
 
-          {/* FOOTER ACTIONS */}
           <div className="bg-gray-50 p-6 border-t border-gray-200 flex items-center justify-between">
             <button 
               onClick={prevStep}
               className="flex items-center gap-1 text-gray-500 font-bold hover:text-gray-800 transition-colors px-4 py-2"
+              disabled={isSubmitting}
             >
               <ChevronLeft size={20} />
               Voltar
