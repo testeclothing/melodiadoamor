@@ -20,7 +20,7 @@ interface WizardProps {
 const STEPS = [
   { id: 1, label: 'Estilo', icon: Music },
   { id: 2, label: 'História', icon: PenTool },
-  { id: 3, label: 'Pedido', icon: Truck },
+  { id: 3, label: 'Checkout', icon: Truck },
 ];
 
 const SelectionButton = ({ 
@@ -63,8 +63,21 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     email: ''
   });
 
+  // LINKS DO STRIPE (Configurados para o modo TEST)
+  // Quando passares para produção, substitui pelos links 'live_'
+  const STRIPE_LINK_MUSIC = "https://buy.stripe.com/test_5kQbIUgkWaiUh0n7Or8Zq00";
+  const STRIPE_LINK_VIDEO = "https://buy.stripe.com/test_28E9AM5Gi1Mo6lJb0D8Zq01";
+
   const handleChange = (field: keyof FormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handlePayment = () => {
+    // Escolhe o link com base na seleção do utilizador
+    const linkToOpen = formData.includeVideo ? STRIPE_LINK_VIDEO : STRIPE_LINK_MUSIC;
+    
+    // Abre o link do Stripe na mesma aba para iniciar o pagamento
+    window.location.href = linkToOpen;
   };
 
   const nextStep = () => {
@@ -350,26 +363,16 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 </div>
               </div>
 
-              {/* Email */}
-              <div className="space-y-3">
-                <label className="block font-bold text-gray-800">Onde devemos enviar a música?</label>
-                <input 
-                  type="email" 
-                  placeholder="O teu melhor e-mail"
-                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all"
-                  value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                />
-                <p className="text-xs text-gray-400">
-                  Enviaremos também uma cópia por WhatsApp se forneceres o número no checkout.
-                </p>
+              {/* Payment Info */}
+              <div className="text-center text-sm text-gray-500 pb-2">
+                Ao clicar em Pagar, serás redirecionado para a página segura do Stripe.
               </div>
 
-              {/* Payment Mockup */}
-              <div className="space-y-4 pt-4">
-                 <Button fullWidth pulse className="text-lg">
+              {/* Payment Button */}
+              <div className="space-y-4 pt-2">
+                 <Button fullWidth pulse className="text-lg" onClick={handlePayment}>
                    <CreditCard className="mr-2" />
-                   Pagar com Segurança
+                   Pagar {formData.includeVideo ? '39,98€' : '29,99€'} com Segurança
                  </Button>
                  
                  <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
