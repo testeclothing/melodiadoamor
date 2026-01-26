@@ -1,21 +1,13 @@
-export interface Testimonial {
+export interface SongSample {
   id: number;
-  name: string;
-  text: string;
-  rating: number;
-  image?: string;
+  title: string;
+  genre: string;
+  url: string;
 }
 
 export interface FaqItem {
   question: string;
   answer: string;
-}
-
-export interface SongSample {
-  id: number;
-  title: string;
-  genre: string;
-  url: string; // URL to an mp3 file
 }
 
 export interface FormData {
