@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Heart, 
   Star, 
@@ -6,7 +6,9 @@ import {
   Music, 
   Clock, 
   ShieldCheck, 
-  Gift
+  Gift,
+  Play,
+  Pause
 } from 'lucide-react';
 
 import { Button } from './components/Button';
@@ -16,8 +18,9 @@ import { Faq } from './components/Faq';
 import { Wizard } from './components/Wizard';
 import { SongSample, FaqItem } from './types';
 
-// IMPORTAÇÃO DA NOVA IMAGEM
+// IMPORTAÇÃO DA IMAGEM E DO ÁUDIO
 import heroBg from './assets/12qwq.jpeg';
+import heroAudio from './assets/demo.mp3'; // <--- O TEU FICHEIRO DE ÁUDIO AQUI
 
 // Dados
 const SAMPLES: SongSample[] = [
@@ -53,6 +56,21 @@ const REVIEWS = [
 
 function App() {
   const [view, setView] = useState<'landing' | 'wizard'>('landing');
+  
+  // ESTADOS PARA O PLAYER DO HERO
+  const [heroIsPlaying, setHeroIsPlaying] = useState(false);
+  const heroAudioRef = useRef<HTMLAudioElement>(null);
+
+  const toggleHeroAudio = () => {
+    if (heroAudioRef.current) {
+      if (heroIsPlaying) {
+        heroAudioRef.current.pause();
+      } else {
+        heroAudioRef.current.play();
+      }
+      setHeroIsPlaying(!heroIsPlaying);
+    }
+  };
 
   const scrollToPricing = () => {
     const el = document.getElementById('pricing');
@@ -60,6 +78,11 @@ function App() {
   };
 
   const startWizard = () => {
+    // Parar música se estiver a tocar ao mudar de página
+    if(heroAudioRef.current) {
+      heroAudioRef.current.pause();
+      setHeroIsPlaying(false);
+    }
     window.scrollTo(0, 0);
     setView('wizard');
   };
@@ -71,6 +94,13 @@ function App() {
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-brand-100 selection:text-brand-900">
       
+      {/* Elemento de Áudio Invisível */}
+      <audio 
+        ref={heroAudioRef} 
+        src={heroAudio} 
+        onEnded={() => setHeroIsPlaying(false)} 
+      />
+
       {/* HEADER / TOP BAR */}
       <header className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-brand-100 shadow-sm h-16">
         <div className="container mx-auto px-4 h-full flex items-center justify-between max-w-7xl">
@@ -95,20 +125,18 @@ function App() {
         </div>
       </header>
 
-      {/* HERO SECTION - REESTRUTURADA PARA MELHOR HIERARQUIA */}
+      {/* HERO SECTION */}
       <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
         
-        {/* Background blobs (ajustados) */}
+        {/* Background blobs */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[30rem] h-[30rem] bg-brand-100/50 rounded-full blur-3xl -z-10"></div>
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[20rem] h-[20rem] bg-pink-100/50 rounded-full blur-3xl -z-10"></div>
 
-        {/* CONTAINER MAIS APERTADO (max-w-6xl) PARA CENTRAR O CONTEÚDO */}
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
           
-          {/* Layout alterado: justify-center + gap maior em vez de justify-between */}
           <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20">
             
-            {/* COLUNA DE TEXTO - Ajustada para não ficar isolada à esquerda */}
+            {/* COLUNA DE TEXTO */}
             <div className="flex-1 text-center lg:text-left space-y-8 max-w-xl">
               
               <div className="inline-flex items-center gap-2 bg-red-50 text-brand-600 px-4 py-1.5 rounded-full text-sm font-bold border border-red-100 uppercase tracking-wide shadow-sm hover:scale-105 transition-transform">
@@ -143,48 +171,75 @@ function App() {
               </div>
             </div>
             
-            {/* COLUNA DA IMAGEM - Mais equilibrada e integrada */}
+            {/* COLUNA DA IMAGEM COM PLAYER FUNCIONAL */}
             <div className="flex-1 w-full max-w-[500px] lg:max-w-[550px] relative mt-8 lg:mt-0">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-all duration-700 border-[6px] border-white group">
                 
-                {/* Imagem */}
                 <img 
                   src={heroBg} 
                   alt="Casal feliz a ouvir música" 
-                  className="w-full h-auto object-cover aspect-[4/5] lg:aspect-[3/4] scale-105 group-hover:scale-100 transition-transform duration-700"
+                  className={`w-full h-auto object-cover aspect-[4/5] lg:aspect-[3/4] transition-transform duration-[20s] ease-linear ${heroIsPlaying ? 'scale-110' : 'scale-100 group-hover:scale-105'}`}
                 />
                 
-                {/* Overlay Gradiente subtil para texto legível */}
+                {/* Overlay Escuro */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
 
-                {/* Player Flutuante - Agora dentro da imagem para poupar espaço visual */}
+                {/* PLAYER FLUTUANTE INTERATIVO */}
                 <div className="absolute bottom-6 left-6 right-6 z-20">
-                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-4 flex items-center gap-4 shadow-xl border border-white/40">
-                    <div className="bg-brand-500 p-3 rounded-full text-white animate-pulse shadow-lg shadow-brand-500/40">
-                      <Music size={22} />
+                  <button 
+                    onClick={toggleHeroAudio}
+                    className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-4 flex items-center gap-4 shadow-xl border border-white/40 hover:bg-white transition-all cursor-pointer group/player text-left"
+                  >
+                    {/* Botão Play/Pause */}
+                    <div className={`relative w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300 ${heroIsPlaying ? 'bg-rose-500 scale-105' : 'bg-brand-500 group-hover/player:scale-110'}`}>
+                      {heroIsPlaying ? (
+                         <Pause size={20} fill="currentColor" />
+                      ) : (
+                         <Play size={20} fill="currentColor" className="ml-1" />
+                      )}
+                      
+                      {/* Onda de choque ao clicar */}
+                      {heroIsPlaying && (
+                        <span className="absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75 animate-ping"></span>
+                      )}
                     </div>
-                    <div className="flex-1 min-w-0 text-left">
-                      <p className="font-bold text-base text-gray-900 truncate">A Nossa História.mp3</p>
-                      <div className="w-full bg-gray-200 rounded-full h-1 mt-2">
-                        <div className="bg-brand-500 h-1 rounded-full w-2/3"></div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                         <p className="font-bold text-base text-gray-900 truncate">Exemplo: A Nossa História</p>
+                         
+                         {/* ANIMAÇÃO DE EQUALIZADOR */}
+                         {heroIsPlaying && (
+                           <div className="flex items-end gap-1 h-4">
+                             <span className="w-1 bg-brand-500 rounded-full animate-[bounce_1s_infinite]"></span>
+                             <span className="w-1 bg-brand-500 rounded-full animate-[bounce_1.2s_infinite] h-3"></span>
+                             <span className="w-1 bg-brand-500 rounded-full animate-[bounce_0.8s_infinite] h-2"></span>
+                             <span className="w-1 bg-brand-500 rounded-full animate-[bounce_1.1s_infinite]"></span>
+                           </div>
+                         )}
+                      </div>
+                      
+                      {/* Barra de progresso visual */}
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-gray-500 font-mono">{heroIsPlaying ? 'A Tocar...' : 'Ouvir Exemplo'}</span>
+                        <div className="flex-1 bg-gray-200 rounded-full h-1">
+                          <div className={`bg-brand-500 h-1 rounded-full transition-all duration-1000 ${heroIsPlaying ? 'w-full opacity-100 animate-pulse' : 'w-0 opacity-0'}`}></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 </div>
               </div>
               
-              {/* Elementos Decorativos de Fundo */}
+              {/* Elementos Decorativos */}
               <div className="absolute -inset-4 bg-gradient-to-tr from-brand-200 to-pink-200 rounded-[2.5rem] -z-10 transform -rotate-2 opacity-60"></div>
-              <div className="absolute -bottom-8 -right-8 text-brand-200 animate-bounce delay-700 hidden lg:block">
-                 <Music size={64} strokeWidth={1} />
-              </div>
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* SOCIAL PROOF - Mantido */}
+      {/* RESTANTE DO SITE - SOCIAL PROOF */}
       <section className="bg-gray-50 py-12 border-y border-gray-100">
         <div className="container mx-auto px-4 max-w-6xl">
           <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">
@@ -219,7 +274,7 @@ function App() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-             {/* Connector Line (Desktop) */}
+             {/* Connector Line */}
             <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
 
             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-transform duration-300">
@@ -249,7 +304,7 @@ function App() {
         </div>
       </section>
 
-      {/* AUDIO SAMPLES & BENEFITS */}
+      {/* AUDIO SAMPLES */}
       <section className="bg-gray-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
