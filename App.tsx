@@ -16,6 +16,9 @@ import { Faq } from './components/Faq';
 import { Wizard } from './components/Wizard';
 import { SongSample, FaqItem } from './types';
 
+// IMPORTAÇÃO DA NOVA IMAGEM
+import heroBg from './assets/12qwq.jpeg';
+
 // Dados
 const SAMPLES: SongSample[] = [
   { id: 1, title: "A Nossa Viagem a Paris", genre: "Pop Acústico Romântico", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
@@ -138,9 +141,9 @@ function App() {
             <div className="flex-1 w-full max-w-md lg:max-w-lg relative">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl transform rotate-1 hover:rotate-0 transition-all duration-500 border-4 border-white">
                 
-                {/* AQUI ESTÁ O TRUQUE: max-h-[500px] impede que fique gigante */}
+                {/* AQUI ESTÁ A MUDANÇA: Usando a variável heroBg */}
                 <img 
-                  src="12qwq.jpeg" 
+                  src={heroBg} 
                   alt="Casal feliz a ouvir música" 
                   className="w-full h-auto max-h-[450px] lg:max-h-[550px] object-cover"
                 />
