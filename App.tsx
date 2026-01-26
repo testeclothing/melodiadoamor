@@ -13,15 +13,10 @@ import { Button } from './components/Button';
 import { Countdown } from './components/Countdown';
 import { AudioPlayer } from './components/AudioPlayer';
 import { Faq } from './components/Faq';
-
-// --- IMPORTAÇÕES CORRIGIDAS ---
-// O Wizard é exportado como { Wizard }, por isso leva chaves
-import { Wizard } from './components/Wizard'; 
-// O Planos é exportado como default, por isso NÃO leva chaves
-import Planos from './components/Planos';
-// ------------------------------
-
+import { Wizard } from './components/Wizard'; // Importamos o Wizard
 import { SongSample, FaqItem } from './types';
+
+// NOTA: Removemos a importação do "Planos" porque vamos desenhar o cartão vermelho diretamente aqui
 
 // Dados
 const SAMPLES: SongSample[] = [
@@ -33,7 +28,7 @@ const SAMPLES: SongSample[] = [
 const FAQS: FaqItem[] = [
   { 
     question: "Como funciona a personalização?", 
-    answer: "É muito simples! Podes escolher o plano direto ou preencher o nosso questionário interativo. Depois do pagamento, nós tratamos de tudo!" 
+    answer: "É muito simples! Clicas em 'Criar Música', respondes a algumas perguntas sobre a vossa história e nós tratamos do resto." 
   },
   { 
     question: "Quanto tempo demora a entrega?", 
@@ -68,12 +63,10 @@ function App() {
     setView('wizard');
   };
 
-  // Se a view for wizard, mostra o questionário
   if (view === 'wizard') {
     return <Wizard onBack={() => setView('landing')} />;
   }
 
-  // Caso contrário, mostra a Landing Page
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-brand-100 selection:text-brand-900">
       
@@ -90,7 +83,7 @@ function App() {
              <Countdown />
           </div>
           <button 
-            onClick={startWizard}
+            onClick={scrollToPricing} // Botão do header leva ao cartão vermelho
             className="md:hidden bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-bold"
           >
             Criar Agora
@@ -124,6 +117,7 @@ function App() {
               </p>
               
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start pt-4">
+                {/* Botão Hero leva ao Wizard */}
                 <Button onClick={startWizard} pulse className="w-full sm:w-auto">
                   Quero Emocionar a Minha Cara-Metade
                 </Button>
@@ -202,36 +196,37 @@ function App() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
+             {/* Connector Line (Desktop) */}
             <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
 
             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative">
               <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm">
                 <Heart size={40} />
               </div>
-              <h3 className="text-xl font-bold mb-3">1. Conta a História</h3>
-              <p className="text-gray-600">Preenche o questionário ou escolhe o plano direto.</p>
+              <h3 className="text-xl font-bold mb-3">1. Partilha a História</h3>
+              <p className="text-gray-600">Preenche um formulário simples com os vossos nomes, memórias e o estilo musical que mais gostam.</p>
             </div>
 
             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative">
               <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm">
                 <Clock size={40} />
               </div>
-              <h3 className="text-xl font-bold mb-3">2. Produção 24h</h3>
-              <p className="text-gray-600">A nossa equipa cria a letra e a melodia em tempo recorde.</p>
+              <h3 className="text-xl font-bold mb-3">2. Produção Profissional</h3>
+              <p className="text-gray-600">Os nossos artistas e IA compõem uma letra emocionante e uma melodia única baseada nos teus detalhes.</p>
             </div>
 
             <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative">
               <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm">
                 <Gift size={40} />
               </div>
-              <h3 className="text-xl font-bold mb-3">3. Recebe e Oferece</h3>
-              <p className="text-gray-600">Recebe no e-mail e WhatsApp. Prepara os lenços!</p>
+              <h3 className="text-xl font-bold mb-3">3. Recebe em 24h</h3>
+              <p className="text-gray-600">Recebe o ficheiro MP3 e o cartão digital com QR Code no teu e-mail e WhatsApp. Pronta a oferecer!</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* AUDIO SAMPLES */}
+      {/* AUDIO SAMPLES & BENEFITS */}
       <section className="bg-gray-900 text-white py-20 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10">
@@ -242,6 +237,7 @@ function App() {
             
             <div className="flex-1 space-y-8">
               <h2 className="text-3xl md:text-4xl font-serif font-bold">Mais do que uma música, uma memória eterna.</h2>
+              
               <ul className="space-y-6">
                 {[
                   { icon: Clock, title: "Entrega Ultra-Rápida", desc: "Perfeito se deixaste a prenda para a última hora. Recebe em menos de 24h." },
@@ -260,14 +256,84 @@ function App() {
                   </li>
                 ))}
               </ul>
+              
+              <div className="pt-4">
+                <Button onClick={startWizard} variant="primary" className="shadow-brand-500/50">
+                  Ouvir a Minha História
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* PRICING SECTION - PLANOS */}
-      <section id="pricing">
-         <Planos />
+      {/* PRICING SECTION - CARTÃO VERMELHO RESTAURADO */}
+      <section id="pricing" className="py-24 bg-gradient-to-b from-white to-brand-50/50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-brand-100 flex flex-col md:flex-row">
+            
+            {/* LADO ESQUERDO: VERMELHO */}
+            <div className="flex-1 p-8 md:p-12 flex flex-col justify-center bg-brand-600 text-white relative overflow-hidden">
+               <div className="absolute inset-0 bg-black/10"></div>
+               <div className="relative z-10">
+                 <h3 className="text-2xl font-bold mb-2 text-brand-100">Oferta Limitada</h3>
+                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Dia dos Namorados</h2>
+                 <p className="text-brand-100 mb-8 text-lg">O preço vai subir assim que o contador chegar a zero. Aproveita agora!</p>
+                 <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/20">
+                   <div className="flex items-center gap-3">
+                     <Clock className="text-brand-200" />
+                     <div>
+                       <p className="text-xs text-brand-200 uppercase font-bold">Entrega Garantida</p>
+                       <p className="font-bold">Em menos de 24 Horas</p>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+            </div>
+
+            {/* LADO DIREITO: BRANCO */}
+            <div className="flex-1 p-8 md:p-12">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-500 line-through text-xl">€99,00</span>
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">70% Desconto</span>
+              </div>
+              <div className="flex items-baseline gap-1 mb-6">
+                <span className="text-5xl font-bold text-brand-600">29,99€</span>
+                <span className="text-gray-500">/ música</span>
+              </div>
+              
+              <ul className="space-y-4 mb-8">
+                {[
+                  "Música MP3 Completa (3-4 min)",
+                  "Letra 100% Personalizada",
+                  "Cartão Digital com QR Code",
+                  "Revisão Gratuita",
+                  "Entrega Prioritária (24h)"
+                ].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3 text-gray-700">
+                    <CheckCircle2 size={18} className="text-brand-500 shrink-0" />
+                    <span>{feat}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* BOTÃO AGORA CHAMA O WIZARD */}
+              <Button fullWidth pulse onClick={startWizard}>
+                Criar Música Agora
+              </Button>
+              
+              <p className="text-center text-xs text-gray-500 mt-4">
+                Pagamento 100% Seguro. Satisfação Garantida.
+              </p>
+              
+              <div className="mt-6 flex justify-center gap-4 opacity-60 grayscale hover:grayscale-0 transition-all">
+                 <div className="h-8 bg-gray-100 px-2 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-300">MB WAY</div>
+                 <div className="h-8 bg-gray-100 px-2 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-300">MULTIBANCO</div>
+                 <div className="h-8 bg-gray-100 px-2 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-300">VISA</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* FAQ */}
@@ -304,10 +370,10 @@ function App() {
         </div>
       </footer>
       
-      {/* MOBILE STICKY BUTTON */}
+      {/* STICKY MOBILE CTA */}
       <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
          <Button fullWidth className="shadow-xl border border-white/20" onClick={startWizard}>
-           Criar Música Agora
+           Criar Música (29,99€)
          </Button>
       </div>
 
