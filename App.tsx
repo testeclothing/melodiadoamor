@@ -154,7 +154,7 @@ function App() {
               
               <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start pt-2">
                 <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl shadow-brand-500/20">
-                  Quero Emocionar
+                  Criar a Minha Canção
                 </Button>
                 
                 <div className="flex items-center gap-3 text-sm text-gray-500 font-medium bg-white/50 px-3 py-2 rounded-xl border border-white/50 backdrop-blur-sm">
