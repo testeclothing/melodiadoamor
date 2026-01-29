@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Play, Pause, Clock, Check, Sparkles } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Clock, Check, Sparkles, Lightbulb, MessageCircleHeart } from 'lucide-react';
 
 interface WizardProps {
   onBack: () => void;
 }
 
 // CONFIGURAÇÃO DOS 3 ESTILOS MUSICAIS
-// NOTA: Podes alterar os 'previewUrl' para ficheiros locais se tiveres (ex: '/assets/piano.mp3')
 const MUSIC_STYLES = [
   {
     id: 'pop',
@@ -36,8 +35,9 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [formData, setFormData] = useState({
     names: '',
     story: '',
+    privateJoke: '', // NOVO CAMPO
     style: '',
-    fastDelivery: false // UPSELL: Entrega em 24h
+    fastDelivery: false
   });
 
   // Preços
@@ -48,15 +48,12 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   // Função para tocar/parar áudio
   const toggleAudio = (id: string, url: string) => {
     const audioElements = document.getElementsByTagName('audio');
-    
-    // Parar todos os outros sons
     for (let i = 0; i < audioElements.length; i++) {
       if (audioElements[i].id !== `audio-${id}`) {
         audioElements[i].pause();
         audioElements[i].currentTime = 0;
       }
     }
-
     const currentAudio = document.getElementById(`audio-${id}`) as HTMLAudioElement;
     if (currentAudio) {
       if (playing === id) {
@@ -95,22 +92,58 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     </div>
   );
 
+  // --- PASSO 2 ATUALIZADO ---
   const renderStep2 = () => (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-5 animate-fadeIn">
       <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-800">Conta-nos a vossa história</h2>
-        <p className="text-slate-500 text-sm mt-1">Quanto mais detalhes deres, mais única será a música.</p>
+        <h2 className="text-2xl font-bold text-slate-800">A Vossa História</h2>
+        <p className="text-slate-500 text-sm mt-1">Partilha os detalhes que tornam a vossa relação única.</p>
       </div>
+
+      {/* Caixa de Sugestões / Guia */}
+      <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3">
+        <div className="mt-0.5">
+            <Lightbulb className="text-blue-500 w-5 h-5" />
+        </div>
+        <div>
+            <h4 className="font-bold text-blue-800 text-sm mb-1">Não sabes o que escrever? Tenta isto:</h4>
+            <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
+                <li>Onde foi o vosso primeiro encontro?</li>
+                <li>Qual foi a viagem mais marcante?</li>
+                <li>O que é que mais amas nele/a?</li>
+            </ul>
+        </div>
+      </div>
+
       <div>
-        <label className="block text-sm font-medium text-slate-600 mb-2">Detalhes importantes</label>
+        <label className="block text-sm font-bold text-slate-700 mb-2">Conta-nos tudo aqui:</label>
         <textarea 
-          className="w-full p-4 border border-slate-200 rounded-xl h-40 focus:ring-2 focus:ring-rose-500 outline-none resize-none"
-          placeholder="Como se conheceram? Qual o vosso lugar especial? Têm alguma piada interna? O que mais amas nele/a?..."
+          className="w-full p-4 border border-slate-200 rounded-xl h-32 focus:ring-2 focus:ring-rose-500 outline-none resize-none text-sm leading-relaxed"
+          placeholder="Ex: Conhecemo-nos na faculdade em 2018. Adoramos comer sushi e passear o nosso cão Max. Ele é a pessoa mais carinhosa que conheço..."
           value={formData.story}
           onChange={(e) => setFormData({...formData, story: e.target.value})}
         />
       </div>
-      <div className="flex gap-4">
+
+      {/* NOVO CAMPO: Piada Interna */}
+      <div className="bg-rose-50/50 p-4 rounded-xl border border-rose-100">
+        <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-2">
+            <MessageCircleHeart size={16} className="text-rose-500" />
+            Piada Interna ou Frase Especial (Opcional)
+        </label>
+        <input 
+          type="text"
+          className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none text-sm"
+          placeholder="Ex: 'És o meu pinguim', 'Até já crocodilo', 'Batatinha'..."
+          value={formData.privateJoke}
+          onChange={(e) => setFormData({...formData, privateJoke: e.target.value})}
+        />
+        <p className="text-xs text-slate-500 mt-2 ml-1">
+            Vamos tentar incluir esta expressão na letra da música!
+        </p>
+      </div>
+
+      <div className="flex gap-4 pt-2">
         <button onClick={() => setStep(1)} className="px-6 text-slate-500 font-medium hover:text-slate-800">Voltar</button>
         <button 
           onClick={() => setStep(3)}
@@ -126,7 +159,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const renderStep3 = () => (
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-800">Escolhe a Vibe da Música</h2>
+        <h2 className="text-2xl font-bold text-slate-800">Escolhe a Vibe</h2>
         <p className="text-slate-500 text-sm mt-1">Ouve os exemplos e escolhe o teu favorito.</p>
       </div>
       
@@ -147,7 +180,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
             </div>
             <p className="text-sm text-slate-600 mb-3">{style.description}</p>
             
-            {/* Audio Player Integrado */}
             <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-slate-100 shadow-sm" onClick={(e) => e.stopPropagation()}>
               <button 
                 onClick={() => toggleAudio(style.id, style.previewUrl)}
@@ -173,7 +205,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         <button onClick={() => setStep(2)} className="px-6 text-slate-500 font-medium hover:text-slate-800">Voltar</button>
         <button 
           onClick={() => {
-             // Parar música ao avançar
              if(playing) toggleAudio(playing, ''); 
              setStep(4)
           }}
@@ -199,7 +230,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           <span className="font-bold text-slate-800">€{BASE_PRICE}</span>
         </div>
         
-        {/* Lógica de Exibição do Preço Base */}
         {!formData.fastDelivery && (
           <div className="flex justify-between border-b border-slate-200 pb-3">
             <span className="text-slate-500">Entrega Standard (72h)</span>
@@ -207,7 +237,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           </div>
         )}
 
-        {/* UPSELL SECTION (ENTREGA 24H) */}
         <label 
           className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all relative overflow-hidden group ${
             formData.fastDelivery 
@@ -247,7 +276,10 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       <div className="flex gap-4">
         <button onClick={() => setStep(3)} className="px-6 text-slate-500 font-medium hover:text-slate-800">Voltar</button>
         <button 
-          onClick={() => alert(`A Redirecionar para Pagamento Stripe... Valor: €${finalPrice}`)}
+          onClick={() => alert(`A Redirecionar para Pagamento Stripe... 
+          Valor: €${finalPrice}
+          História: ${formData.story.substring(0, 20)}...
+          Piada Interna: ${formData.privateJoke}`)}
           className="flex-1 bg-green-500 hover:bg-green-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 transition-transform hover:-translate-y-1"
         >
           Pagar €{finalPrice.toFixed(2)}
@@ -270,7 +302,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
             <ArrowLeft size={20} />
           </button>
           <div className="flex-1 text-center font-bold">Passo {step} de 4</div>
-          <div className="w-9"></div> {/* Spacer para centralizar o texto */}
+          <div className="w-9"></div>
         </div>
         
         {/* Barra de Progresso */}
