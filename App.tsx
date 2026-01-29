@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Heart, 
   Star, 
@@ -6,7 +6,6 @@ import {
   Music, 
   Clock, 
   ShieldCheck, 
-  Gift,
   Play,
   Pause
 } from 'lucide-react';
@@ -19,10 +18,11 @@ import { Wizard } from './components/Wizard';
 import { SongSample, FaqItem } from './types';
 
 // IMPORTAÇÃO DA IMAGEM E DO ÁUDIO
+// Certifica-te que estes caminhos estão corretos
 import heroBg from './assets/12qwq.jpeg';
-import heroAudio from './assets/demo.mp3'; // <--- O TEU FICHEIRO DE ÁUDIO AQUI
+import heroAudio from './assets/demo.mp3'; 
 
-// Dados
+// Dados de Exemplo
 const SAMPLES: SongSample[] = [
   { id: 1, title: "A Nossa Viagem a Paris", genre: "Pop Acústico Romântico", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
   { id: 2, title: "5 Anos de Amor", genre: "Piano & Voz Emocional", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
@@ -36,7 +36,7 @@ const FAQS: FaqItem[] = [
   },
   { 
     question: "Quanto tempo demora a entrega?", 
-    answer: "Garantimos a entrega em menos de 24 horas diretamente no teu e-mail e WhatsApp. Perfeito para prendas de última hora." 
+    answer: "A entrega standard é feita em 72h. Se precisares com urgência, podes selecionar a opção 'Entrega em 24h' no final do pedido." 
   },
   { 
     question: "Posso pedir alterações?", 
@@ -44,7 +44,7 @@ const FAQS: FaqItem[] = [
   },
   { 
     question: "Em que formato recebo a música?", 
-    answer: "Recebes um ficheiro MP3 de alta qualidade e um Cartão Digital (PDF) com a letra e um QR Code para ouvirem juntos." 
+    answer: "Recebes um ficheiro MP3 de alta qualidade e a letra completa da canção." 
   },
 ];
 
@@ -117,7 +117,7 @@ function App() {
             onClick={scrollToPricing} 
             className="md:hidden bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-bold"
           >
-            Criar Agora
+            Começar
           </button>
         </div>
         <div className="md:hidden bg-brand-50 py-2 flex justify-center border-b border-brand-100">
@@ -149,7 +149,7 @@ function App() {
               </h1>
               
               <p className="text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Surpreende a tua cara-metade com uma música personalizada feita à medida. Tu dás-nos as memórias, nós criamos a emoção em 24h.
+                Surpreende a tua cara-metade com uma música personalizada feita à medida. Tu dás-nos as memórias, nós criamos a emoção.
               </p>
               
               <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start pt-2">
@@ -265,46 +265,7 @@ function App() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="py-24">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Como criamos a magia?</h2>
-            <p className="text-gray-600 text-lg">Tu contas a história, nós transformamos em melodia. O processo é simples e rápido.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-             {/* Connector Line */}
-            <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
-
-            <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-transform duration-300">
-              <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform">
-                <Heart size={40} />
-              </div>
-              <h3 className="text-xl font-bold mb-3">1. Partilha a História</h3>
-              <p className="text-gray-600">Preenche um formulário simples com os vossos nomes, memórias e o estilo musical que mais gostam.</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-transform duration-300">
-              <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform">
-                <Clock size={40} />
-              </div>
-              <h3 className="text-xl font-bold mb-3">2. Produção Profissional</h3>
-              <p className="text-gray-600">Os nossos artistas e IA compõem uma letra emocionante e uma melodia única baseada nos teus detalhes.</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-transform duration-300">
-              <div className="w-24 h-24 mx-auto bg-brand-50 rounded-full flex items-center justify-center text-brand-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform">
-                <Gift size={40} />
-              </div>
-              <h3 className="text-xl font-bold mb-3">3. Recebe em 24h</h3>
-              <p className="text-gray-600">Recebe o ficheiro MP3 e o cartão digital com QR Code no teu e-mail e WhatsApp. Pronta a oferecer!</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* AUDIO SAMPLES */}
+      {/* AUDIO SAMPLES SECTION */}
       <section className="bg-gray-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
@@ -318,7 +279,8 @@ function App() {
               
               <ul className="space-y-6">
                 {[
-                  { icon: Clock, title: "Entrega Ultra-Rápida", desc: "Perfeito se deixaste a prenda para a última hora. Recebe em menos de 24h." },
+                  // ALTERAÇÃO: Atualizado para 72h standard
+                  { icon: Clock, title: "Entrega em 72 Horas", desc: "Recebe a tua música pronta e masterizada no teu email em 3 dias." },
                   { icon: Music, title: "Qualidade de Estúdio", desc: "Produção profissional com vozes claras e instrumentos envolventes." },
                   { icon: CheckCircle2, title: "100% Personalizado", desc: "A letra fala sobre VÓS. Os vossos nomes, o vosso lugar especial, a vossa data." },
                   { icon: ShieldCheck, title: "Garantia de Emoção", desc: "Desenhado para criar impacto emocional. Prepara os lenços!" }
@@ -336,8 +298,9 @@ function App() {
               </ul>
               
               <div className="pt-6">
+                {/* ALTERAÇÃO: Novo texto no CTA */}
                 <Button onClick={startWizard} variant="primary" className="shadow-brand-500/50 py-4 px-8 text-lg">
-                  Ouvir a Minha História
+                  Começar a Minha Música
                 </Button>
               </div>
             </div>
@@ -363,7 +326,8 @@ function App() {
                      </div>
                      <div>
                        <p className="text-xs text-brand-100 uppercase font-bold tracking-wider">Entrega Garantida</p>
-                       <p className="font-bold text-xl">Em menos de 24 Horas</p>
+                       {/* ALTERAÇÃO: Texto alterado para 72 Horas */}
+                       <p className="font-bold text-xl">Em 72 Horas</p>
                      </div>
                    </div>
                  </div>
@@ -384,9 +348,9 @@ function App() {
                 {[
                   "Música MP3 Completa (3-4 min)",
                   "Letra 100% Personalizada",
-                  "Cartão Digital com QR Code",
                   "Revisão Gratuita",
-                  "Entrega Prioritária (24h)"
+                  // ALTERAÇÃO: Removido QR Code e alterado para 72h
+                  "Entrega Standard (72h)"
                 ].map((feat, i) => (
                   <li key={i} className="flex items-center gap-3 text-gray-700 text-lg">
                     <div className="bg-brand-50 rounded-full p-1">
