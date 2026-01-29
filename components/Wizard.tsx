@@ -1,466 +1,292 @@
 import React, { useState } from 'react';
-import { 
-  Music, 
-  PenTool, 
-  Truck, 
-  ChevronRight, 
-  ChevronLeft, 
-  Check, 
-  Lock,
-  CreditCard,
-  Gift,
-  Loader2
-} from 'lucide-react';
-import { Button } from './Button';
-import { FormData } from '../types';
+import { ArrowLeft, Play, Pause, Clock, Check, Sparkles } from 'lucide-react';
 
 interface WizardProps {
   onBack: () => void;
 }
 
-const STEPS = [
-  { id: 1, label: 'Estilo', icon: Music },
-  { id: 2, label: 'História', icon: PenTool },
-  { id: 3, label: 'Checkout', icon: Truck },
+// CONFIGURAÇÃO DOS 3 ESTILOS MUSICAIS
+// NOTA: Podes alterar os 'previewUrl' para ficheiros locais se tiveres (ex: '/assets/piano.mp3')
+const MUSIC_STYLES = [
+  {
+    id: 'pop',
+    name: 'Pop Acústico Romântico',
+    description: 'Leve, feliz e contagiante. Perfeito para histórias divertidas.',
+    previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' 
+  },
+  {
+    id: 'piano',
+    name: 'Piano & Voz Emocional',
+    description: 'Profundo e tocante. Para fazer chorar de emoção.',
+    previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+  },
+  {
+    id: 'folk',
+    name: 'Indie Folk Fofinho',
+    description: 'Descontraído, com violão e vibe de viagem.',
+    previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
+  }
 ];
 
-const SelectionButton = ({ 
-  selected, 
-  onClick, 
-  label, 
-  emoji 
-}: { selected: boolean; onClick: () => void; label: string; emoji?: string }) => (
-  <button
-    onClick={onClick}
-    className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-2 h-24 sm:h-28 relative overflow-hidden ${
-      selected 
-        ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-md transform scale-[1.02]' 
-        : 'border-gray-100 bg-white text-gray-600 hover:border-brand-200 hover:bg-gray-50'
-    }`}
-  >
-    {selected && (
-      <div className="absolute top-2 right-2 w-5 h-5 bg-brand-500 rounded-full flex items-center justify-center text-white">
-        <Check size={12} strokeWidth={4} />
-      </div>
-    )}
-    <span className="text-2xl md:text-3xl">{emoji}</span>
-    <span className="font-bold text-sm md:text-base leading-tight">{label}</span>
-  </button>
-);
-
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    recipient: '',
-    genre: '',
-    mood: '',
-    vocal: '',
-    occasion: '',
-    storyMeet: '',
-    storyMemory: '',
-    storyLove: '',
-    extraPhrase: '',
-    includeVideo: false,
-    email: ''
+  const [step, setStep] = useState(1);
+  const [playing, setPlaying] = useState<string | null>(null); // Controla qual audio toca
+  
+  // Dados do Formulário
+  const [formData, setFormData] = useState({
+    names: '',
+    story: '',
+    style: '',
+    fastDelivery: false // UPSELL: Entrega em 24h
   });
 
-  // O TEU LINK DA GOOGLE SHEET
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykBouHdqolWmVwi1FDmpk04M901WTyl_JImxUAI3yHfb3TLJPzLVo1zFc8oun-FqjJ/exec";
+  // Preços
+  const BASE_PRICE = 29.99;
+  const RUSH_FEE = 10.00;
+  const finalPrice = formData.fastDelivery ? BASE_PRICE + RUSH_FEE : BASE_PRICE;
 
-  // Links do Stripe
-  const STRIPE_LINK_MUSIC = "https://buy.stripe.com/test_5kQbIUgkWaiUh0n7Or8Zq00";
-  const STRIPE_LINK_VIDEO = "https://buy.stripe.com/test_28E9AM5Gi1Mo6lJb0D8Zq01";
-
-  const handleChange = (field: keyof FormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handlePayment = async () => {
-    // Validação simples do email
-    if (!formData.email || !formData.email.includes('@')) {
-      alert("Por favor preenche um email válido para receberes a música.");
-      return;
+  // Função para tocar/parar áudio
+  const toggleAudio = (id: string, url: string) => {
+    const audioElements = document.getElementsByTagName('audio');
+    
+    // Parar todos os outros sons
+    for (let i = 0; i < audioElements.length; i++) {
+      if (audioElements[i].id !== `audio-${id}`) {
+        audioElements[i].pause();
+        audioElements[i].currentTime = 0;
+      }
     }
 
-    setIsSubmitting(true);
-
-    try {
-      // 1. Enviar dados para a Google Sheet
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      // 2. Preparar link do Stripe
-      const linkToOpen = formData.includeVideo ? STRIPE_LINK_VIDEO : STRIPE_LINK_MUSIC;
-      
-      // 3. Adicionar email ao link para preencher automático no Stripe
-      const finalLink = `${linkToOpen}?prefilled_email=${encodeURIComponent(formData.email)}`;
-      
-      // 4. Redirecionar
-      window.location.href = finalLink;
-
-    } catch (error) {
-      console.error("Erro ao guardar pedido", error);
-      // Se falhar o Google Sheets, manda para o pagamento na mesma para não perder a venda
-      window.location.href = formData.includeVideo ? STRIPE_LINK_VIDEO : STRIPE_LINK_MUSIC;
-    } finally {
-      setIsSubmitting(false);
+    const currentAudio = document.getElementById(`audio-${id}`) as HTMLAudioElement;
+    if (currentAudio) {
+      if (playing === id) {
+        currentAudio.pause();
+        setPlaying(null);
+      } else {
+        currentAudio.play();
+        setPlaying(id);
+      }
     }
   };
 
-  const nextStep = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCurrentStep(prev => Math.min(prev + 1, 3));
-  };
+  const renderStep1 = () => (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Quem são os protagonistas?</h2>
+        <p className="text-slate-500 text-sm mt-1">Diz-nos os nomes que vão entrar na música.</p>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-600 mb-2">Os vossos nomes</label>
+        <input 
+          type="text" 
+          className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all"
+          placeholder="Ex: Ana e João"
+          value={formData.names}
+          onChange={(e) => setFormData({...formData, names: e.target.value})}
+        />
+      </div>
+      <button 
+        onClick={() => setStep(2)}
+        disabled={!formData.names}
+        className="w-full bg-rose-500 hover:bg-rose-600 text-white p-4 rounded-xl font-bold disabled:opacity-50 transition-all transform active:scale-95 shadow-lg shadow-rose-500/30"
+      >
+        Continuar
+      </button>
+    </div>
+  );
 
-  const prevStep = () => {
-    if (currentStep === 1) {
-      onBack();
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setCurrentStep(prev => Math.max(prev - 1, 1));
-    }
-  };
-
-  const renderProgressBar = () => (
-    <div className="w-full max-w-2xl mx-auto mb-8 px-4">
-      <div className="relative flex justify-between items-center">
-        <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-10 rounded-full"></div>
-        <div 
-          className="absolute top-1/2 left-0 h-1 bg-brand-500 -z-10 rounded-full transition-all duration-500"
-          style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
-        ></div>
-
-        {STEPS.map((step) => {
-          const isActive = step.id <= currentStep;
-          const isCurrent = step.id === currentStep;
-          return (
-            <div key={step.id} className="flex flex-col items-center bg-white px-2">
-              <div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                  isActive 
-                    ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/30' 
-                    : 'bg-white border-gray-300 text-gray-400'
-                }`}
-              >
-                <step.icon size={18} />
-              </div>
-              <span className={`text-xs font-bold mt-2 uppercase tracking-wide ${isCurrent ? 'text-brand-600' : 'text-gray-400'}`}>
-                {step.label}
-              </span>
-            </div>
-          );
-        })}
+  const renderStep2 = () => (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Conta-nos a vossa história</h2>
+        <p className="text-slate-500 text-sm mt-1">Quanto mais detalhes deres, mais única será a música.</p>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-600 mb-2">Detalhes importantes</label>
+        <textarea 
+          className="w-full p-4 border border-slate-200 rounded-xl h-40 focus:ring-2 focus:ring-rose-500 outline-none resize-none"
+          placeholder="Como se conheceram? Qual o vosso lugar especial? Têm alguma piada interna? O que mais amas nele/a?..."
+          value={formData.story}
+          onChange={(e) => setFormData({...formData, story: e.target.value})}
+        />
+      </div>
+      <div className="flex gap-4">
+        <button onClick={() => setStep(1)} className="px-6 text-slate-500 font-medium hover:text-slate-800">Voltar</button>
+        <button 
+          onClick={() => setStep(3)}
+          disabled={!formData.story}
+          className="flex-1 bg-rose-500 hover:bg-rose-600 text-white p-4 rounded-xl font-bold disabled:opacity-50 transition-all shadow-lg shadow-rose-500/30"
+        >
+          Escolher Estilo
+        </button>
       </div>
     </div>
   );
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-12 md:py-20 animate-fade-in">
-      <div className="container mx-auto px-4 max-w-3xl">
-        
-        {renderProgressBar()}
-
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          
-          {/* STEP 1: STYLE */}
-          {currentStep === 1 && (
-            <div className="p-6 md:p-10 space-y-10">
-              <div className="space-y-4 text-center">
-                <h2 className="text-3xl font-serif font-bold text-gray-900">Vamos começar!</h2>
-                <p className="text-gray-500">Conta-nos o básico para criarmos a base perfeita.</p>
-              </div>
-
-              <div className="space-y-3">
-                <label className="block font-bold text-gray-800 text-lg">Para quem é esta música?</label>
-                <input 
-                  type="text" 
-                  placeholder="Ex: Sara, João, O meu Amor..."
-                  className="w-full p-4 text-lg border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all"
-                  value={formData.recipient}
-                  onChange={(e) => handleChange('recipient', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="block font-bold text-gray-800 text-lg">Estilo Musical</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {[
-                    { l: 'Pop', e: '🎤' }, { l: 'Rock', e: '🎸' }, 
-                    { l: 'Country', e: '🤠' }, { l: 'R&B', e: '🎷' },
-                    { l: 'Soul', e: '💜' }, { l: 'Folk', e: '🪕' }, 
-                    { l: 'Jazz', e: '🎺' }, { l: 'Surpresa', e: '🎲' }
-                  ].map((opt) => (
-                    <SelectionButton
-                      key={opt.l}
-                      label={opt.l}
-                      emoji={opt.e}
-                      selected={formData.genre === opt.l}
-                      onClick={() => handleChange('genre', opt.l)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <label className="block font-bold text-gray-800 text-lg">Vibe / Mood</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { l: 'Romântica', e: '💘' }, 
-                    { l: 'Sentida', e: '🥹' }, 
-                    { l: 'Feliz', e: '😄' }
-                  ].map((opt) => (
-                    <SelectionButton
-                      key={opt.l}
-                      label={opt.l}
-                      emoji={opt.e}
-                      selected={formData.mood === opt.l}
-                      onClick={() => handleChange('mood', opt.l)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-               <div className="space-y-3">
-                <label className="block font-bold text-gray-800 text-lg">Voz</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { l: 'Masculina', e: '👨' }, 
-                    { l: 'Feminina', e: '👩' }, 
-                    { l: 'Dueto', e: '👫' }
-                  ].map((opt) => (
-                    <SelectionButton
-                      key={opt.l}
-                      label={opt.l}
-                      emoji={opt.e}
-                      selected={formData.vocal === opt.l}
-                      onClick={() => handleChange('vocal', opt.l)}
-                    />
-                  ))}
-                </div>
-              </div>
+  const renderStep3 = () => (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Escolhe a Vibe da Música</h2>
+        <p className="text-slate-500 text-sm mt-1">Ouve os exemplos e escolhe o teu favorito.</p>
+      </div>
+      
+      <div className="grid gap-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+        {MUSIC_STYLES.map((style) => (
+          <div 
+            key={style.id}
+            onClick={() => setFormData({...formData, style: style.id})}
+            className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
+              formData.style === style.id 
+                ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-500' 
+                : 'border-slate-100 hover:border-slate-300 hover:bg-slate-50'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-bold text-slate-800">{style.name}</h3>
+              {formData.style === style.id && <Check className="text-rose-500 w-5 h-5" />}
             </div>
-          )}
-
-          {/* STEP 2: STORY */}
-          {currentStep === 2 && (
-            <div className="p-6 md:p-10 space-y-10">
-              <div className="space-y-4 text-center">
-                <h2 className="text-3xl font-serif font-bold text-gray-900">A Vossa História</h2>
-                <p className="text-gray-500">Os detalhes que tornam a música única.</p>
-              </div>
-
-               <div className="space-y-3">
-                <label className="block font-bold text-gray-800 text-lg">Qual a ocasião?</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {[
-                    { l: 'Namorados', e: '❤️' }, 
-                    { l: 'Aniversário', e: '🎂' }, 
-                    { l: 'Pedido', e: '💍' },
-                    { l: 'Anos de Namoro', e: '🥂' },
-                    { l: 'Reconciliação', e: '🙏' },
-                    { l: 'Just Because', e: '🎁' }
-                  ].map((opt) => (
-                    <SelectionButton
-                      key={opt.l}
-                      label={opt.l}
-                      emoji={opt.e}
-                      selected={formData.occasion === opt.l}
-                      onClick={() => handleChange('occasion', opt.l)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {[
-                { label: 'Onde se conheceram?', field: 'storyMeet', placeholder: 'Ex: Na faculdade, num café em Lisboa, online...' },
-                { label: 'Qual a vossa memória favorita?', field: 'storyMemory', placeholder: 'Ex: A viagem aos Açores, o dia em que adotamos o cão...' },
-                { label: 'O que mais amas nele(a)?', field: 'storyLove', placeholder: 'Ex: O sorriso, a forma como me acalma, o sentido de humor...' }
-              ].map((q, idx) => (
-                <div key={idx} className="space-y-3">
-                   <div className="flex items-center justify-between">
-                     <label className="block font-bold text-gray-800 text-lg">{q.label}</label>
-                     <span className="text-xs font-bold text-brand-500 bg-brand-50 px-2 py-1 rounded-full">Pergunta {idx + 1}/3</span>
-                   </div>
-                   <textarea
-                    rows={2}
-                    placeholder={q.placeholder}
-                    className="w-full p-4 text-base border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all resize-none"
-                    value={formData[q.field as keyof FormData] as string}
-                    onChange={(e) => handleChange(q.field as keyof FormData, e.target.value)}
-                  />
-                </div>
-              ))}
-
-              <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                <div className="flex items-start gap-4">
-                  <div className="mt-1">
-                    <input 
-                      type="checkbox" 
-                      id="extraPhraseCheck"
-                      className="w-5 h-5 text-brand-600 rounded focus:ring-brand-500"
-                      checked={!!formData.extraPhrase}
-                      onChange={(e) => handleChange('extraPhrase', e.target.checked ? ' ' : '')}
-                    />
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    <label htmlFor="extraPhraseCheck" className="font-bold text-gray-800 cursor-pointer">
-                      Mencionar uma frase específica?
-                    </label>
-                    <p className="text-sm text-gray-500">Uma piada interna ou algo que dizem sempre um ao outro.</p>
-                    
-                    {formData.extraPhrase !== '' && (
-                       <input 
-                       type="text" 
-                       placeholder="Escreve a frase aqui..."
-                       className="w-full p-3 mt-2 text-base bg-white border border-blue-200 rounded-lg focus:border-brand-500 outline-none"
-                       value={formData.extraPhrase === ' ' ? '' : formData.extraPhrase}
-                       onChange={(e) => handleChange('extraPhrase', e.target.value)}
-                       autoFocus
-                     />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: CHECKOUT */}
-          {currentStep === 3 && (
-            <div className="p-6 md:p-10 space-y-8">
-              <div className="text-center space-y-2">
-                <h2 className="text-3xl font-serif font-bold text-gray-900">Finalizar Pedido</h2>
-                <p className="text-green-600 font-bold flex items-center justify-center gap-2">
-                  <Check size={18} />
-                  Informação guardada com sucesso!
-                </p>
-              </div>
-
-              <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 space-y-4">
-                <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Gift size={20} className="text-brand-500" />
-                  Resumo do Pedido
-                </h3>
-                <div className="flex justify-between items-center text-gray-600">
-                  <span>Música Personalizada (Dia dos Namorados)</span>
-                  <span className="font-bold text-gray-900">29,99€</span>
-                </div>
-                
-                <div className="bg-white p-4 rounded-lg border-2 border-brand-100 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] px-2 py-0.5 font-bold rounded-bl-lg">
-                    RECOMENDADO
-                  </div>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <div className="relative flex items-center">
-                      <input 
-                        type="checkbox" 
-                        className="w-6 h-6 text-brand-600 rounded border-gray-300 focus:ring-brand-500"
-                        checked={formData.includeVideo}
-                        onChange={(e) => handleChange('includeVideo', e.target.checked)}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center">
-                        <span className="font-bold text-gray-900">Adicionar Vídeo Lyric</span>
-                        <span className="font-bold text-brand-600">+9,99€</span>
-                      </div>
-                      <p className="text-sm text-gray-500 leading-snug mt-1">
-                        Recebe um vídeo MP4 com a letra a passar e fotos vossas. Ideal para partilhar nas redes sociais!
-                      </p>
-                    </div>
-                  </label>
-                </div>
-
-                <div className="border-t border-gray-200 pt-4 flex justify-between items-center text-xl">
-                  <span className="font-bold text-gray-900">Total</span>
-                  <span className="font-bold text-brand-600">
-                    {formData.includeVideo ? '39,98€' : '29,99€'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Email REQUIRED */}
-              <div className="space-y-3">
-                <label className="block font-bold text-gray-800">O teu Email (Obrigatório)</label>
-                <input 
-                  type="email" 
-                  placeholder="Para onde enviamos a música?"
-                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all"
-                  value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                />
-              </div>
-
-              <div className="text-center text-sm text-gray-500 pb-2">
-                Ao clicar em Pagar, serás redirecionado para a página segura do Stripe.
-              </div>
-
-              <div className="space-y-4 pt-2">
-                 <Button 
-                   fullWidth 
-                   pulse={!isSubmitting} 
-                   className="text-lg" 
-                   onClick={handlePayment}
-                   disabled={isSubmitting}
-                 >
-                   {isSubmitting ? (
-                     <>
-                        <Loader2 className="mr-2 animate-spin" />
-                        A Processar...
-                     </>
-                   ) : (
-                     <>
-                        <CreditCard className="mr-2" />
-                        Pagar {formData.includeVideo ? '39,98€' : '29,99€'} com Segurança
-                     </>
-                   )}
-                 </Button>
-                 
-                 <div className="flex items-center justify-center gap-2 text-gray-400 text-xs">
-                   <Lock size={12} />
-                   <span>Pagamento encriptado SSL 256-bit</span>
-                 </div>
-
-                 <div className="flex justify-center gap-3 opacity-60">
-                   {['MB WAY', 'Multibanco', 'Visa', 'Mastercard'].map(m => (
-                     <div key={m} className="bg-gray-100 px-2 py-1 rounded text-[10px] font-bold text-gray-600 border border-gray-200">
-                       {m}
-                     </div>
-                   ))}
-                 </div>
-              </div>
-            </div>
-          )}
-
-          <div className="bg-gray-50 p-6 border-t border-gray-200 flex items-center justify-between">
-            <button 
-              onClick={prevStep}
-              className="flex items-center gap-1 text-gray-500 font-bold hover:text-gray-800 transition-colors px-4 py-2"
-              disabled={isSubmitting}
-            >
-              <ChevronLeft size={20} />
-              Voltar
-            </button>
-
-            {currentStep < 3 && (
-              <Button 
-                onClick={nextStep} 
-                className="py-3 px-8 text-base shadow-brand-500/20"
-                disabled={
-                  (currentStep === 1 && (!formData.recipient || !formData.genre || !formData.mood || !formData.vocal)) ||
-                  (currentStep === 2 && (!formData.occasion || !formData.storyMeet))
-                }
+            <p className="text-sm text-slate-600 mb-3">{style.description}</p>
+            
+            {/* Audio Player Integrado */}
+            <div className="flex items-center gap-3 bg-white p-2 rounded-lg border border-slate-100 shadow-sm" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={() => toggleAudio(style.id, style.previewUrl)}
+                className="w-8 h-8 flex items-center justify-center bg-rose-100 text-rose-600 rounded-full hover:bg-rose-200 transition-colors"
               >
-                Continuar
-                <ChevronRight size={20} />
-              </Button>
-            )}
+                {playing === style.id ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+              </button>
+              
+              <div className="flex-1 flex flex-col justify-center gap-1">
+                 <div className="h-1 bg-slate-100 rounded-full w-full overflow-hidden">
+                    <div className={`h-full bg-rose-400 rounded-full transition-all duration-300 ${playing === style.id ? 'animate-pulse w-2/3' : 'w-0'}`}></div>
+                 </div>
+              </div>
+              
+              <span className="text-xs text-slate-400 font-medium">Preview</span>
+              <audio id={`audio-${style.id}`} src={style.previewUrl} />
+            </div>
           </div>
+        ))}
+      </div>
 
+      <div className="flex gap-4 pt-2">
+        <button onClick={() => setStep(2)} className="px-6 text-slate-500 font-medium hover:text-slate-800">Voltar</button>
+        <button 
+          onClick={() => {
+             // Parar música ao avançar
+             if(playing) toggleAudio(playing, ''); 
+             setStep(4)
+          }}
+          disabled={!formData.style}
+          className="flex-1 bg-rose-500 hover:bg-rose-600 text-white p-4 rounded-xl font-bold disabled:opacity-50 transition-all shadow-lg shadow-rose-500/30"
+        >
+          Ver Resumo
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderStep4 = () => (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Resumo do Pedido</h2>
+        <p className="text-slate-500 text-sm mt-1">Confirma os detalhes antes de finalizar.</p>
+      </div>
+      
+      <div className="bg-slate-50 p-6 rounded-xl space-y-4 text-sm border border-slate-100">
+        <div className="flex justify-between border-b border-slate-200 pb-3">
+          <span className="text-slate-500">Música Personalizada</span>
+          <span className="font-bold text-slate-800">€{BASE_PRICE}</span>
+        </div>
+        
+        {/* Lógica de Exibição do Preço Base */}
+        {!formData.fastDelivery && (
+          <div className="flex justify-between border-b border-slate-200 pb-3">
+            <span className="text-slate-500">Entrega Standard (72h)</span>
+            <span className="font-bold text-green-600">Grátis</span>
+          </div>
+        )}
+
+        {/* UPSELL SECTION (ENTREGA 24H) */}
+        <label 
+          className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all relative overflow-hidden group ${
+            formData.fastDelivery 
+            ? 'border-amber-400 bg-amber-50' 
+            : 'border-slate-200 hover:border-amber-200 bg-white'
+          }`}
+        >
+          <div className="mt-1">
+            <input 
+              type="checkbox" 
+              checked={formData.fastDelivery}
+              onChange={(e) => setFormData({...formData, fastDelivery: e.target.checked})}
+              className="w-5 h-5 text-amber-500 rounded focus:ring-amber-500 border-gray-300"
+            />
+          </div>
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-1">
+              <span className="font-bold text-slate-800 flex items-center gap-2">
+                <Sparkles size={16} className="text-amber-500" /> Quero em 24 Horas
+              </span>
+              <span className="font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded text-xs">+€{RUSH_FEE.toFixed(2)}</span>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Vamos passar o teu pedido para a frente da fila. Recebes a música amanhã.
+            </p>
+          </div>
+        </label>
+
+        <div className="flex justify-between text-xl pt-2 items-center">
+          <span className="font-bold text-slate-800">Total</span>
+          <div className="text-right">
+             <span className="font-bold text-rose-600 text-2xl">€{finalPrice.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <button onClick={() => setStep(3)} className="px-6 text-slate-500 font-medium hover:text-slate-800">Voltar</button>
+        <button 
+          onClick={() => alert(`A Redirecionar para Pagamento Stripe... Valor: €${finalPrice}`)}
+          className="flex-1 bg-green-500 hover:bg-green-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 transition-transform hover:-translate-y-1"
+        >
+          Pagar €{finalPrice.toFixed(2)}
+        </button>
+      </div>
+      
+      <p className="text-xs text-center text-slate-400 flex items-center justify-center gap-1">
+         <Clock size={12} /> A produção começa imediatamente após o pagamento.
+      </p>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
+      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
+        
+        {/* Header do Wizard */}
+        <div className="bg-slate-900 p-4 flex items-center gap-4 text-white">
+          <button onClick={onBack} className="hover:bg-slate-700 p-2 rounded-full transition-colors">
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex-1 text-center font-bold">Passo {step} de 4</div>
+          <div className="w-9"></div> {/* Spacer para centralizar o texto */}
+        </div>
+        
+        {/* Barra de Progresso */}
+        <div className="h-1.5 bg-slate-100 w-full">
+          <div 
+            className="h-full bg-rose-500 transition-all duration-500 ease-out"
+            style={{ width: `${(step / 4) * 100}%` }}
+          ></div>
+        </div>
+
+        {/* Conteúdo Dinâmico */}
+        <div className="p-6 md:p-8">
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()}
+          {step === 4 && renderStep4()}
         </div>
       </div>
     </div>
