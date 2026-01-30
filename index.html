@@ -3,58 +3,75 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Melodia do Amor - Prenda de Dia dos Namorados</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/heart-icon.svg" />
+    
+    <!-- SEO & Autoridade -->
+    <title>Melodia do Amor | A Vossa História em Música</title>
+    <meta name="description" content="Surpreende a tua cara-metade com uma música personalizada. A vossa história, com o peso da alma e qualidade de estúdio. Entrega em 24h.">
+    
+    <!-- Open Graph (Preview para WhatsApp/TikTok) -->
+    <meta property="og:title" content="Melodia do Amor | Prenda Inesquecível">
+    <meta property="og:description" content="Transformamos as vossas memórias num hit exclusivo. Estilo Teddy Swims, Bryan Adams e mais.">
+    <meta property="og:url" content="https://melodiadoamor.pt">
+    <meta property="og:type" content="website">
 
-    <!-- TikTok Pixel Code Start -->
+    <!-- TikTok Pixel Code Start (ID: D5UJTHBC77UAR2VU2520) -->
     <script>
     !function (w, d, t) {
       w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
       var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
       ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
 
-      ttq.load('D5RSUMBC77U7L31UJ65G');
+      ttq.load('D5UJTHBC77UAR2VU2520');
       ttq.page();
     }(window, document, 'ttq');
     </script>
     <!-- TikTok Pixel Code End -->
 
+    <!-- Fontes & Estilos Alpha -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              serif: ['Playfair Display', 'serif'],
+              sans: ['Inter', 'sans-serif'], // Para o corpo do texto
+              serif: ['Playfair Display', 'serif'], // Para títulos de luxo
             },
             colors: {
               brand: {
                 50: '#fff1f2',
-                100: '#ffe4e6',
-                500: '#f43f5e',
-                600: '#e11d48',
-                700: '#be123c',
+                500: '#f43f5e', // Rosa Intenso (CTA Principal)
+                600: '#e11d48', // Hover do CTA
+                700: '#be123c', // Bordô de contraste
+                900: '#881337', // Texto escuro de autoridade
               }
             }
           }
         }
       }
     </script>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
-</head>
-  <body>
+
+    <!-- React 19 & Dependências -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react": "https://esm.sh/react@^19.2.3",
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+      }
+    }
+    </script>
+    <link rel="stylesheet" href="/index.css">
+  </head>
+  <body class="bg-brand-50 font-sans text-gray-900 selection:bg-brand-100">
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <!-- O Vite liga-se aqui ao teu index.tsx principal -->
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>
