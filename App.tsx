@@ -12,9 +12,9 @@ import { Wizard } from './components/Wizard';
 import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
 import { SongSample, FaqItem } from './types';
 
-// --- CORREÇÃO AQUI: USAR ./ EM VEZ DE ../ ---
+// --- ALTERADO AQUI PARA SOFIA ---
 import heroBg from './assets/12qwq.jpeg';
-import heroAudio from './assets/teddy.mp3'; 
+import heroAudio from './assets/sofia.mp3'; 
 
 // --- CONFIGURAÇÃO DO CONCURSO PARIS ---
 const VENDAS_ATUAIS = 28; 
