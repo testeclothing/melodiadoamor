@@ -40,11 +40,6 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ samples }) => {
   }, []);
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-serif font-bold text-gray-900 mb-2">Ouve a Qualidade</h3>
-        <p className="text-gray-600">Exemplos reais criados para outros casais.</p>
-      </div>
       
       <audio ref={audioRef} onEnded={() => setIsPlaying(false)} className="hidden" />
 
