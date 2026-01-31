@@ -19,6 +19,7 @@ import { Countdown } from './components/Countdown';
 import { AudioPlayer } from './components/AudioPlayer';
 import { Faq } from './components/Faq';
 import { Wizard } from './components/Wizard';
+// --- NOVO: IMPORTAÇÃO DAS PÁGINAS LEGAIS ---
 import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
 import { SongSample, FaqItem } from './types';
 
@@ -64,14 +65,14 @@ const REVIEWS = [
 ];
 
 function App() {
-  // ESTADO DE NAVEGAÇÃO COMPLETO
+  // --- ATUALIZAÇÃO: ESTADO DE NAVEGAÇÃO COMPLETO ---
   const [view, setView] = useState<'landing' | 'wizard' | 'terms' | 'privacy' | 'contact'>('landing');
   
   const [showPopup, setShowPopup] = useState(false);
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
 
-  // --- 1. LÓGICA DE RETORNO DO STRIPE (ABRE O WIZARD NO SUCESSO) ---
+  // --- NOVO: LÓGICA DE RETORNO DO STRIPE (ABRE O WIZARD NO SUCESSO) ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('status') === 'success') {
@@ -80,7 +81,7 @@ function App() {
     }
   }, []);
 
-  // --- 2. LÓGICA DO POPUP (SÓ NA LANDING) ---
+  // --- LÓGICA DO POPUP (ATUALIZADA PARA NÃO ABRIR SE FOR SUCESSO) ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (view === 'landing' && urlParams.get('status') !== 'success') {
@@ -117,7 +118,7 @@ function App() {
     setView('wizard');
   };
 
-  // --- ROTEAMENTO DE PÁGINAS ---
+  // --- NOVO: ROTEAMENTO DE PÁGINAS ---
   if (view === 'wizard') return <Wizard onBack={() => setView('landing')} />;
   if (view === 'contact') return <ContactPage onBack={() => setView('landing')} />;
   if (view === 'terms') return <TermsPage onBack={() => setView('landing')} />;
@@ -350,7 +351,7 @@ function App() {
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* --- ATUALIZAÇÃO: FOOTER COM LINKS LEGAIS --- */}
       <footer className="bg-gray-50 border-t border-gray-200 py-16 mt-24">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
@@ -358,11 +359,14 @@ function App() {
               <div className="bg-rose-600 p-2 rounded-xl text-white shadow-lg shadow-rose-500/20"><Music size={20} fill="currentColor" /></div>
               <span className="font-serif font-bold text-xl text-gray-900">Melodia do Amor</span>
             </div>
+            
+            {/* Links funcionais */}
             <div className="text-sm text-gray-500 flex flex-wrap justify-center gap-8 font-medium cursor-pointer">
               <span onClick={() => { window.scrollTo(0,0); setView('terms'); }} className="hover:text-rose-600 transition-colors">Termos e Condições</span>
               <span onClick={() => { window.scrollTo(0,0); setView('privacy'); }} className="hover:text-rose-600 transition-colors">Política de Privacidade</span>
               <span onClick={() => { window.scrollTo(0,0); setView('contact'); }} className="hover:text-rose-600 transition-colors">Contactos</span>
             </div>
+
             <div className="text-xs text-gray-400">© {new Date().getFullYear()} Melodia do Amor Portugal.</div>
           </div>
         </div>
