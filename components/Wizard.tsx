@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Check, Sparkles, Clock, Lightbulb, MessageCircle, Mail, RotateCcw, Play, Pause } from 'lucide-react';
+import { 
+  ArrowLeft, Check, Sparkles, Clock, Lightbulb, 
+  MessageCircle, Mail, RotateCcw, Play, Pause, 
+  User, Users, Calendar, Heart
+} from 'lucide-react';
 
 interface WizardProps {
   onBack: () => void;
@@ -14,8 +18,15 @@ const MUSIC_STYLES = [
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [step, setStep] = useState(1);
   const [playing, setPlaying] = useState<string | null>(null);
+  
   const [formData, setFormData] = useState({
-    names: '', story: '', style: '', fastDelivery: false
+    senderName: '',
+    recipientName: '',
+    nicknames: '',   // Opcional
+    specialDate: '', // Opcional
+    story: '',
+    style: '',
+    fastDelivery: false
   });
 
   const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
@@ -32,7 +43,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   }, []);
 
   const handleStripe = () => {
-    // LINKS REAIS QUE FORNECERSTE
     const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
     const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
     if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
@@ -46,54 +56,113 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     if (current) { if (playing === id) { current.pause(); setPlaying(null); } else { current.play(); setPlaying(id); } }
   };
 
-  // --- PASSOS DO WIZARD ---
+  // --- RENDERS ---
 
   const renderStep1 = () => (
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-900 font-serif italic">Os Protagonistas</h2>
-        <p className="text-slate-500 text-sm mt-1">Insere os nomes que vão imortalizar esta melodia.</p>
+        <h2 className="text-2xl font-bold text-slate-900 font-serif italic">Definição de Identidade</h2>
+        <p className="text-slate-500 text-sm mt-1">Estabelece os pilares do vosso hino personalizado.</p>
       </div>
-      <input 
-        type="text" 
-        className="w-full p-5 border-2 border-slate-100 rounded-2xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium text-lg"
-        placeholder="Ex: Carlos e Carla"
-        value={formData.names}
-        onChange={(e) => setFormData({...formData, names: e.target.value})}
-      />
-      <button onClick={() => setStep(2)} disabled={!formData.names} className="w-full bg-rose-500 hover:bg-rose-600 text-white p-5 rounded-2xl font-bold shadow-xl shadow-rose-500/20 disabled:opacity-30 transition-all">Continuar</button>
+
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                   <User size={12} /> O Teu Nome
+                </label>
+                <input 
+                    type="text" 
+                    className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium"
+                    placeholder="Ex: Carlos"
+                    value={formData.senderName}
+                    onChange={(e) => setFormData({...formData, senderName: e.target.value})}
+                />
+            </div>
+            <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                    <Heart size={12} className="text-rose-500" /> Nome Dela/Dele
+                </label>
+                <input 
+                    type="text" 
+                    className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium"
+                    placeholder="Ex: Carla"
+                    value={formData.recipientName}
+                    onChange={(e) => setFormData({...formData, recipientName: e.target.value})}
+                />
+            </div>
+        </div>
+
+        <div className="pt-4 border-t border-slate-50 space-y-4">
+            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] text-center">Detalhes de Carácter Opcional</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                        <Users size={12} /> Alcunhas ou Nomes Especiais
+                    </label>
+                    <input 
+                        type="text" 
+                        className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white outline-none text-sm"
+                        placeholder="Ex: Pinguim, Batatinha..."
+                        value={formData.nicknames}
+                        onChange={(e) => setFormData({...formData, nicknames: e.target.value})}
+                    />
+                </div>
+                <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                        <Calendar size={12} /> Data Marcante
+                    </label>
+                    <input 
+                        type="text" 
+                        className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white outline-none text-sm"
+                        placeholder="Ex: 07 de Julho de 2018"
+                        value={formData.specialDate}
+                        onChange={(e) => setFormData({...formData, specialDate: e.target.value})}
+                    />
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <button 
+        onClick={() => setStep(2)} 
+        disabled={!formData.senderName || !formData.recipientName} 
+        className="w-full bg-rose-500 hover:bg-rose-600 text-white p-5 rounded-2xl font-bold shadow-xl shadow-rose-500/20 disabled:opacity-30 transition-all uppercase tracking-widest text-xs"
+      >
+        Prosseguir para a Composição
+      </button>
     </div>
   );
 
   const renderStep2 = () => (
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-900 font-serif italic">A Vossa História</h2>
-        <p className="text-slate-500 text-sm mt-1">Tu dás os factos, nós criamos a alma.</p>
+        <h2 className="text-2xl font-bold text-slate-900 font-serif italic">Mapear a Vossa História</h2>
+        <p className="text-slate-500 text-sm mt-1">Tu forneces os factos, nós imortalizamos a alma.</p>
       </div>
 
       <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-3">
-        <div className="flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-widest">
-            <Lightbulb size={14} /> Dicas para a Letra:
+        <div className="flex items-center gap-2 text-rose-600 font-bold text-[10px] uppercase tracking-[0.2em]">
+            <Lightbulb size={14} /> Guia Lírico:
         </div>
-        <ul className="text-xs text-slate-600 space-y-1 font-medium">
-            <li>• Onde se conheceram? (Ex: Escola, Ginásio...)</li>
-            <li>• Memória favorita? (Ex: Viagens, Concertos...)</li>
-            <li>• O que mais amas nele/a? (Ex: Alegria, Apoio...)</li>
-            <li>• Hobbies ou Piadas Internas?</li>
+        <ul className="text-xs text-slate-600 space-y-1 font-medium italic">
+            <li>• Onde se conheceram (Escola, Ginásio, Trabalho)?</li>
+            <li>• Qual o momento que definiu o vosso percurso?</li>
+            <li>• O que torna o vosso laço inquebrável?</li>
         </ul>
       </div>
 
       <textarea 
         className="w-full p-5 border-2 border-slate-100 rounded-2xl h-44 focus:ring-2 focus:ring-rose-500 outline-none resize-none text-sm font-medium leading-relaxed"
-        placeholder="Escreve aqui a vossa jornada..."
+        placeholder="Escreve aqui os vossos marcos..."
         value={formData.story}
         onChange={(e) => setFormData({...formData, story: e.target.value})}
       />
 
       <div className="flex gap-4">
-        <button onClick={() => setStep(1)} className="px-6 text-slate-400 font-bold">Voltar</button>
-        <button onClick={() => setStep(3)} disabled={formData.story.length < 10} className="flex-1 bg-rose-500 text-white p-5 rounded-2xl font-bold shadow-lg disabled:opacity-30">Escolher Estilo</button>
+        <button onClick={() => setStep(1)} className="px-6 text-slate-400 font-bold text-sm">Voltar</button>
+        <button onClick={() => setStep(3)} disabled={formData.story.length < 15} className="flex-1 bg-rose-500 text-white p-5 rounded-2xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs">Escolher Estilo</button>
       </div>
     </div>
   );
@@ -101,17 +170,18 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const renderStep3 = () => (
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-900 font-serif italic">A Frequência</h2>
+        <h2 className="text-2xl font-bold text-slate-900 font-serif italic">Escolha de Frequência</h2>
         <p className="text-slate-500 text-sm mt-1">O tom que vai selar o vosso pacto.</p>
       </div>
       <div className="space-y-3">
         {MUSIC_STYLES.map((s) => (
-          <div key={s.id} onClick={() => setFormData({...formData, style: s.id})} className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${formData.style === s.id ? 'border-rose-500 bg-rose-50 shadow-md' : 'border-slate-100 hover:border-slate-200'}`}>
+          <div key={s.id} onClick={() => setFormData({...formData, style: s.id})} className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${formData.style === s.id ? 'border-rose-500 bg-rose-50 shadow-md' : 'border-slate-100 hover:border-slate-200 bg-white'}`}>
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-bold text-slate-900">{s.name}</h3>
               {formData.style === s.id && <Check className="text-rose-500" size={20} />}
             </div>
-            <button onClick={(e) => { e.stopPropagation(); toggleAudio(s.id); }} className="flex items-center gap-2 text-[10px] font-bold text-rose-600 bg-white border border-rose-100 px-3 py-1.5 rounded-full">
+            <p className="text-[11px] text-slate-500 mb-3 font-medium">{s.desc}</p>
+            <button onClick={(e) => { e.stopPropagation(); toggleAudio(s.id); }} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-rose-600 bg-white border border-rose-100 px-4 py-2 rounded-full shadow-sm">
               {playing === s.id ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
               {playing === s.id ? 'Parar' : 'Ouvir Exemplo'}
               <audio id={`audio-${s.id}`} src={s.url} />
@@ -120,8 +190,8 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         ))}
       </div>
       <div className="flex gap-4">
-        <button onClick={() => setStep(2)} className="px-6 text-slate-400 font-bold">Voltar</button>
-        <button onClick={() => setStep(4)} disabled={!formData.style} className="flex-1 bg-rose-500 text-white p-5 rounded-2xl font-bold shadow-lg disabled:opacity-30">Ver Veredito</button>
+        <button onClick={() => setStep(2)} className="px-6 text-slate-400 font-bold text-sm">Voltar</button>
+        <button onClick={() => setStep(4)} disabled={!formData.style} className="flex-1 bg-rose-500 text-white p-5 rounded-2xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs">Ver Veredito</button>
       </div>
     </div>
   );
@@ -129,38 +199,38 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const renderStep4 = () => (
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-900 font-serif italic">O Vosso Pacto</h2>
-        <p className="text-slate-500 text-sm mt-1">Confirma o destino final da vossa história.</p>
+        <h2 className="text-2xl font-bold text-slate-800 italic font-serif">O Vosso Veredito</h2>
+        <p className="text-slate-500 text-sm mt-1 text-balance">Confirma as garantias de um hino imortal.</p>
       </div>
       <div className="bg-slate-50 p-6 rounded-3xl space-y-5 border border-slate-100 shadow-inner">
         <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-slate-700 font-medium">
-                <Check className="text-green-500" size={16} /> Entrega via <strong>WhatsApp e E-mail</strong>
+            <div className="flex items-center gap-3 text-sm text-slate-700 font-medium">
+                <Check className="text-green-500" size={18} /> Entrega via <strong>WhatsApp e E-mail</strong>
             </div>
-            <div className="flex items-center gap-2 text-sm text-slate-700 font-medium">
-                <RotateCcw className="text-rose-500" size={16} /> Ajustes incluídos até estar perfeita
+            <div className="flex items-center gap-3 text-sm text-slate-700 font-medium">
+                <RotateCcw className="text-rose-500" size={18} /> Ajustes de letra incluídos
             </div>
         </div>
 
-        <label className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.fastDelivery ? 'border-amber-400 bg-amber-50 shadow-md' : 'border-slate-200 bg-white'}`}>
-          <input type="checkbox" checked={formData.fastDelivery} onChange={(e) => setFormData({...formData, fastDelivery: e.target.checked})} className="mt-1 w-4 h-4 accent-amber-500" />
+        <label className={`flex items-start gap-3 p-5 rounded-2xl border-2 cursor-pointer transition-all ${formData.fastDelivery ? 'border-amber-400 bg-amber-50 shadow-md' : 'border-slate-200 bg-white'}`}>
+          <input type="checkbox" checked={formData.fastDelivery} onChange={(e) => setFormData({...formData, fastDelivery: e.target.checked})} className="mt-1 w-5 h-5 accent-amber-500" />
           <div className="flex-1">
             <div className="flex justify-between font-bold text-sm">
-                <span><Sparkles size={14} className="inline mr-1 text-amber-500" />Prioridade 24 Horas</span>
+                <span className="flex items-center gap-1"><Sparkles size={16} className="text-amber-500" />Prioridade 24 Horas</span>
                 <span className="text-amber-600">+4,99€</span>
             </div>
-            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">O teu hino passa para a frente da fila.</p>
+            <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest mt-1">Topo da fila de produção.</p>
           </div>
         </label>
         
         <div className="flex justify-between items-center pt-4 border-t border-slate-200">
-          <span className="font-bold text-slate-400 uppercase text-xs tracking-widest">Investimento</span>
-          <span className="font-bold text-rose-600 text-3xl font-serif">{finalPrice.toFixed(2)}€</span>
+          <span className="font-bold text-slate-400 uppercase text-xs tracking-[0.2em]">Investimento</span>
+          <span className="font-bold text-rose-600 text-3xl font-serif tracking-tighter">{finalPrice.toFixed(2)}€</span>
         </div>
       </div>
       
-      <button onClick={handleStripe} className="w-full bg-slate-900 hover:bg-black text-white p-5 rounded-2xl font-bold shadow-2xl transition-all transform active:scale-95 text-lg">Selar o Pacto Agora</button>
-      <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest opacity-60">A produção começa após o pagamento.</p>
+      <button onClick={handleStripe} className="w-full bg-slate-900 hover:bg-black text-white p-6 rounded-2xl font-bold shadow-2xl transition-all transform active:scale-95 text-lg uppercase tracking-widest">Selar o Pacto</button>
+      <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest opacity-40">A produção profissional começa após o pagamento.</p>
     </div>
   );
 
@@ -171,25 +241,27 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       </div>
       <div className="space-y-2">
         <h2 className="text-3xl font-serif font-bold italic text-slate-900">Veredito Selado.</h2>
-        <p className="text-slate-400 font-medium">A vossa história entrou em produção oficial.</p>
+        <p className="text-slate-400 font-medium">A vossa história entrou em estúdio oficial.</p>
       </div>
       <div className="bg-slate-900 text-white p-8 rounded-[2rem] shadow-3xl">
-         <div className="flex justify-center gap-4 mb-4">
-            <MessageCircle className="text-green-500" /> <Mail className="text-rose-400" />
+         <div className="flex justify-center gap-6 mb-6">
+            <div className="flex flex-col items-center gap-1 opacity-60"><MessageCircle size={24} /><span className="text-[8px] uppercase tracking-widest">WhatsApp</span></div>
+            <div className="flex flex-col items-center gap-1 opacity-60"><Mail size={24} /><span className="text-[8px] uppercase tracking-widest">E-mail</span></div>
          </div>
-         <p className="text-sm font-medium">Receberás o link de download no WhatsApp e E-mail em menos de {formData.fastDelivery ? '24' : '72'} horas.</p>
+         <p className="text-xs uppercase tracking-[0.3em] opacity-40 mb-2 font-black">Entrega Estimada</p>
+         <p className="text-3xl font-bold font-sans tracking-tighter">{formData.fastDelivery ? 'Menos de 24h' : 'Até 72h'}</p>
       </div>
-      <button onClick={onBack} className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-bold uppercase tracking-widest">Voltar ao Início</button>
+      <button onClick={onBack} className="text-slate-400 hover:text-slate-900 transition-colors text-[10px] font-black uppercase tracking-[0.3em]">Voltar ao Início</button>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
-      <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_30px_70px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans selection:bg-rose-100">
+      <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
         {step < 5 && (
           <div className="bg-slate-900 p-5 flex items-center text-white">
             <button onClick={onBack} className="p-2 hover:bg-slate-800 rounded-full transition-colors"><ArrowLeft size={20} /></button>
-            <div className="flex-1 text-center font-bold text-xs uppercase tracking-[0.2em]">Passo {step} de 4</div>
+            <div className="flex-1 text-center font-bold text-[10px] uppercase tracking-[0.3em]">Sessão {step} de 4</div>
             <div className="w-10"></div>
           </div>
         )}
