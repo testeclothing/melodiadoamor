@@ -33,7 +33,7 @@ export const ContactPage: React.FC<PageProps> = ({ onBack }) => {
               <div className="bg-white p-4 rounded-full shadow-sm text-rose-500 group-hover:scale-110 transition-transform"><Mail size={28} /></div>
               <div>
                 <h3 className="font-bold text-slate-900 text-lg">E-mail</h3>
-                <a href="mailto:apoio@melodiadoamor.pt" className="text-rose-600 hover:underline">apoio@melodiadoamor.pt</a>
+                <a href="mailto:goalcouplesgift@gmail.com" className="text-rose-600 hover:underline">goalcouplesgift@gmail.com</a>
                 <p className="text-xs text-slate-400 mt-2">Tempo médio de resposta: 2 a 4 horas</p>
               </div>
             </div>
@@ -42,7 +42,7 @@ export const ContactPage: React.FC<PageProps> = ({ onBack }) => {
               <div className="bg-white p-4 rounded-full shadow-sm text-green-500 group-hover:scale-110 transition-transform"><MessageCircle size={28} /></div>
               <div>
                 <h3 className="font-bold text-slate-900 text-lg">WhatsApp</h3>
-                <p className="text-sm text-slate-600">Suporte Prioritário</p>
+                <a href="https://wa.me/351960188335" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">+351 960 188 335</a>
                 <p className="text-xs text-slate-400 mt-2">Disponível das 09h às 20h (Seg-Sex)</p>
               </div>
             </div>
@@ -101,7 +101,7 @@ export const TermsPage: React.FC<PageProps> = ({ onBack }) => {
             <ul className="list-disc pl-5 space-y-2">
               <li><strong>Prazo:</strong> A entrega é feita digitalmente (via E-mail e/ou WhatsApp) no prazo máximo de 72 horas para pedidos Standard, ou 24 horas para pedidos Prioritários.</li>
               <li><strong>Formato:</strong> Ficheiro digital MP3 de alta fidelidade. Não são enviados produtos físicos (CDs, Vinil).</li>
-              <li><strong>Revisões:</strong> O Cliente tem direito a revisões gratuitas caso existam erros factuais na letra (ex: nomes errados, datas incorretas) ou falhas técnicas no áudio. Alterações estéticas completas (ex: "não gosto do estilo que escolhi") podem estar sujeitas a uma taxa adicional.</li>
+              <li><strong>Revisões:</strong> O Cliente tem direito a revisões gratuitas caso existam erros factuais na letra (ex: nomes errados, das incorretas) ou falhas técnicas no áudio. Alterações estéticas completas (ex: "não gosto do estilo que escolhi") podem estar sujeitas a uma taxa adicional.</li>
             </ul>
           </section>
 
@@ -155,7 +155,7 @@ export const PrivacyPage: React.FC<PageProps> = ({ onBack }) => {
             <p>Para a prestação do serviço, partilhamos dados estritamente necessários com os seguintes parceiros:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li><strong>Stripe:</strong> Para processamento seguro de pagamentos.</li>
-              <li><strong>Parceiros de Produção:</strong> Sistemas de IA e engenharia de som utilizados na composição (apenas o conteúdo da história é processado, de forma anonimizada).</li>
+              <li><strong>Parceiros de Produção:</strong> Sistemas de som utilizados na composição.</li>
             </ul>
           </section>
 
@@ -166,7 +166,7 @@ export const PrivacyPage: React.FC<PageProps> = ({ onBack }) => {
 
           <section>
             <h3 className="text-lg font-bold text-slate-900 mb-3">5. Os Seus Direitos</h3>
-            <p>Nos termos do Regulamento Geral sobre a Proteção de Dados (RGPD), o titular tem o direito de aceder, retificar, limitar ou apagar os seus dados pessoais a qualquer momento. Para exercer estes direitos, contacte-nos através do e-mail: <strong>apoio@melodiadoamor.pt</strong>.</p>
+            <p>Nos termos do Regulamento Geral sobre a Proteção de Dados (RGPD), o titular tem o direito de aceder, retificar, limitar ou apagar os seus dados pessoais a qualquer momento. Para exercer estes direitos, contacte-nos através do e-mail: <strong>goalcouplesgift@gmail.com</strong>.</p>
           </section>
         </div>
       </div>
