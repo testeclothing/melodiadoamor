@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 
 // --- IMPORTAÇÃO DOS ÁUDIOS ---
-import sofiaAudio from '../assets/sofia.mp3';     
+import sofiaAudio from '../assets/sofia2.mp3';     
 import ivandroAudio from '../assets/ivandro.mp3'; 
 import vitorAudio from '../assets/vitor.mp3';     
 
@@ -18,19 +18,19 @@ const MUSIC_STYLES = [
   { 
     id: 'soul', 
     name: 'Alma & Emoção', 
-    desc: 'Estilo Sofia. Voz forte e sentida.', 
+    desc: 'Voz forte e com muito sentimento.', 
     url: sofiaAudio 
   },
   { 
     id: 'rock', 
     name: 'R&B Romântico', 
-    desc: 'Estilo Ivandro. Suave e envolvente.', 
+    desc: 'Voz suave, batida lenta e envolvente.', 
     url: ivandroAudio 
   },
   { 
     id: 'pop', 
     name: 'Pop Acústico', 
-    desc: 'Estilo Vitor Kley. Boa vibe e solar.', 
+    desc: 'Guitarra, boa energia e "good vibes".', 
     url: vitorAudio 
   }
 ];
