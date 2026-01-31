@@ -205,7 +205,7 @@ function App() {
                   <div className="flex -space-x-3">
                     {[1,2,3,4].map(i => (<img key={i} src={`https://picsum.photos/40/40?random=${i}`} className="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="User" />))}
                   </div>
-                  <div className="flex flex-col leading-none gap-0.5"><span className="font-bold text-gray-900">+2500 casais</span><span className="text-xs">felizes</span></div>
+                  <div className="flex flex-col leading-none gap-0.5"><span className="font-bold text-gray-900">+550 casais</span><span className="text-xs">felizes</span></div>
                 </div>
               </div>
             </div>
@@ -332,8 +332,8 @@ function App() {
                </div>
             </div>
             <div className="flex-1 p-10 md:p-16">
-              <div className="flex items-center justify-between mb-2"><span className="text-gray-400 line-through text-xl">€99,00</span><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">70% Desconto</span></div>
-              <div className="flex items-baseline gap-1 mb-8"><span className="text-6xl font-bold text-rose-600 tracking-tight">29,99€</span><span className="text-gray-500 font-medium">/ música</span></div>
+              <div className="flex items-center justify-between mb-2"><span className="text-gray-400 line-through text-xl">59,99€</span><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">70% Desconto</span></div>
+              <div className="flex items-baseline gap-1 mb-8"><span className="text-6xl font-bold text-rose-600 tracking-tight">24,99€</span><span className="text-gray-500 font-medium">/ música</span></div>
               <ul className="space-y-4 mb-10">
                 {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Standard (72h)", "Participação Concurso Paris"].map((feat, i) => (
                   <li key={i} className="flex items-center gap-3 text-gray-700 text-lg"><div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600 shrink-0" /></div><span>{feat}</span></li>
