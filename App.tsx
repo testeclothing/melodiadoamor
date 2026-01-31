@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Heart, Star, CheckCircle2, Music, Clock, ShieldCheck, Gift, 
@@ -332,7 +333,7 @@ function App() {
                </div>
             </div>
             <div className="flex-1 p-10 md:p-16">
-              <div className="flex items-center justify-between mb-2"><span className="text-gray-400 line-through text-xl">59,99€</span><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">70% Desconto</span></div>
+              <div className="flex items-center justify-between mb-2"><span className="text-gray-400 line-through text-xl">59,99€</span><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">60% Desconto</span></div>
               <div className="flex items-baseline gap-1 mb-8"><span className="text-6xl font-bold text-rose-600 tracking-tight">24,99€</span><span className="text-gray-500 font-medium">/ música</span></div>
               <ul className="space-y-4 mb-10">
                 {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Standard (72h)", "Participação Concurso Paris"].map((feat, i) => (
