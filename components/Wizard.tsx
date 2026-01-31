@@ -82,7 +82,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Detalhes Extra", data.extraDetails);
 
         // O TEU LINK DO GOOGLE APPS SCRIPT (Copiado do teu print)
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGP_60VyGJDsCNpwhwkRwwBlomGflDZCqloOg7h2ex3YHUkDjYWT1gbcwThbf_20_XWg/exec";
+        const GOOGLE_SCRIPT_URL = "AKfycbwO63IFCrdlEM46Zw7CqpZR55FocJKIL6WkyuzZpGlpjEqOgiTdNwzk9atIXmK4yl0fLw";
 
         // 3. Envia para o Excel (Google Sheets)
         fetch(GOOGLE_SCRIPT_URL, {
