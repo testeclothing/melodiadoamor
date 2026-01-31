@@ -4,9 +4,8 @@ import {
   Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine
 } from 'lucide-react';
 
-// --- IMPORTAÇÃO DOS ÁUDIOS (NOMES SIMPLIFICADOS) ---
-// Certifica-te que renomeaste os ficheiros na pasta assets!
-import teddyAudio from '../assets/demo.mp3';     
+// --- IMPORTAÇÃO DOS ÁUDIOS (CORRIGIDO CONFORME O TEU PRINT) ---
+import teddyAudio from '../assets/teddy.mp3';     // Antes era demo.mp3
 import ivandroAudio from '../assets/ivandro.mp3'; 
 import vitorAudio from '../assets/vitor.mp3';     
 
@@ -66,7 +65,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   }, []);
 
   const handleStripe = () => {
-    // LINKS DO TEU STRIPE
+    // LINKS DO TEU STRIPE (Substitui se mudares para LIVE)
     const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
     const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
     
