@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  ArrowLeft, Check, Sparkles, Clock, Lightbulb, 
+  ArrowLeft, Check, Sparkles, 
   MessageCircle, Mail, RotateCcw, Play, Pause, 
   User, Users, Calendar, Heart, MapPin, Star, PenTool
 } from 'lucide-react';
@@ -365,9 +365,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           {step === 5 && renderStep5()}
         </div>
       </div>
-    </div>
-  );
-};
     </div>
   );
 };
