@@ -299,10 +299,7 @@ function App() {
           <div className="flex flex-col lg:flex-row gap-16 items-center">
             <div className="flex-1 w-full">
               <div className="bg-white rounded-[2.5rem] p-8 md:p-12 text-slate-900 shadow-2xl transform -rotate-1 hover:rotate-0 transition-transform duration-500">
-                <div className="text-center mb-10">
-                  <h3 className="text-2xl font-serif font-bold">Ouve a Qualidade</h3>
-                  <p className="text-slate-500 text-sm mt-1">Exemplos reais criados para outros casais.</p>
-                </div>
+                
                 <AudioPlayer samples={SAMPLES} />
               </div>
             </div>
