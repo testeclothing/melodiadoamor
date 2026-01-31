@@ -27,6 +27,12 @@ const VENDAS_ATUAIS = 28;
 const OBJETIVO_VENDAS = 100;
 const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
 
+// --- NOVO: CÁLCULO PARA O DIA DOS NAMORADOS ---
+const dataAlvo = new Date('2026-02-14T00:00:00');
+const hoje = new Date();
+const diffTime = dataAlvo.getTime() - hoje.getTime();
+const diasQueFaltam = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
 // --- DADOS DOS SAMPLES ATUALIZADOS ---
 const SAMPLES: SongSample[] = [
   { 
