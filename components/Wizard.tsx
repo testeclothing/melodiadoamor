@@ -4,35 +4,35 @@ import {
   Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine
 } from 'lucide-react';
 
-// --- ALTERAÇÃO 1: IMPORTAÇÃO DOS TEUS ÁUDIOS REAIS ---
-// Certifica-te que os nomes dos ficheiros na pasta 'assets' correspondem a isto:
-import teddyAudio from '../assets/demo.mp3'; 
-import ivandroAudio from '../assets/Exemplo Ivandro.mp3 (1).mpeg'; // Ou o nome exato que tiveres
-import vitorAudio from '../assets/Exemplo Vitor Kley.mp3.mpeg';   // Ou o nome exato que tiveres
+// --- IMPORTAÇÃO DOS ÁUDIOS (NOMES SIMPLIFICADOS) ---
+// Certifica-te que renomeaste os ficheiros na pasta assets!
+import teddyAudio from '../assets/demo.mp3';     
+import ivandroAudio from '../assets/ivandro.mp3'; 
+import vitorAudio from '../assets/vitor.mp3';     
 
 interface WizardProps {
   onBack: () => void;
 }
 
-// --- ALTERAÇÃO 2: LIGAÇÃO DOS ESTILOS AOS FICHEIROS ---
+// CONFIGURAÇÃO DOS ESTILOS
 const MUSIC_STYLES = [
   { 
     id: 'soul', 
     name: 'Alma & Emoção', 
     desc: 'Estilo Teddy Swims. Voz forte e sentida.', 
-    url: teddyAudio // Toca o demo.mp3
+    url: teddyAudio 
   },
   { 
     id: 'rock', 
-    name: 'R&B Romântico', // Ajustado para o estilo Ivandro que falámos
+    name: 'R&B Romântico', 
     desc: 'Estilo Ivandro. Suave e envolvente.', 
-    url: ivandroAudio // Toca o ficheiro do Ivandro
+    url: ivandroAudio 
   },
   { 
     id: 'pop', 
-    name: 'Pop Acústico', // Ajustado para o estilo Vitor Kley
+    name: 'Pop Acústico', 
     desc: 'Estilo Vitor Kley. Boa vibe e solar.', 
-    url: vitorAudio // Toca o ficheiro do Vitor Kley
+    url: vitorAudio 
   }
 ];
 
@@ -66,7 +66,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   }, []);
 
   const handleStripe = () => {
-    // LINKS REAIS QUE FORNECERSTE
+    // LINKS DO TEU STRIPE
     const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
     const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
     
@@ -207,7 +207,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-600">Voltar</button>
         <button 
           onClick={() => setStep(3)} 
-          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-100 uppercase tracking-widest text-xs transition-all"
+          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg uppercase tracking-widest text-xs hover:bg-black transition-all"
         >
           Próximo Passo
         </button>
@@ -352,6 +352,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
       <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
         
+        {/* Barra de Progresso */}
         {step < 5 && (
           <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-50">
             <div className="h-full bg-rose-500 transition-all duration-700 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
