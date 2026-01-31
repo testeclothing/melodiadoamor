@@ -54,7 +54,14 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
 
-  // --- LÓGICA DE SUCESSO E ENVIO PARA GOOGLE SHEETS ---
+  // --- 1. SEGURANÇA DE DOMÍNIO (EVITA O ERRO DO WWW) ---
+  useEffect(() => {
+    if (window.location.hostname.startsWith('www.')) {
+      window.location.href = window.location.href.replace('www.', '');
+    }
+  }, []);
+
+  // --- 2. LÓGICA DE SUCESSO E ENVIO PARA O GOOGLE SHEETS ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -78,23 +85,26 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Hobbies", data.hobbies);
         formDataToSend.append("Detalhes Extra", data.extraDetails);
 
-        // O TEU LINK DO GOOGLE
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7YbtCuxUj6Wogbaw0ZEeVIyRcZwyUETUH_LJFWjNfaWNI1Y4YEILgfBASHTpe4gP6Ug/exec";
+        // O TEU LINK DO GOOGLE ATUALIZADO
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxF4N-NK6sN_siTh0KIq-3ekk9tBSEsGixAb-P0Hbb5ZB0J8sN-BdlI7PTFOby3rDZNxw/exec";
 
         fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
           body: formDataToSend,
-          mode: "no-cors" 
+          mode: "no-cors" // Crucial para não haver bloqueio de segurança do Google
         })
         .then(() => {
-          console.log("Sucesso Excel!");
-          localStorage.removeItem('pendingOrder');
+          console.log("Sucesso: Pedido guardado no Excel!");
+          localStorage.removeItem('pendingOrder'); // Limpa para não duplicar se der refresh
         })
         .catch(err => console.error("Erro Excel:", err));
       }
 
+      // Rastreio Pixel
       const amt = urlParams.get('amt') || '24.99';
       if ((window as any).ttq) (window as any).ttq.track('CompletePayment', { value: parseFloat(amt), currency: 'EUR' });
+      
+      // Limpa o URL para ficar limpo
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -102,24 +112,16 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const handleStripe = () => {
     setIsSubmitting(true);
 
-    // SEGURANÇA DE DOMÍNIO (pt vs www.pt)
-    if (window.location.hostname.includes('www.')) {
-      const cleanUrl = window.location.href.replace('www.', '');
-      localStorage.setItem('pendingOrder', JSON.stringify({
-        ...formData,
-        styleName: MUSIC_STYLES.find(s => s.id === formData.style)?.name || formData.style
-      }));
-      window.location.href = cleanUrl;
-      return;
-    }
-
+    // LINKS DO TEU STRIPE (Produção)
     const L_STD = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001";
     const L_FAST = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000";
     const paymentLink = formData.fastDelivery ? L_FAST : L_STD;
 
+    // GUARDA NO BOLSO DO NAVEGADOR
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
-      styleName: MUSIC_STYLES.find(s => s.id === formData.style)?.name || formData.style
+      styleName: MUSIC_STYLES.find(s => s.id === formData.style)?.name || formData.style,
+      timestamp: new Date().toISOString()
     }));
 
     if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
@@ -133,7 +135,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     if (current) { if (playing === id) { current.pause(); setPlaying(null); } else { current.play(); setPlaying(id); } }
   };
 
-  // --- COMPONENTES VISUAIS ORIGINAIS ---
+  // --- COMPONENTES VISUAIS (DESIGN ORIGINAL) ---
 
   const renderStep1 = () => (
     <div className="space-y-8 animate-fadeIn">
@@ -404,6 +406,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
       <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
         
+        {/* Barra de Progresso */}
         {step < 5 && (
           <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-50">
             <div className="h-full bg-rose-500 transition-all duration-700 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
