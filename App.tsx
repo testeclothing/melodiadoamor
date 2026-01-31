@@ -13,8 +13,8 @@ import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO ---
 import heroBg from './assets/12qwq.jpeg';
-import heroAudio from './assets/sofia.mp3'; 
-import sofiaAudio from './assets/sofia.mp3';     
+import heroAudio from './assets/sofia2.mp3'; 
+import sofiaAudio from './assets/sofia2.mp3';     
 import ivandroAudio from './assets/ivandro.mp3'; 
 import vitorAudio from './assets/vitor.mp3';     
 
@@ -61,7 +61,7 @@ function App() {
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
 
-  // --- NOVA LÓGICA: TEMPO PARA O DIA DOS NAMORADOS ---
+  // --- LÓGICA: TEMPO PARA O DIA DOS NAMORADOS ---
   const [tempoValentine, setTempoValentine] = useState("");
 
   useEffect(() => {
@@ -69,12 +69,10 @@ function App() {
       const agora = new Date();
       const alvo = new Date('2026-02-14T00:00:00');
       const diff = alvo.getTime() - agora.getTime();
-
       if (diff <= 0) {
         setTempoValentine("É hoje o Dia dos Namorados!");
         return;
       }
-
       const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
       const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       setTempoValentine(`Faltam ${dias} dias e ${horas}h para o Dia dos Namorados`);
@@ -180,13 +178,12 @@ function App() {
             <span className="font-serif font-bold text-xl tracking-tight text-slate-800">Melodia do Amor</span>
           </div>
           
-          {/* BARRA DE ANÚNCIO DESKTOP */}
           <div className="hidden md:flex items-center gap-2 bg-rose-50 px-4 py-1.5 rounded-full border border-rose-100">
             <Clock size={14} className="text-rose-600" />
             <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">{tempoValentine}</span>
           </div>
 
-          <button onClick={scrollToPricing} className="bg-rose-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg hover:bg-rose-700 transition-colors">Criar Agora</button>
+          <button onClick={startWizard} className="bg-rose-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg hover:bg-rose-700 transition-colors">Criar Agora</button>
         </div>
       </header>
 
@@ -198,45 +195,45 @@ function App() {
         </div>
       </div>
 
-      {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+      {/* HERO SECTION - Otimizada para Mobile Spacing */}
+      <section className="relative min-h-[85vh] lg:min-h-screen flex items-center pt-8 pb-8 lg:pt-24 lg:pb-16 overflow-hidden">
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[30rem] h-[30rem] bg-rose-100/50 rounded-full blur-3xl -z-10 animate-pulse"></div>
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[20rem] h-[20rem] bg-blue-100/50 rounded-full blur-3xl -z-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20">
-            <div className="flex-1 text-center lg:text-left space-y-8 max-w-xl">
-              <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full text-sm font-bold border border-rose-100 uppercase tracking-wide shadow-sm hover:scale-105 transition-transform">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-20">
+            <div className="flex-1 text-center lg:text-left space-y-4 lg:space-y-8 max-w-xl">
+              <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full text-sm font-bold border border-rose-100 uppercase tracking-wide shadow-sm">
                 <Heart size={14} fill="currentColor" /><span>Oferta Dia dos Namorados</span>
               </div>
               <h1 className="text-4xl lg:text-6xl font-serif font-bold leading-[1.1] text-gray-900 tracking-tight">
                 A vossa história merece uma <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">banda sonora única.</span>
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
+              <p className="text-base lg:text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
                 Surpreende a tua cara-metade com uma música personalizada feita à medida. Tu dás-nos as memórias, nós criamos a emoção.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start pt-2">
-                <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl shadow-rose-500/20 bg-rose-600 hover:bg-rose-700">
+              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2">
+                <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl bg-rose-600 hover:bg-rose-700">
                   Criar a Minha Canção
                 </Button>
                 <div className="flex items-center gap-3 text-sm text-gray-500 font-medium bg-white/50 px-3 py-2 rounded-xl border border-white/50 backdrop-blur-sm">
                   <div className="flex -space-x-3">
                     {[1,2,3,4].map(i => (<img key={i} src={`https://picsum.photos/40/40?random=${i}`} className="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="User" />))}
                   </div>
-                  <div className="flex flex-col leading-none gap-0.5"><span className="font-bold text-gray-900">+2500 casais</span><span className="text-xs">felizes</span></div>
+                  <div className="flex flex-col leading-none"><span className="font-bold text-gray-900">+2500 casais</span><span className="text-xs">felizes</span></div>
                 </div>
               </div>
             </div>
-            <div className="flex-1 w-full max-w-[500px] lg:max-w-[550px] relative mt-8 lg:mt-0">
+            <div className="flex-1 w-full max-w-[450px] lg:max-w-[550px] relative">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-[6px] border-white group">
                 <img src={heroBg} alt="Casal feliz" className="w-full h-auto object-cover aspect-[4/5] lg:aspect-[3/4]"/>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
-                <div className="absolute bottom-6 left-6 right-6 z-20">
-                  <button onClick={toggleHeroAudio} className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-4 flex items-center gap-4 shadow-xl border border-white/40 hover:bg-white transition-all cursor-pointer group/player text-left">
-                    <div className={`relative w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300 ${heroIsPlaying ? 'bg-rose-500 scale-105' : 'bg-rose-600 group-hover/player:scale-110'}`}>
-                      {heroIsPlaying ? (<Pause size={20} fill="currentColor" />) : (<Play size={20} fill="currentColor" className="ml-1" />)}
+                <div className="absolute bottom-4 left-4 right-4 z-20">
+                  <button onClick={toggleHeroAudio} className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-3 flex items-center gap-4 shadow-xl">
+                    <div className={`relative w-10 h-10 rounded-full flex items-center justify-center text-white shadow-lg ${heroIsPlaying ? 'bg-rose-500' : 'bg-rose-600'}`}>
+                      {heroIsPlaying ? (<Pause size={18} fill="currentColor" />) : (<Play size={18} fill="currentColor" className="ml-0.5" />)}
                     </div>
-                    <div className="flex-1 min-w-0">
-                         <p className="font-bold text-base text-gray-900 truncate">Exemplo: A Nossa História</p>
+                    <div className="flex-1 min-w-0 text-left">
+                         <p className="font-bold text-sm text-gray-900 truncate">Exemplo: A Nossa História</p>
                          <p className="text-[10px] text-gray-500 font-mono">{heroIsPlaying ? 'A Tocar...' : 'Ouvir Exemplo'}</p>
                     </div>
                   </button>
@@ -255,7 +252,7 @@ function App() {
             {REVIEWS.map((review, i) => (
               <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex gap-1 text-yellow-400 mb-3">{[...Array(review.stars)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}</div>
-                <p className="text-gray-700 italic mb-4">"{review.text}"</p>
+                <p className="text-gray-700 italic mb-4 leading-relaxed">"{review.text}"</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center text-rose-700 font-bold text-sm">{review.name.charAt(0)}</div>
                   <span className="font-bold text-sm text-gray-900">{review.name}</span>
@@ -273,20 +270,20 @@ function App() {
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Como criamos a magia?</h2>
             <p className="text-gray-600 text-lg mb-16">Tu contas a história, nós transformamos em melodia.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
-                    <div className="w-24 h-24 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6"><Heart size={40} /></div>
+                <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg group hover:-translate-y-1 transition-transform">
+                    <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm"><Heart size={32} /></div>
                     <h3 className="text-xl font-bold mb-3">1. Partilha a História</h3>
                     <p className="text-gray-600">Preenche um formulário simples com memórias e o estilo que gostam.</p>
                 </div>
-                <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
-                    <div className="w-24 h-24 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6"><Music size={40} /></div>
+                <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg group hover:-translate-y-1 transition-transform">
+                    <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm"><Music size={32} /></div>
                     <h3 className="text-xl font-bold mb-3">2. Produção</h3>
                     <p className="text-gray-600">Compostos uma letra emocionante e melodia baseada nos teus detalhes.</p>
                 </div>
-                <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
-                    <div className="w-24 h-24 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6"><Gift size={40} /></div>
+                <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg group hover:-translate-y-1 transition-transform">
+                    <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm"><Gift size={32} /></div>
                     <h3 className="text-xl font-bold mb-3">3. Recebe em 72h</h3>
-                    <p className="text-gray-600">Recebe o ficheiro MP3 e a letra no teu e-mail. Pronta a emocionar!</p>
+                    <p className="text-gray-600">Recebe o ficheiro MP3 e a letra no teu e-mail. Pronta a oferecer!</p>
                 </div>
             </div>
         </div>
@@ -297,63 +294,71 @@ function App() {
         <div className="container mx-auto px-4 max-w-6xl flex flex-col lg:flex-row gap-16 items-center">
             <div className="flex-1 w-full"><AudioPlayer samples={SAMPLES} /></div>
             <div className="flex-1 space-y-8 text-left">
-                <h2 className="text-3xl md:text-5xl font-serif font-bold">Mais do que uma música, <span className="text-rose-400">uma memória eterna.</span></h2>
+                <h2 className="text-3xl md:text-5xl font-serif font-bold leading-tight">Mais do que uma música, <span className="text-rose-400">uma memória eterna.</span></h2>
                 <ul className="space-y-6">
                     <li className="flex gap-5">
-                        <div className="bg-rose-600/20 p-3 rounded-xl h-fit text-rose-400"><Clock size={24} /></div>
+                        <div className="bg-rose-600/20 p-3 rounded-xl h-fit text-rose-400 border border-rose-500/20"><Clock size={24} /></div>
                         <div><h4 className="font-bold text-xl">Entrega em 72 Horas</h4><p className="text-gray-400">Recebe a música pronta no teu e-mail em 3 dias.</p></div>
                     </li>
                     <li className="flex gap-5">
-                        <div className="bg-rose-600/20 p-3 rounded-xl h-fit text-rose-400"><Music size={24} /></div>
+                        <div className="bg-rose-600/20 p-3 rounded-xl h-fit text-rose-400 border border-rose-500/20"><Music size={24} /></div>
                         <div><h4 className="font-bold text-xl">Qualidade de Estúdio</h4><p className="text-gray-400">Produção profissional com vozes claras.</p></div>
                     </li>
                     <li className="flex gap-5">
-                        <div className="bg-rose-600/20 p-3 rounded-xl h-fit text-rose-400"><CheckCircle2 size={24} /></div>
+                        <div className="bg-rose-600/20 p-3 rounded-xl h-fit text-rose-400 border border-rose-500/20"><CheckCircle2 size={24} /></div>
                         <div><h4 className="font-bold text-xl">100% Personalizado</h4><p className="text-gray-400">A letra fala sobre VÓS. Lugares, datas e segredos.</p></div>
                     </li>
                 </ul>
-                <Button onClick={startWizard} className="py-4 px-8 text-lg bg-rose-600 hover:bg-rose-700">Começar a Minha Música</Button>
+                <Button onClick={startWizard} className="py-4 px-8 text-lg bg-rose-600 hover:bg-rose-700 shadow-xl shadow-rose-500/20">Começar a Minha Música</Button>
             </div>
         </div>
       </section>
 
-      {/* PRICING SECTION - ATUALIZADA */}
+      {/* PRICING SECTION - Otimizada Hierarquia Visual */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-transform">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
             
-            <div className="flex-1 p-10 md:p-16 flex flex-col justify-center bg-rose-600 text-white relative overflow-hidden">
+            {/* LADO ESQUERDO (VERMELHO) */}
+            <div className="flex-1 p-6 md:p-16 flex flex-col justify-center bg-rose-600 text-white relative overflow-hidden text-center md:text-left">
                <div className="absolute inset-0 bg-gradient-to-br from-rose-500 to-rose-700"></div>
                <div className="relative z-10">
-                 <h3 className="text-2xl font-bold mb-2 text-rose-100">Oferta Limitada</h3>
-                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Dia dos Namorados</h2>
+                 <h3 className="text-lg font-bold mb-2 text-rose-100 uppercase tracking-widest">Oferta Limitada</h3>
+                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 italic">Dia dos Namorados</h2>
                  
-                 <p className="text-rose-100 mb-8 text-lg leading-relaxed">
+                 <p className="text-rose-50 mb-6 text-base lg:text-lg leading-relaxed">
                    Aproveita agora o preço promocional de lançamento para receberes a tua música a tempo de surpreender quem mais amas.
                  </p>
 
-                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/20 inline-block md:block mx-auto md:mx-0">
                    <div className="flex items-center gap-4">
-                     <div className="bg-white/20 p-2 rounded-full"><Clock className="text-white" size={24} /></div>
+                     <div className="bg-white/20 p-2 rounded-full hidden sm:block"><Clock className="text-white" size={20} /></div>
                      <div>
-                       <p className="text-xs text-rose-100 uppercase font-bold tracking-wider">Aproveita Já:</p>
-                       <p className="font-bold text-xl uppercase">{tempoValentine}</p>
+                       <p className="text-[10px] md:text-xs text-rose-100 uppercase font-bold tracking-wider">Aproveita Já:</p>
+                       <p className="font-bold text-sm md:text-xl uppercase tracking-tight">{tempoValentine}</p>
                      </div>
                    </div>
                  </div>
                </div>
             </div>
 
-            <div className="flex-1 p-10 md:p-16">
-              <div className="flex items-center justify-between mb-2"><span className="text-gray-400 line-through text-xl">59,99€</span><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase">70% Desconto</span></div>
-              <div className="flex items-baseline gap-1 mb-8"><span className="text-6xl font-bold text-rose-600 tracking-tight">24,99€</span><span className="text-gray-500 font-medium">/ música</span></div>
-              <ul className="space-y-4 mb-10">
-                {["Música MP3 Completa", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Digital (72h)", "Participação Concurso Paris"].map((feat, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-700 text-lg"><div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600" /></div><span>{feat}</span></li>
+            {/* LADO DIREITO (PREÇO) */}
+            <div className="flex-1 p-8 md:p-16">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 line-through text-xl">59,99€</span>
+                <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border border-green-100">60% Desconto</span>
+              </div>
+              <div className="flex items-baseline gap-1 mb-8">
+                <span className="text-6xl font-bold text-rose-600 tracking-tight">24,99€</span>
+                <span className="text-gray-500 font-medium">/ música</span>
+              </div>
+              <ul className="space-y-3 mb-10">
+                {["Música MP3 Completa", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Digital (72h)", "Participação Viagem Paris"].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3 text-gray-700 text-base"><div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600" /></div><span>{feat}</span></li>
                 ))}
               </ul>
-              <Button fullWidth pulse onClick={startWizard} className="py-4 text-lg bg-rose-600 hover:bg-rose-700 shadow-xl">Criar Música Agora</Button>
-              <p className="text-center text-xs text-gray-400 mt-6 uppercase font-bold">Pagamento Seguro via Stripe</p>
+              <Button fullWidth pulse onClick={startWizard} className="py-4 text-lg bg-rose-600 hover:bg-rose-700 shadow-xl shadow-rose-500/20">Criar Música Agora</Button>
+              <p className="text-center text-[10px] text-gray-400 mt-6 uppercase font-bold tracking-widest">Pagamento Seguro via Stripe</p>
             </div>
           </div>
         </div>
@@ -369,22 +374,23 @@ function App() {
 
       {/* FOOTER */}
       <footer className="bg-gray-50 border-t border-gray-200 py-16">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="container mx-auto px-4 max-w-6xl flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-2">
+            <div className="bg-rose-600 p-1.5 rounded-lg text-white"><Music size={20} fill="currentColor" /></div>
             <span className="font-serif font-bold text-xl text-gray-900">Melodia do Amor</span>
-            <div className="text-sm text-gray-500 flex gap-8 font-medium cursor-pointer">
-              <span onClick={() => setView('terms')}>Termos</span>
-              <span onClick={() => setView('privacy')}>Privacidade</span>
-              <span onClick={() => setView('contact')}>Contactos</span>
-            </div>
-            <div className="text-xs text-gray-400">© {new Date().getFullYear()} Melodia do Amor Portugal.</div>
           </div>
+          <div className="text-sm text-gray-500 flex gap-8 font-medium cursor-pointer">
+            <span onClick={() => setView('terms')} className="hover:text-rose-600 transition-colors">Termos</span>
+            <span onClick={() => setView('privacy')} className="hover:text-rose-600 transition-colors">Privacidade</span>
+            <span onClick={() => setView('contact')} className="hover:text-rose-600 transition-colors">Contactos</span>
+          </div>
+          <div className="text-xs text-gray-400">© {new Date().getFullYear()} Melodia do Amor Portugal.</div>
         </div>
       </footer>
       
       {/* STICKY MOBILE CTA */}
       <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
-         <Button fullWidth className="shadow-2xl py-4 text-lg bg-rose-600 hover:bg-rose-700" onClick={startWizard}>Criar Música (24,99€)</Button>
+         <Button fullWidth className="shadow-2xl py-4 text-lg bg-rose-600 hover:bg-rose-700 text-white" onClick={startWizard}>Criar Música (24,99€)</Button>
       </div>
 
     </div>
