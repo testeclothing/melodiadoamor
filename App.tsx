@@ -16,7 +16,7 @@ import heroBg from './assets/12qwq.jpeg';
 import heroAudio from './assets/sofia.mp3'; 
 
 // --- IMPORTAÇÃO DOS SAMPLES (LOCAIS) ---
-import sofiaAudio from './assets/sofia.mp3';     
+import sofiaAudio from './assets/sofia2.mp3';     
 import ivandroAudio from './assets/ivandro.mp3'; 
 import vitorAudio from './assets/vitor.mp3';     
 
