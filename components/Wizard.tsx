@@ -4,7 +4,7 @@ import {
   Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine
 } from 'lucide-react';
 
-// --- IMPORTAÇÃO DOS ÁUDIOS (ALTERADO TEDDY PARA SOFIA) ---
+// --- IMPORTAÇÃO DOS ÁUDIOS ---
 import sofiaAudio from '../assets/sofia.mp3';     
 import ivandroAudio from '../assets/ivandro.mp3'; 
 import vitorAudio from '../assets/vitor.mp3';     
@@ -18,7 +18,7 @@ const MUSIC_STYLES = [
   { 
     id: 'soul', 
     name: 'Alma & Emoção', 
-    desc: 'Estilo Sofia. Voz forte e sentida.', // Atualizei a descrição também
+    desc: 'Estilo Sofia. Voz forte e sentida.', 
     url: sofiaAudio 
   },
   { 
@@ -38,6 +38,7 @@ const MUSIC_STYLES = [
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [step, setStep] = useState(1);
   const [playing, setPlaying] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Novo estado para bloquear o botão
   
   const [formData, setFormData] = useState({
     senderName: '',    
@@ -53,24 +54,78 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
 
-  // Lógica de Retorno do Stripe & Pixel
+  // --- LÓGICA DE RETORNO DO STRIPE & GOOGLE SHEETS ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // Se o pagamento foi sucesso (o cliente voltou do Stripe)
     if (urlParams.get('status') === 'success') {
       setStep(5);
+      
+      // 1. Vai buscar os dados que guardámos no "bolso" antes de ir para o Stripe
+      const pendingData = localStorage.getItem('pendingOrder');
+      
+      if (pendingData) {
+        const data = JSON.parse(pendingData);
+        
+        // 2. Prepara os dados para o Google Sheets
+        const formDataToSend = new FormData();
+        formDataToSend.append("Nome Cliente", data.senderName);
+        formDataToSend.append("Para Quem", data.recipientName);
+        formDataToSend.append("Estilo", data.styleName);
+        formDataToSend.append("Preco", data.fastDelivery ? "29.98€" : "24.99€");
+        formDataToSend.append("Entrega Rapida", data.fastDelivery ? "SIM" : "NÃO");
+        formDataToSend.append("Historia", data.meeting);
+        formDataToSend.append("Memoria", data.memory);
+        formDataToSend.append("O Que Ama", data.loveMost);
+        formDataToSend.append("Hobbies", data.hobbies);
+        formDataToSend.append("Detalhes Extra", data.extraDetails);
+
+        // O TEU LINK DO GOOGLE APPS SCRIPT (Copiado do teu print)
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGP_60VyGJDsCNpwhwkRwwBlomGflDZCqloOg7h2ex3YHUkDjYWT1gbcwThbf_20_XWg/exec";
+
+        // 3. Envia para o Excel (Google Sheets)
+        fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          body: formDataToSend
+        })
+        .then(() => {
+          console.log("Pedido salvo no Excel com sucesso!");
+          localStorage.removeItem('pendingOrder'); // Limpa os dados para não duplicar
+        })
+        .catch(err => console.error("Erro ao salvar no Excel:", err));
+      }
+
+      // Pixel e Analytics
       const amt = urlParams.get('amt') || '24.99';
       if ((window as any).ttq) (window as any).ttq.track('CompletePayment', { value: parseFloat(amt), currency: 'EUR' });
+      
+      // Limpa o URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
   const handleStripe = () => {
-    // LINKS DO TEU STRIPE (Substitui se mudares para LIVE)
+    setIsSubmitting(true);
+
+    // LINKS DO TEU STRIPE (Produção)
     const L_STD = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001";
     const L_FAST = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000";
     
+    const paymentLink = formData.fastDelivery ? L_FAST : L_STD;
+
+    // --- GUARDAR NO "BOLSO" (Local Storage) ---
+    // Guardamos aqui para enviar para o Excel SÓ DEPOIS do pagamento ser confirmado
+    localStorage.setItem('pendingOrder', JSON.stringify({
+      ...formData,
+      styleName: MUSIC_STYLES.find(s => s.id === formData.style)?.name || formData.style,
+      timestamp: new Date().toISOString()
+    }));
+
     if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
-    window.location.href = formData.fastDelivery ? L_FAST : L_STD;
+    
+    // Redireciona para o pagamento
+    window.location.href = paymentLink;
   };
 
   const toggleAudio = (id: string) => {
@@ -285,7 +340,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
         {/* Upsell Card */}
         <div 
-          onClick={() => setFormData({...formData, fastDelivery: !formData.fastDelivery})}
+          onClick={() => !isSubmitting && setFormData({...formData, fastDelivery: !formData.fastDelivery})}
           className={`p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${
             formData.fastDelivery 
               ? 'border-amber-400 bg-amber-50' 
@@ -311,11 +366,13 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       <div className="space-y-4">
         <button 
           onClick={handleStripe} 
-          className="w-full bg-green-600 hover:bg-green-700 text-white p-5 rounded-2xl font-bold shadow-xl shadow-green-100 transition-all transform active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+          disabled={isSubmitting}
+          className="w-full bg-green-600 hover:bg-green-700 text-white p-5 rounded-2xl font-bold shadow-xl shadow-green-100 transition-all transform active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs disabled:opacity-70 disabled:cursor-wait"
         >
-          Finalizar Pedido <ShieldCheck size={16} />
+          {isSubmitting ? 'A Processar...' : 'Finalizar Pedido'} 
+          {!isSubmitting && <ShieldCheck size={16} />}
         </button>
-        <button onClick={() => setStep(3)} className="w-full text-slate-400 text-xs font-bold hover:text-slate-600 uppercase tracking-widest">Voltar</button>
+        <button onClick={() => setStep(3)} disabled={isSubmitting} className="w-full text-slate-400 text-xs font-bold hover:text-slate-600 uppercase tracking-widest">Voltar</button>
       </div>
       
       <p className="text-[10px] text-center text-slate-400 flex items-center justify-center gap-1 opacity-60">
