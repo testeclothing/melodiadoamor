@@ -338,12 +338,7 @@ function App() {
                  <p className="text-rose-50 mb-8 text-base lg:text-lg leading-relaxed">
                    Faltam apenas <span className="font-bold text-white underline">{diasFaltam} dias</span> para o Dia dos Namorados. Aproveita agora o preço promocional de lançamento!
                  </p>
-                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/20 inline-block md:block mx-auto md:mx-0">
-                   <div className="flex items-center gap-4">
-                     <div className="bg-white/20 p-2 rounded-full hidden sm:block animate-pulse"><Clock className="text-white" size={20} /></div>
-                     <div>
-                       <p className="text-[10px] md:text-xs text-rose-100 uppercase font-bold tracking-wider">APROVEITA JÁ:</p>
-                       <p className="font-bold text-sm md:text-xl uppercase tracking-tight">{tempoValentine}</p>
+                 
                      </div>
                    </div>
                  </div>
