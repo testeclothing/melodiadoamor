@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Check, Sparkles, MessageCircle, Mail, RotateCcw, 
-  Play, Pause, MapPin, Heart, Star, Smile, Mic, ShieldCheck 
+  Play, Pause, MapPin, Heart, Star, Smile, ShieldCheck, ChevronRight
 } from 'lucide-react';
 
 interface WizardProps {
@@ -9,9 +9,9 @@ interface WizardProps {
 }
 
 const MUSIC_STYLES = [
-  { id: 'soul', name: 'Alma & Intensidade', desc: 'Vibe Teddy Swims. Voz rasgada e profunda.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-  { id: 'rock', name: 'Eterno Rock', desc: 'Vibe Bryan Adams. Clássica e leal.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-  { id: 'pop', name: 'Cinema & Romance', desc: 'Vibe Lady Gaga. Épica e grandiosa.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
+  { id: 'soul', name: 'Alma & Emoção', desc: 'Estilo Teddy Swims. Voz forte e sentida.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+  { id: 'rock', name: 'Pop Rock Romântico', desc: 'Estilo Bryan Adams. Clássico e intemporal.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+  { id: 'pop', name: 'Pop Cinematic', desc: 'Estilo Lady Gaga. Grandioso e bonito.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
 ];
 
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
@@ -20,21 +20,18 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   
   const [formData, setFormData] = useState({
     names: '',
-    // As tuas 5 perguntas obrigatórias
-    q1_meeting: '',
-    q2_memory: '',
-    q3_loveMost: '',
-    q4_hobbies: '',
-    q5_loveLanguage: '',
-    // Caixa opcional
-    extraDetails: '', 
+    meeting: '',      // Obrigatório
+    memory: '',       // Obrigatório
+    loveMost: '',     // Obrigatório
+    hobbies: '',      // Opcional
+    extraDetails: '', // Opcional
     style: '',
     fastDelivery: false
   });
 
   const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
 
-  // --- LÓGICA DE STRIPE & PIXEL ---
+  // Lógica de Retorno do Stripe
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('status') === 'success') {
@@ -46,8 +43,10 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   }, []);
 
   const handleStripe = () => {
-    const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00"; // Teus links
+    // Teus links de teste
+    const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
     const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
+    
     if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
     window.location.href = formData.fastDelivery ? L_FAST : L_STD;
   };
@@ -59,172 +58,157 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     if (current) { if (playing === id) { current.pause(); setPlaying(null); } else { current.play(); setPlaying(id); } }
   };
 
-  // --- COMPONENTES VISUAIS (DESIGN TRUELOVESONG) ---
+  // --- PASSOS DO FORMULÁRIO ---
 
   const renderStep1 = () => (
-    <div className="space-y-8 animate-fadeIn max-w-md mx-auto">
-      <div className="text-center space-y-2">
-        <h2 className="text-3xl md:text-4xl font-serif font-bold text-white tracking-tight">Identidade</h2>
-        <p className="text-zinc-400 text-sm">Quem são os protagonistas desta história?</p>
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Vamos começar</h2>
+        <p className="text-slate-500 text-sm mt-1">Como se chamam as pessoas da música?</p>
       </div>
       
-      <div className="space-y-4">
-        <div className="group relative">
-          <input 
-            type="text" 
-            className="w-full bg-zinc-900 border-2 border-zinc-800 p-6 rounded-2xl text-xl text-center focus:border-rose-500 outline-none transition-all text-white placeholder:text-zinc-600 font-medium"
-            placeholder="Ex: Carlos e Carla"
-            value={formData.names}
-            onChange={(e) => setFormData({...formData, names: e.target.value})}
-            autoFocus
-          />
-          <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-rose-500 to-transparent opacity-0 group-focus-within:opacity-50 transition-opacity rounded-b-2xl"></div>
-        </div>
-        
-        <button 
-          onClick={() => setStep(2)} 
-          disabled={!formData.names} 
-          className="w-full bg-rose-600 hover:bg-rose-700 text-white p-5 rounded-full font-bold shadow-[0_0_30px_-5px_rgba(225,29,72,0.4)] disabled:opacity-30 disabled:shadow-none transition-all uppercase tracking-widest text-xs"
-        >
-          Começar a História
-        </button>
+      <div>
+        <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Nomes do Casal</label>
+        <input 
+          type="text" 
+          className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium bg-white"
+          placeholder="Ex: Ana e João"
+          value={formData.names}
+          onChange={(e) => setFormData({...formData, names: e.target.value})}
+        />
       </div>
+      
+      <button 
+        onClick={() => setStep(2)} 
+        disabled={!formData.names} 
+        className="w-full bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-100 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+      >
+        Continuar <ChevronRight size={18} />
+      </button>
     </div>
   );
 
   const renderStep2 = () => (
-    <div className="space-y-6 animate-fadeIn max-w-lg mx-auto">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">O Vosso Legado</h2>
-        <p className="text-zinc-400 text-xs uppercase tracking-widest mt-2">Responde ao essencial. Nós criamos a poesia.</p>
+    <div className="space-y-6 animate-fadeIn max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">A Vossa História</h2>
+        <p className="text-slate-500 text-sm mt-1">Conta-nos um pouco sobre vocês para a letra ficar perfeita.</p>
       </div>
 
-      <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-        {/* PERGUNTA 1 */}
-        <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800 focus-within:border-rose-500/50 transition-colors">
-          <label className="flex items-center gap-2 text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-2">
-            <MapPin size={12} /> Quando ou onde se conheceram?
+      <div className="space-y-4">
+        {/* Perguntas Obrigatórias */}
+        <div className="space-y-1">
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase ml-1">
+            <MapPin size={12} className="text-rose-500"/> Onde/Quando se conheceram? *
           </label>
           <input 
             type="text" 
-            className="w-full bg-transparent text-white placeholder:text-zinc-600 outline-none text-sm font-medium"
-            placeholder="Ex: No ginásio em 2018..."
-            value={formData.q1_meeting}
-            onChange={(e) => setFormData({...formData, q1_meeting: e.target.value})}
+            className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
+            placeholder="Ex: Na escola, no trabalho, em 2015..."
+            value={formData.meeting}
+            onChange={(e) => setFormData({...formData, meeting: e.target.value})}
           />
         </div>
 
-        {/* PERGUNTA 2 */}
-        <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800 focus-within:border-rose-500/50 transition-colors">
-          <label className="flex items-center gap-2 text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-2">
-            <Star size={12} /> Qual a tua memória juntos favorita?
+        <div className="space-y-1">
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase ml-1">
+            <Star size={12} className="text-rose-500"/> Memória Favorita Juntos? *
           </label>
           <textarea 
-            className="w-full bg-transparent text-white placeholder:text-zinc-600 outline-none text-sm font-medium resize-none h-16"
-            placeholder="Ex: A viagem à Figueira da Foz..."
-            value={formData.q2_memory}
-            onChange={(e) => setFormData({...formData, q2_memory: e.target.value})}
+            className="w-full p-3 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:border-rose-500 outline-none"
+            placeholder="Ex: A nossa viagem a Paris, o dia do pedido..."
+            value={formData.memory}
+            onChange={(e) => setFormData({...formData, memory: e.target.value})}
           />
         </div>
 
-        {/* PERGUNTA 3 */}
-        <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800 focus-within:border-rose-500/50 transition-colors">
-          <label className="flex items-center gap-2 text-[10px] font-bold text-rose-400 uppercase tracking-widest mb-2">
-            <Heart size={12} /> O que amas mais nele(a)?
+        <div className="space-y-1">
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase ml-1">
+            <Heart size={12} className="text-rose-500"/> O que mais amas nele(a)? *
           </label>
           <input 
             type="text" 
-            className="w-full bg-transparent text-white placeholder:text-zinc-600 outline-none text-sm font-medium"
-            placeholder="Ex: A alegria contagiante..."
-            value={formData.q3_loveMost}
-            onChange={(e) => setFormData({...formData, q3_loveMost: e.target.value})}
+            className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
+            placeholder="Ex: O sorriso, a forma como me apoia..."
+            value={formData.loveMost}
+            onChange={(e) => setFormData({...formData, loveMost: e.target.value})}
           />
         </div>
 
-        {/* PERGUNTA 4 & 5 (Grid) */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800 focus-within:border-rose-500/50 transition-colors">
-            <label className="flex items-center gap-2 text-[9px] font-bold text-rose-400 uppercase tracking-widest mb-2">
-              <Smile size={12} /> Hobbies?
-            </label>
-            <input 
-              type="text" 
-              className="w-full bg-transparent text-white placeholder:text-zinc-600 outline-none text-sm font-medium"
-              placeholder="Ex: Body Pump"
-              value={formData.q4_hobbies}
-              onChange={(e) => setFormData({...formData, q4_hobbies: e.target.value})}
-            />
-          </div>
-          <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800 focus-within:border-rose-500/50 transition-colors">
-            <label className="flex items-center gap-2 text-[9px] font-bold text-rose-400 uppercase tracking-widest mb-2">
-              <MessageCircle size={12} /> Linguagem Amor?
-            </label>
-            <input 
-              type="text" 
-              className="w-full bg-transparent text-white placeholder:text-zinc-600 outline-none text-sm font-medium"
-              placeholder="Ex: Toque físico"
-              value={formData.q5_loveLanguage}
-              onChange={(e) => setFormData({...formData, q5_loveLanguage: e.target.value})}
-            />
-          </div>
-        </div>
-
-        {/* BOX OPCIONAL */}
-        <div className="mt-6 pt-4 border-t border-zinc-800">
-          <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 text-center">
-            Queres acrescentar mais detalhes? (Opcional)
-          </label>
-          <textarea 
-            className="w-full bg-black border border-zinc-800 p-4 rounded-xl text-white placeholder:text-zinc-700 outline-none text-xs focus:border-zinc-600 transition-colors h-20 resize-none"
-            placeholder="Piadas internas, frases especiais, ou qualquer outra coisa..."
-            value={formData.extraDetails}
-            onChange={(e) => setFormData({...formData, extraDetails: e.target.value})}
-          />
+        {/* Perguntas Opcionais */}
+        <div className="pt-4 border-t border-slate-100">
+            <p className="text-xs font-bold text-slate-400 uppercase mb-3 text-center">Perguntas Opcionais</p>
+            
+            <div className="space-y-3">
+                <div className="space-y-1">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 ml-1">
+                        <Smile size={12}/> Hobbies ou Interesses?
+                    </label>
+                    <input 
+                        type="text" 
+                        className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:bg-white outline-none transition-colors"
+                        placeholder="Ex: Viajar, Cozinhar, Body Pump..."
+                        value={formData.hobbies}
+                        onChange={(e) => setFormData({...formData, hobbies: e.target.value})}
+                    />
+                </div>
+                
+                <div className="space-y-1">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 ml-1">
+                        <MessageCircle size={12}/> Detalhes Extra?
+                    </label>
+                    <textarea 
+                        className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm h-16 resize-none focus:bg-white outline-none transition-colors"
+                        placeholder="Piadas internas, frases especiais..."
+                        value={formData.extraDetails}
+                        onChange={(e) => setFormData({...formData, extraDetails: e.target.value})}
+                    />
+                </div>
+            </div>
         </div>
       </div>
 
-      <div className="flex gap-4 pt-4">
-        <button onClick={() => setStep(1)} className="px-6 text-zinc-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">Voltar</button>
+      <div className="flex gap-4 pt-2">
+        <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-sm hover:text-slate-600">Voltar</button>
         <button 
           onClick={() => setStep(3)} 
-          disabled={!formData.q1_meeting || !formData.q2_memory} 
-          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-full font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs transition-all"
+          disabled={!formData.meeting || !formData.memory || !formData.loveMost} 
+          className="flex-1 bg-rose-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-100 disabled:opacity-50 transition-all"
         >
-          Escolher Estilo
+          Próximo Passo
         </button>
       </div>
     </div>
   );
 
   const renderStep3 = () => (
-    <div className="space-y-8 animate-fadeIn max-w-md mx-auto">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">A Frequência</h2>
-        <p className="text-zinc-400 text-xs uppercase tracking-widest">O tom que vai selar o vosso pacto.</p>
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Estilo Musical</h2>
+        <p className="text-slate-500 text-sm mt-1">Ouve os exemplos e escolhe o teu favorito.</p>
       </div>
-      
-      <div className="space-y-4">
+      <div className="space-y-3">
         {MUSIC_STYLES.map((s) => (
           <div 
             key={s.id} 
             onClick={() => setFormData({...formData, style: s.id})}
-            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between group ${
+            className={`p-4 border-2 rounded-xl cursor-pointer transition-all flex items-center justify-between ${
               formData.style === s.id 
-                ? 'border-rose-500 bg-rose-500/10' 
-                : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700'
+                ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-500' 
+                : 'border-slate-100 hover:border-slate-300 bg-white'
             }`}
           >
             <div>
-              <h3 className={`font-bold text-sm ${formData.style === s.id ? 'text-white' : 'text-zinc-300'}`}>{s.name}</h3>
-              <p className="text-[10px] text-zinc-500 mt-1 font-medium">{s.desc}</p>
+              <h3 className="font-bold text-slate-800 text-sm">{s.name}</h3>
+              <p className="text-xs text-slate-500 mt-1">{s.desc}</p>
             </div>
             
             <div className="flex items-center gap-3">
               <button 
                 onClick={(e) => { e.stopPropagation(); toggleAudio(s.id); }}
-                className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-rose-500 hover:bg-zinc-700 transition-colors"
+                className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 hover:bg-rose-200 transition-colors"
               >
-                {playing === s.id ? <Pause size={12} fill="currentColor"/> : <Play size={12} fill="currentColor"/>}
+                {playing === s.id ? <Pause size={14} fill="currentColor"/> : <Play size={14} fill="currentColor"/>}
               </button>
               {formData.style === s.id && <div className="bg-rose-500 p-1 rounded-full"><Check size={12} className="text-white"/></div>}
             </div>
@@ -233,114 +217,113 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         ))}
       </div>
 
-      <div className="flex gap-4 pt-4">
-        <button onClick={() => setStep(2)} className="px-6 text-zinc-500 font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">Voltar</button>
+      <div className="flex gap-4 pt-2">
+        <button onClick={() => setStep(2)} className="px-4 text-slate-400 font-bold text-sm hover:text-slate-600">Voltar</button>
         <button 
           onClick={() => { if(playing) toggleAudio(playing); setStep(4); }} 
           disabled={!formData.style} 
-          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-full font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs transition-all"
+          className="flex-1 bg-rose-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-100 disabled:opacity-50 transition-all"
         >
-          Ver Veredito
+          Ver Resumo
         </button>
       </div>
     </div>
   );
 
   const renderStep4 = () => (
-    <div className="space-y-8 animate-fadeIn max-w-md mx-auto">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl md:text-3xl font-serif font-bold text-white italic">O Vosso Veredito</h2>
-        <p className="text-zinc-400 text-xs uppercase tracking-widest">Confirma o pacto final.</p>
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Resumo do Pedido</h2>
+        <p className="text-slate-500 text-sm mt-1">Confirma os detalhes antes de finalizar.</p>
       </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-3xl space-y-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3 text-xs text-zinc-300 font-medium">
-            <div className="bg-green-500/20 p-1.5 rounded-lg text-green-500"><MessageCircle size={14} /></div>
-            <span>Entrega via <strong>WhatsApp e E-mail</strong></span>
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div className="space-y-2 pb-4 border-b border-slate-100">
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-500">Música Personalizada</span>
+            <span className="font-bold text-slate-900">24,99€</span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-zinc-300 font-medium">
-            <div className="bg-rose-500/20 p-1.5 rounded-lg text-rose-500"><RotateCcw size={14} /></div>
-            <span><strong>Ajustes Incluídos</strong> na letra</span>
+          <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 w-fit px-2 py-1 rounded">
+            <MessageCircle size={12} /> Entrega WhatsApp + Email
           </div>
         </div>
 
+        {/* Upsell 24h */}
         <div 
           onClick={() => setFormData({...formData, fastDelivery: !formData.fastDelivery})}
-          className={`p-5 rounded-2xl border cursor-pointer transition-all relative overflow-hidden ${
+          className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
             formData.fastDelivery 
-              ? 'border-amber-500/50 bg-amber-500/10' 
-              : 'border-zinc-800 bg-black hover:border-zinc-700'
+              ? 'border-amber-400 bg-amber-50' 
+              : 'border-slate-100 hover:border-slate-300'
           }`}
         >
-          <div className="flex justify-between items-center relative z-10">
-            <span className="text-xs font-bold text-white flex items-center gap-2">
-              <Sparkles size={14} className={formData.fastDelivery ? "text-amber-400" : "text-zinc-600"} /> 
-              Prioridade 24 Horas
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <Sparkles size={16} className={formData.fastDelivery ? "text-amber-500" : "text-slate-400"} /> 
+              Quero em 24 Horas
             </span>
-            <span className="text-amber-500 font-bold text-sm">+4,99€</span>
+            <span className="text-amber-600 font-bold text-sm">+4,99€</span>
           </div>
-          {formData.fastDelivery && <div className="absolute inset-0 bg-amber-500/5 blur-xl"></div>}
+          <p className="text-xs text-slate-500 ml-6">Passamos o pedido para a frente da fila.</p>
         </div>
 
-        <div className="flex justify-between items-center pt-6 border-t border-zinc-800">
-          <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Investimento</span>
-          <span className="text-3xl font-serif font-bold text-white">{finalPrice.toFixed(2)}€</span>
+        <div className="flex justify-between items-center pt-2">
+          <span className="font-bold text-slate-500 text-sm">Total a Pagar</span>
+          <span className="text-2xl font-bold text-rose-600">{finalPrice.toFixed(2)}€</span>
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <button 
           onClick={handleStripe} 
-          className="w-full bg-white text-black p-5 rounded-full font-bold text-sm shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:bg-zinc-200 transition-all transform active:scale-95 uppercase tracking-widest flex items-center justify-center gap-2"
+          className="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl font-bold shadow-xl shadow-green-100 transition-all transform active:scale-95 flex items-center justify-center gap-2"
         >
-          Selar o Pacto <ShieldCheck size={16} />
+          Finalizar Pedido <ShieldCheck size={18} />
         </button>
-        <button onClick={() => setStep(3)} className="w-full text-zinc-600 text-xs font-bold hover:text-white transition-colors uppercase tracking-widest">Voltar</button>
+        <button onClick={() => setStep(3)} className="w-full text-slate-400 text-sm font-bold hover:text-slate-600">Voltar</button>
       </div>
+      
+      <p className="text-[10px] text-center text-slate-400 flex items-center justify-center gap-1">
+        <RotateCcw size={10} /> Inclui revisões da letra se necessário.
+      </p>
     </div>
   );
 
   const renderStep5 = () => (
-    <div className="text-center space-y-8 py-12 animate-fadeIn px-4 max-w-md mx-auto">
-      <div className="inline-block relative">
-        <div className="bg-green-500 w-20 h-20 rounded-full flex items-center justify-center text-black shadow-[0_0_50px_-10px_rgba(34,197,94,0.6)]">
-          <Check size={40} strokeWidth={3} />
-        </div>
+    <div className="text-center space-y-6 py-10 animate-fadeIn px-4">
+      <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-green-600">
+        <Check size={40} strokeWidth={3} />
       </div>
       <div className="space-y-2">
-        <h2 className="text-3xl font-serif font-bold text-white italic">Pacto Selado.</h2>
-        <p className="text-zinc-400 text-sm">A vossa história entrou em estúdio.</p>
+        <h2 className="text-2xl font-bold text-slate-900">Pagamento Confirmado!</h2>
+        <p className="text-slate-500 text-sm">A vossa história já está na nossa lista de produção.</p>
       </div>
-      <div className="bg-zinc-900 border border-zinc-800 text-white p-8 rounded-[2rem]">
-         <div className="flex justify-center gap-6 mb-6 opacity-80">
-            <MessageCircle className="text-green-500" /> <Mail className="text-rose-500" />
+      
+      <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+         <p className="text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Entrega Estimada</p>
+         <p className="text-xl font-bold text-slate-800 mb-4">{formData.fastDelivery ? 'Menos de 24 Horas' : 'Até 72 Horas'}</p>
+         <div className="flex justify-center gap-2 text-xs text-slate-500">
+            <span className="flex items-center gap-1 bg-white px-3 py-1 rounded border border-slate-200"><MessageCircle size={12}/> WhatsApp</span>
+            <span className="flex items-center gap-1 bg-white px-3 py-1 rounded border border-slate-200"><Mail size={12}/> Email</span>
          </div>
-         <p className="text-[10px] uppercase opacity-40 font-black tracking-[0.3em] mb-2">Entrega Estimada</p>
-         <p className="text-2xl font-bold font-sans tracking-tighter">{formData.fastDelivery ? 'Menos de 24h' : 'Até 72h'}</p>
       </div>
-      <button onClick={onBack} className="text-zinc-600 hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.3em]">Voltar ao Início</button>
+      
+      <button onClick={onBack} className="text-rose-500 font-bold text-sm hover:underline">Voltar ao Início</button>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4 font-sans text-white">
-      <div className="w-full max-w-2xl relative">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
+      <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden border border-slate-100 relative">
         
-        {/* Barra de Progresso (Estilo Minimalista Topo) */}
+        {/* Barra de Progresso Simples */}
         {step < 5 && (
-          <div className="absolute -top-12 left-0 w-full flex items-center justify-between px-2">
-             <div className="text-rose-600 font-black italic tracking-tighter text-sm">Melodia do Amor</div>
-             <div className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">Passo {step}/4</div>
+          <div className="w-full bg-slate-100 h-1.5">
+            <div className="bg-rose-500 h-full transition-all duration-500" style={{ width: `${(step / 4) * 100}%` }}></div>
           </div>
         )}
 
-        {/* Card Principal */}
-        <div className="bg-zinc-950 p-6 md:p-10 rounded-[2.5rem] border border-zinc-900 shadow-[0_0_100px_-30px_rgba(225,29,72,0.1)] relative overflow-hidden">
-          
-          {/* Noise Texture (Opcional para dar textura 'film') */}
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-
+        <div className="p-6 md:p-8">
           {step === 1 && renderStep1()} 
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()} 
