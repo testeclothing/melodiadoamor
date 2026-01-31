@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Heart, Star, CheckCircle2, Music, Clock, ShieldCheck, Gift, 
@@ -26,34 +25,18 @@ import vitorAudio from './assets/vitor.mp3';
 const VENDAS_ATUAIS = 28; 
 const OBJETIVO_VENDAS = 100;
 const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
-const diasQueFaltam = Math.ceil((new Date('2026-02-14').getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 
-// --- NOVO: CÁLCULO PARA O DIA DOS NAMORADOS ---
+// --- CÁLCULO DINÂMICO PARA O DIA DOS NAMORADOS ---
 const dataAlvo = new Date('2026-02-14T00:00:00');
 const hoje = new Date();
 const diffTime = dataAlvo.getTime() - hoje.getTime();
-const diasQueFaltam = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+const diasQueFaltam = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
 // --- DADOS DOS SAMPLES ATUALIZADOS ---
 const SAMPLES: SongSample[] = [
-  { 
-    id: 1, 
-    title: "Margarida", 
-    genre: "Pop Acústico", 
-    url: vitorAudio // Alterado para o ficheiro local
-  },
-  { 
-    id: 2, 
-    title: "Sabia quem eras", 
-    genre: "Alma & Emoção", 
-    url: sofiaAudio // Alterado para o ficheiro local
-  },
-  { 
-    id: 3, 
-    title: "Lugar Seguro", 
-    genre: "R&B Romântico", 
-    url: ivandroAudio // Alterado para o ficheiro local
-  },
+  { id: 1, title: "Margarida", genre: "Pop Acústico", url: vitorAudio },
+  { id: 2, title: "Sabia quem eras", genre: "Alma & Emoção", url: sofiaAudio },
+  { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
 ];
 
 const FAQS: FaqItem[] = [
@@ -325,35 +308,53 @@ function App() {
       </section>
 
       {/* PRICING SECTION */}
-<section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
-  <div className="container mx-auto px-4 max-w-5xl">
-    <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-transform duration-500">
-      
-      {/* LADO ESQUERDO (VERMELHO) */}
-      <div className="flex-1 p-10 md:p-16 flex flex-col justify-center bg-rose-600 text-white relative overflow-hidden">
-         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 to-rose-700"></div>
-         <div className="relative z-10">
-           <h3 className="text-2xl font-bold mb-2 text-rose-100">Oferta Limitada</h3>
-           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Dia dos Namorados</h2>
-           
-           {/* ALTERA ESTE PARÁGRAFO ABAIXO */}
-           <p className="text-rose-100 mb-8 text-lg leading-relaxed">
-             Faltam apenas <span className="font-bold text-white underline">{diasQueFaltam} dias</span> para o Dia dos Namorados. Aproveita agora o preço promocional de lançamento!
-           </p>
+      <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-transform duration-500">
+            
+            {/* LADO ESQUERDO (VERMELHO) */}
+            <div className="flex-1 p-10 md:p-16 flex flex-col justify-center bg-rose-600 text-white relative overflow-hidden">
+               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 to-rose-700"></div>
+               <div className="relative z-10">
+                 <h3 className="text-2xl font-bold mb-2 text-rose-100">Oferta Limitada</h3>
+                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Dia dos Namorados</h2>
+                 
+                 <p className="text-rose-100 mb-8 text-lg leading-relaxed">
+                   Faltam apenas <span className="font-bold text-white underline">{diasQueFaltam} dias</span> para o Dia dos Namorados. Aproveita agora o preço promocional de lançamento!
+                 </p>
 
-           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-             <div className="flex items-center gap-4">
-               <div className="bg-white/20 p-2 rounded-full"><Clock className="text-white" size={24} /></div>
-               <div>
-                 <p className="text-xs text-rose-100 uppercase font-bold tracking-wider">A oferta acaba em:</p>
-                 <div className="font-bold text-xl"><Countdown /></div>
+                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                   <div className="flex items-center gap-4">
+                     <div className="bg-white/20 p-2 rounded-full"><Clock className="text-white" size={24} /></div>
+                     <div>
+                       <p className="text-xs text-rose-100 uppercase font-bold tracking-wider">A oferta acaba em:</p>
+                       <div className="font-bold text-xl"><Countdown /></div>
+                     </div>
+                   </div>
+                 </div>
                </div>
-             </div>
-           </div>
-         </div>
-      </div>
+            </div>
 
-      {/* LADO DIREITO (PREÇO) - Continua igual abaixo... */}
+            {/* LADO DIREITO (PREÇO) */}
+            <div className="flex-1 p-10 md:p-16">
+              <div className="flex items-center justify-between mb-2"><span className="text-gray-400 line-through text-xl">59,99€</span><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">70% Desconto</span></div>
+              <div className="flex items-baseline gap-1 mb-8"><span className="text-6xl font-bold text-rose-600 tracking-tight">24,99€</span><span className="text-gray-500 font-medium">/ música</span></div>
+              <ul className="space-y-4 mb-10">
+                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Standard (72h)", "Participação Concurso Paris"].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3 text-gray-700 text-lg"><div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600 shrink-0" /></div><span>{feat}</span></li>
+                ))}
+              </ul>
+              <Button fullWidth pulse onClick={startWizard} className="py-4 text-lg bg-rose-600 hover:bg-rose-700 shadow-xl shadow-rose-500/20">Criar Música Agora</Button>
+              <p className="text-center text-xs text-gray-400 mt-6">Pagamento 100% Seguro via Stripe. Satisfação Garantida.</p>
+              <div className="mt-8 flex justify-center gap-3 opacity-50 grayscale hover:grayscale-0 transition-all duration-300">
+                 <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-200">MB WAY</div>
+                 <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-200">MULTIBANCO</div>
+                 <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-200">VISA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* FAQ */}
       <section className="py-24 bg-white">
