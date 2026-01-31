@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Check, Sparkles, MessageCircle, Mail, RotateCcw, 
-  Play, Pause, MapPin, Heart, Star, Smile, ShieldCheck, ChevronRight
+  Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight
 } from 'lucide-react';
 
 interface WizardProps {
@@ -19,19 +19,20 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [playing, setPlaying] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
-    names: '',
-    meeting: '',      // Obrigatório
-    memory: '',       // Obrigatório
-    loveMost: '',     // Obrigatório
-    hobbies: '',      // Opcional
-    extraDetails: '', // Opcional
+    senderName: '',    // De Quem
+    recipientName: '', // Para Quem
+    meeting: '',       
+    memory: '',        
+    loveMost: '',      
+    hobbies: '',       
+    extraDetails: '',  
     style: '',
     fastDelivery: false
   });
 
   const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
 
-  // Lógica de Retorno do Stripe
+  // Lógica de Retorno do Stripe & Pixel
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('status') === 'success') {
@@ -43,7 +44,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   }, []);
 
   const handleStripe = () => {
-    // Teus links de teste
     const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
     const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
     
@@ -58,95 +58,114 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     if (current) { if (playing === id) { current.pause(); setPlaying(null); } else { current.play(); setPlaying(id); } }
   };
 
-  // --- PASSOS DO FORMULÁRIO ---
+  // --- COMPONENTES VISUAIS ---
 
   const renderStep1 = () => (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-800">Vamos começar</h2>
-        <p className="text-slate-500 text-sm mt-1">Como se chamam as pessoas da música?</p>
+    <div className="space-y-8 animate-fadeIn">
+      <div className="text-center space-y-2">
+        <h2 className="text-3xl font-serif font-bold text-slate-900 italic">Vamos começar</h2>
+        <p className="text-slate-500 text-sm">Identifica quem oferece e quem recebe esta prenda.</p>
       </div>
       
-      <div>
-        <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Nomes do Casal</label>
-        <input 
-          type="text" 
-          className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium bg-white"
-          placeholder="Ex: Ana e João"
-          value={formData.names}
-          onChange={(e) => setFormData({...formData, names: e.target.value})}
-        />
+      <div className="space-y-5">
+        {/* Input De Quem */}
+        <div className="group">
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+            <User size={14} /> O Teu Nome (Quem Oferece)
+          </label>
+          <input 
+            type="text" 
+            className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-lg focus:bg-white focus:border-rose-500 outline-none transition-all font-medium text-slate-800"
+            placeholder="Ex: João"
+            value={formData.senderName}
+            onChange={(e) => setFormData({...formData, senderName: e.target.value})}
+          />
+        </div>
+
+        {/* Input Para Quem */}
+        <div className="group">
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+            <Heart size={14} className="text-rose-500" /> Nome Dele(a) (Quem Recebe)
+          </label>
+          <input 
+            type="text" 
+            className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-lg focus:bg-white focus:border-rose-500 outline-none transition-all font-medium text-slate-800"
+            placeholder="Ex: Ana"
+            value={formData.recipientName}
+            onChange={(e) => setFormData({...formData, recipientName: e.target.value})}
+          />
+        </div>
       </div>
-      
+
       <button 
         onClick={() => setStep(2)} 
-        disabled={!formData.names} 
-        className="w-full bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-100 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+        disabled={!formData.senderName || !formData.recipientName} 
+        className="w-full bg-slate-900 hover:bg-black text-white p-5 rounded-2xl font-bold shadow-xl disabled:opacity-30 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
       >
-        Continuar <ChevronRight size={18} />
+        Continuar <ChevronRight size={16} />
       </button>
     </div>
   );
 
   const renderStep2 = () => (
     <div className="space-y-6 animate-fadeIn max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-      <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-800">A Vossa História</h2>
-        <p className="text-slate-500 text-sm mt-1">Conta-nos um pouco sobre vocês para a letra ficar perfeita.</p>
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-serif font-bold text-slate-900 italic">A Vossa História</h2>
+        <p className="text-slate-500 text-sm">Responde ao essencial para criarmos a letra perfeita.</p>
       </div>
 
-      <div className="space-y-4">
-        {/* Perguntas Obrigatórias */}
-        <div className="space-y-1">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase ml-1">
-            <MapPin size={12} className="text-rose-500"/> Onde/Quando se conheceram? *
+      <div className="space-y-5">
+        {/* PERGUNTAS PRINCIPAIS */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
+            <MapPin size={14} className="text-rose-500"/> Onde/Quando se conheceram? *
           </label>
           <input 
             type="text" 
-            className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
-            placeholder="Ex: Na escola, no trabalho, em 2015..."
+            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-rose-500 outline-none transition-all"
+            placeholder="Ex: Na escola secundária, em 2015..."
             value={formData.meeting}
             onChange={(e) => setFormData({...formData, meeting: e.target.value})}
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase ml-1">
-            <Star size={12} className="text-rose-500"/> Memória Favorita Juntos? *
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
+            <Star size={14} className="text-rose-500"/> Memória Favorita Juntos? *
           </label>
           <textarea 
-            className="w-full p-3 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:border-rose-500 outline-none"
-            placeholder="Ex: A nossa viagem a Paris, o dia do pedido..."
+            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm h-24 resize-none focus:bg-white focus:border-rose-500 outline-none transition-all"
+            placeholder="Ex: A nossa viagem a Paris, o dia em que adotamos o cão..."
             value={formData.memory}
             onChange={(e) => setFormData({...formData, memory: e.target.value})}
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase ml-1">
-            <Heart size={12} className="text-rose-500"/> O que mais amas nele(a)? *
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
+            <Heart size={14} className="text-rose-500"/> O que mais amas nele(a)? *
           </label>
           <input 
             type="text" 
-            className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
+            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-rose-500 outline-none transition-all"
             placeholder="Ex: O sorriso, a forma como me apoia..."
             value={formData.loveMost}
             onChange={(e) => setFormData({...formData, loveMost: e.target.value})}
           />
         </div>
 
-        {/* Perguntas Opcionais */}
-        <div className="pt-4 border-t border-slate-100">
-            <p className="text-xs font-bold text-slate-400 uppercase mb-3 text-center">Perguntas Opcionais</p>
+        {/* SECÇÃO OPCIONAL (VISUALMENTE DIFERENTE) */}
+        <div className="pt-6 border-t border-slate-100">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-4">Detalhes Extra (Opcional)</p>
             
-            <div className="space-y-3">
+            <div className="grid gap-4">
                 <div className="space-y-1">
-                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 ml-1">
-                        <Smile size={12}/> Hobbies ou Interesses?
+                    <label className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase">
+                        <Smile size={12}/> Hobbies / Interesses
                     </label>
                     <input 
                         type="text" 
-                        className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:bg-white outline-none transition-colors"
+                        className="w-full p-3 bg-white border border-slate-100 rounded-xl text-sm focus:border-slate-300 outline-none"
                         placeholder="Ex: Viajar, Cozinhar, Body Pump..."
                         value={formData.hobbies}
                         onChange={(e) => setFormData({...formData, hobbies: e.target.value})}
@@ -154,11 +173,11 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
                 </div>
                 
                 <div className="space-y-1">
-                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 ml-1">
-                        <MessageCircle size={12}/> Detalhes Extra?
+                    <label className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase">
+                        <MessageCircle size={12}/> Outros Detalhes
                     </label>
                     <textarea 
-                        className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm h-16 resize-none focus:bg-white outline-none transition-colors"
+                        className="w-full p-3 bg-white border border-slate-100 rounded-xl text-sm h-16 resize-none focus:border-slate-300 outline-none"
                         placeholder="Piadas internas, frases especiais..."
                         value={formData.extraDetails}
                         onChange={(e) => setFormData({...formData, extraDetails: e.target.value})}
@@ -168,12 +187,12 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="flex gap-4 pt-2">
-        <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-sm hover:text-slate-600">Voltar</button>
+      <div className="flex gap-4 pt-4 sticky bottom-0 bg-white pb-2">
+        <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-600">Voltar</button>
         <button 
           onClick={() => setStep(3)} 
           disabled={!formData.meeting || !formData.memory || !formData.loveMost} 
-          className="flex-1 bg-rose-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-100 disabled:opacity-50 transition-all"
+          className="flex-1 bg-slate-900 text-white p-4 rounded-xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs"
         >
           Próximo Passo
         </button>
@@ -182,47 +201,48 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   );
 
   const renderStep3 = () => (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-800">Estilo Musical</h2>
-        <p className="text-slate-500 text-sm mt-1">Ouve os exemplos e escolhe o teu favorito.</p>
+    <div className="space-y-8 animate-fadeIn">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-serif font-bold text-slate-900 italic">Estilo Musical</h2>
+        <p className="text-slate-500 text-sm">Ouve os exemplos e escolhe o teu favorito.</p>
       </div>
-      <div className="space-y-3">
+      
+      <div className="space-y-4">
         {MUSIC_STYLES.map((s) => (
           <div 
             key={s.id} 
             onClick={() => setFormData({...formData, style: s.id})}
-            className={`p-4 border-2 rounded-xl cursor-pointer transition-all flex items-center justify-between ${
+            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between group ${
               formData.style === s.id 
-                ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-500' 
+                ? 'border-rose-500 bg-rose-50 shadow-md' 
                 : 'border-slate-100 hover:border-slate-300 bg-white'
             }`}
           >
             <div>
               <h3 className="font-bold text-slate-800 text-sm">{s.name}</h3>
-              <p className="text-xs text-slate-500 mt-1">{s.desc}</p>
+              <p className="text-[11px] text-slate-500 mt-1">{s.desc}</p>
             </div>
             
             <div className="flex items-center gap-3">
               <button 
                 onClick={(e) => { e.stopPropagation(); toggleAudio(s.id); }}
-                className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 hover:bg-rose-200 transition-colors"
+                className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 hover:bg-rose-100 transition-colors"
               >
-                {playing === s.id ? <Pause size={14} fill="currentColor"/> : <Play size={14} fill="currentColor"/>}
+                {playing === s.id ? <Pause size={12} fill="currentColor"/> : <Play size={12} fill="currentColor"/>}
               </button>
-              {formData.style === s.id && <div className="bg-rose-500 p-1 rounded-full"><Check size={12} className="text-white"/></div>}
+              {formData.style === s.id && <div className="bg-rose-500 p-1 rounded-full"><Check size={10} className="text-white"/></div>}
             </div>
             <audio id={`audio-${s.id}`} src={s.url} />
           </div>
         ))}
       </div>
 
-      <div className="flex gap-4 pt-2">
-        <button onClick={() => setStep(2)} className="px-4 text-slate-400 font-bold text-sm hover:text-slate-600">Voltar</button>
+      <div className="flex gap-4 pt-4">
+        <button onClick={() => setStep(2)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-600">Voltar</button>
         <button 
           onClick={() => { if(playing) toggleAudio(playing); setStep(4); }} 
           disabled={!formData.style} 
-          className="flex-1 bg-rose-600 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-100 disabled:opacity-50 transition-all"
+          className="flex-1 bg-slate-900 text-white p-4 rounded-xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs"
         >
           Ver Resumo
         </button>
@@ -231,99 +251,100 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   );
 
   const renderStep4 = () => (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-slate-800">Resumo do Pedido</h2>
-        <p className="text-slate-500 text-sm mt-1">Confirma os detalhes antes de finalizar.</p>
+    <div className="space-y-8 animate-fadeIn">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-serif font-bold text-slate-900 italic">Resumo do Pedido</h2>
+        <p className="text-slate-500 text-sm">Confirma os detalhes antes de finalizar.</p>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <div className="space-y-2 pb-4 border-b border-slate-100">
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Música Personalizada</span>
+      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-6">
+        <div className="space-y-3 pb-4 border-b border-slate-100">
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-slate-500 font-medium">Música Personalizada</span>
             <span className="font-bold text-slate-900">24,99€</span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 w-fit px-2 py-1 rounded">
-            <MessageCircle size={12} /> Entrega WhatsApp + Email
+          <div className="flex gap-2">
+             <span className="text-[10px] bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 flex items-center gap-1 font-bold"><MessageCircle size={10}/> WhatsApp</span>
+             <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-100 flex items-center gap-1 font-bold"><Mail size={10}/> E-mail</span>
           </div>
         </div>
 
-        {/* Upsell 24h */}
+        {/* Upsell Card */}
         <div 
           onClick={() => setFormData({...formData, fastDelivery: !formData.fastDelivery})}
-          className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+          className={`p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${
             formData.fastDelivery 
               ? 'border-amber-400 bg-amber-50' 
-              : 'border-slate-100 hover:border-slate-300'
+              : 'border-slate-100 hover:border-slate-300 bg-slate-50'
           }`}
         >
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <Sparkles size={16} className={formData.fastDelivery ? "text-amber-500" : "text-slate-400"} /> 
+          <div className="flex justify-between items-center z-10 relative">
+            <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
+              <Sparkles size={14} className={formData.fastDelivery ? "text-amber-500" : "text-slate-400"} /> 
               Quero em 24 Horas
             </span>
             <span className="text-amber-600 font-bold text-sm">+4,99€</span>
           </div>
-          <p className="text-xs text-slate-500 ml-6">Passamos o pedido para a frente da fila.</p>
+          <p className="text-[10px] text-slate-500 mt-1 ml-6">Passamos o pedido para a frente da fila.</p>
         </div>
 
         <div className="flex justify-between items-center pt-2">
-          <span className="font-bold text-slate-500 text-sm">Total a Pagar</span>
-          <span className="text-2xl font-bold text-rose-600">{finalPrice.toFixed(2)}€</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total a Pagar</span>
+          <span className="text-3xl font-serif font-bold text-rose-600">{finalPrice.toFixed(2)}€</span>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <button 
           onClick={handleStripe} 
-          className="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl font-bold shadow-xl shadow-green-100 transition-all transform active:scale-95 flex items-center justify-center gap-2"
+          className="w-full bg-green-600 hover:bg-green-700 text-white p-5 rounded-2xl font-bold shadow-xl shadow-green-100 transition-all transform active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
         >
-          Finalizar Pedido <ShieldCheck size={18} />
+          Finalizar Pedido <ShieldCheck size={16} />
         </button>
-        <button onClick={() => setStep(3)} className="w-full text-slate-400 text-sm font-bold hover:text-slate-600">Voltar</button>
+        <button onClick={() => setStep(3)} className="w-full text-slate-400 text-xs font-bold hover:text-slate-600 uppercase tracking-widest">Voltar</button>
       </div>
       
-      <p className="text-[10px] text-center text-slate-400 flex items-center justify-center gap-1">
-        <RotateCcw size={10} /> Inclui revisões da letra se necessário.
+      <p className="text-[10px] text-center text-slate-400 flex items-center justify-center gap-1 opacity-60">
+        <RotateCcw size={10} /> Ajustes incluídos até a letra ficar perfeita.
       </p>
     </div>
   );
 
   const renderStep5 = () => (
-    <div className="text-center space-y-6 py-10 animate-fadeIn px-4">
-      <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto text-green-600">
-        <Check size={40} strokeWidth={3} />
+    <div className="text-center space-y-8 py-10 animate-fadeIn px-4">
+      <div className="bg-green-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto text-green-600 shadow-xl">
+        <Check size={48} strokeWidth={3} />
       </div>
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-slate-900">Pagamento Confirmado!</h2>
+        <h2 className="text-3xl font-serif font-bold text-slate-900 italic">Pagamento Confirmado!</h2>
         <p className="text-slate-500 text-sm">A vossa história já está na nossa lista de produção.</p>
       </div>
       
-      <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-         <p className="text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Entrega Estimada</p>
-         <p className="text-xl font-bold text-slate-800 mb-4">{formData.fastDelivery ? 'Menos de 24 Horas' : 'Até 72 Horas'}</p>
-         <div className="flex justify-center gap-2 text-xs text-slate-500">
-            <span className="flex items-center gap-1 bg-white px-3 py-1 rounded border border-slate-200"><MessageCircle size={12}/> WhatsApp</span>
-            <span className="flex items-center gap-1 bg-white px-3 py-1 rounded border border-slate-200"><Mail size={12}/> Email</span>
+      <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200 shadow-sm">
+         <p className="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Entrega Estimada</p>
+         <p className="text-2xl font-bold text-slate-900 mb-6">{formData.fastDelivery ? 'Menos de 24 Horas' : 'Até 72 Horas'}</p>
+         <div className="flex justify-center gap-3">
+            <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><MessageCircle size={14} className="text-green-500"/> WhatsApp</span>
+            <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><Mail size={14} className="text-blue-500"/> Email</span>
          </div>
       </div>
       
-      <button onClick={onBack} className="text-rose-500 font-bold text-sm hover:underline">Voltar ao Início</button>
+      <button onClick={onBack} className="text-rose-500 font-bold text-xs uppercase tracking-widest hover:underline">Voltar ao Início</button>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden border border-slate-100 relative">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
+      <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
         
-        {/* Barra de Progresso Simples */}
+        {/* Barra de Progresso Topo */}
         {step < 5 && (
-          <div className="w-full bg-slate-100 h-1.5">
-            <div className="bg-rose-500 h-full transition-all duration-500" style={{ width: `${(step / 4) * 100}%` }}></div>
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-50">
+            <div className="h-full bg-rose-500 transition-all duration-700 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
           </div>
         )}
 
-        <div className="p-6 md:p-8">
+        <div className="p-8 md:p-12">
           {step === 1 && renderStep1()} 
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()} 
