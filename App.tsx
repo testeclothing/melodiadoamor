@@ -13,8 +13,8 @@ import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO ---
 import heroBg from './assets/12qwq.jpeg';
-import heroAudio from './assets/sofia2.mp3'; 
-import sofiaAudio from './assets/sofia2.mp3';     
+import heroAudio from './assets/sofia.mp3'; 
+import sofiaAudio from './assets/sofia.mp3';     
 import ivandroAudio from './assets/ivandro.mp3'; 
 import vitorAudio from './assets/vitor.mp3';     
 
@@ -23,7 +23,7 @@ const VENDAS_ATUAIS = 28;
 const OBJETIVO_VENDAS = 100;
 const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
 
-// --- DADOS DO SITE (TEXTOS ORIGINAIS RESTAURADOS) ---
+// --- DADOS DO SITE (TEXTOS ORIGINAIS DAS IMAGENS) ---
 const SAMPLES: SongSample[] = [
   { id: 1, title: "Margarida", genre: "Pop Acústico", url: vitorAudio },
   { id: 2, title: "Sabia quem eras", genre: "Alma & Emoção", url: sofiaAudio },
@@ -179,7 +179,6 @@ function App() {
             <span className="font-serif font-bold text-xl tracking-tight text-slate-800">Melodia do Amor</span>
           </div>
           
-          {/* BARRA DE ANÚNCIO DESKTOP */}
           <div className="hidden md:flex items-center gap-2 bg-rose-50 px-4 py-1.5 rounded-full border border-rose-100">
             <Clock size={14} className="text-rose-600" />
             <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">{tempoValentine}</span>
@@ -197,7 +196,7 @@ function App() {
         </div>
       </div>
 
-      {/* HERO SECTION */}
+      {/* HERO SECTION - Otimizada para Mobile */}
       <section className="relative min-h-[85vh] lg:min-h-screen flex items-center pt-8 pb-12 lg:pt-24 lg:pb-16 overflow-hidden">
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[30rem] h-[30rem] bg-rose-100/50 rounded-full blur-3xl -z-10 animate-pulse"></div>
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[20rem] h-[20rem] bg-blue-100/50 rounded-full blur-3xl -z-10"></div>
@@ -328,7 +327,7 @@ function App() {
         </div>
       </section>
 
-      {/* PRICING SECTION */}
+      {/* PRICING SECTION - Otimizada */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
@@ -346,7 +345,7 @@ function App() {
                    <div className="flex items-center gap-4">
                      <div className="bg-white/20 p-2 rounded-full hidden sm:block animate-pulse"><Clock className="text-white" size={20} /></div>
                      <div>
-                       <p className="text-[10px] md:text-xs text-rose-100 uppercase font-bold tracking-wider">Aproveita Já:</p>
+                       <p className="text-[10px] md:text-xs text-rose-100 uppercase font-bold tracking-wider">APROVEITA JÁ:</p>
                        <p className="font-bold text-sm md:text-xl uppercase tracking-tight">{tempoValentine}</p>
                      </div>
                    </div>
@@ -354,7 +353,7 @@ function App() {
                </div>
             </div>
 
-            {/* LADO DIREITO (PREÇO) */}
+            {/* LADO DIREITO (PREÇO - 60% DESCONTO) */}
             <div className="flex-1 p-8 md:p-16">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-gray-400 line-through text-xl">59,99€</span>
@@ -364,9 +363,9 @@ function App() {
                 <span className="text-6xl font-bold text-rose-600 tracking-tight">24,99€</span>
                 <span className="text-gray-500 font-medium">/ música</span>
               </div>
-              <ul className="space-y-3 mb-10">
+              <ul className="space-y-3 mb-10 text-gray-700">
                 {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Standard (72h)", "Participação Concurso Paris"].map((feat, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-700 text-base">
+                  <li key={i} className="flex items-center gap-3 text-base">
                     <div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600 shrink-0" /></div>
                     <span>{feat}</span>
                   </li>
