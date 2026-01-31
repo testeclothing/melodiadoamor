@@ -66,8 +66,8 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   const handleStripe = () => {
     // LINKS DO TEU STRIPE (Substitui se mudares para LIVE)
-    const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
-    const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
+    const L_STD = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001";
+    const L_FAST = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000";
     
     if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
     window.location.href = formData.fastDelivery ? L_FAST : L_STD;
