@@ -18,19 +18,19 @@ const MUSIC_STYLES = [
   { 
     id: 'soul', 
     name: 'Alma & Emoção', 
-    desc: 'Voz forte e com muito sentimento.', 
+    desc: 'Estilo Sofia. Voz forte e sentida.', 
     url: sofiaAudio 
   },
   { 
     id: 'rock', 
     name: 'R&B Romântico', 
-    desc: 'Voz suave, batida lenta e envolvente.', 
+    desc: 'Estilo Ivandro. Suave e envolvente.', 
     url: ivandroAudio 
   },
   { 
     id: 'pop', 
     name: 'Pop Acústico', 
-    desc: 'Guitarra, boa energia e "good vibes".', 
+    desc: 'Estilo Vitor Kley. Boa vibe e solar.', 
     url: vitorAudio 
   }
 ];
@@ -38,7 +38,7 @@ const MUSIC_STYLES = [
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [step, setStep] = useState(1);
   const [playing, setPlaying] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); 
   
   const [formData, setFormData] = useState({
     senderName: '',    
@@ -61,7 +61,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     }
   }, []);
 
-  // --- 2. LÓGICA DE SUCESSO E ENVIO PARA O GOOGLE SHEETS ---
+  // --- 2. LÓGICA DE RETORNO DO STRIPE & GOOGLE SHEETS ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -137,12 +137,12 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   const renderStep1 = () => (
     <div className="space-y-8 animate-fadeIn relative">
-      {/* NOVO BOTAO VOLTAR ADICIONADO AQUI */}
+      {/* BOTÃO VOLTAR PARA HOME PAGE */}
       <button 
         onClick={onBack}
-        className="absolute -top-4 -left-4 flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
+        className="absolute -top-4 -left-2 flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
       >
-        <ArrowLeft size={12} /> Voltar
+        <ArrowLeft size={12} /> Voltar ao Início
       </button>
 
       <div className="text-center space-y-2 pt-4">
@@ -353,7 +353,9 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         >
           <div className="flex justify-between items-center z-10 relative">
             <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
-              <Sparkles size={14} className={formData.fastDelivery ? "text-amber-500" : "text-slate-400"} /> 
+              <span className={formData.fastDelivery ? "text-amber-500" : "text-slate-400"}>
+                <Sparkles size={14} /> 
+              </span>
               Quero em 24 Horas
             </span>
             <span className="text-amber-600 font-bold text-sm">+4,99€</span>
