@@ -228,7 +228,7 @@ function App() {
                   <div className="flex -space-x-3">
                     {[1,2,3,4].map(i => (<img key={i} src={`https://picsum.photos/40/40?random=${i}`} className="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="User" />))}
                   </div>
-                  <div className="flex flex-col leading-none text-left"><span className="font-bold text-gray-900">+2500 casais</span><span className="text-xs">felizes</span></div>
+                  <div className="flex flex-col leading-none text-left"><span className="font-bold text-gray-900">+550 casais</span><span className="text-xs">felizes</span></div>
                 </div>
               </div>
             </div>
