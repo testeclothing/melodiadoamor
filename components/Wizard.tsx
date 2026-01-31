@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 
 // --- IMPORTAÇÃO DOS ÁUDIOS ---
-import sofiaAudio from '../assets/sofia.mp3';     
+import sofiaAudio from '../assets/sofia2.mp3';     
 import ivandroAudio from '../assets/ivandro.mp3'; 
 import vitorAudio from '../assets/vitor.mp3';     
 
