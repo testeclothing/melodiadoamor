@@ -4,14 +4,36 @@ import {
   Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine
 } from 'lucide-react';
 
+// --- ALTERAÇÃO 1: IMPORTAÇÃO DOS TEUS ÁUDIOS REAIS ---
+// Certifica-te que os nomes dos ficheiros na pasta 'assets' correspondem a isto:
+import teddyAudio from '../assets/demo.mp3'; 
+import ivandroAudio from '../assets/Exemplo Ivandro.mp3 (1).mpeg'; // Ou o nome exato que tiveres
+import vitorAudio from '../assets/Exemplo Vitor Kley.mp3.mpeg';   // Ou o nome exato que tiveres
+
 interface WizardProps {
   onBack: () => void;
 }
 
+// --- ALTERAÇÃO 2: LIGAÇÃO DOS ESTILOS AOS FICHEIROS ---
 const MUSIC_STYLES = [
-  { id: 'soul', name: 'Alma & Emoção', desc: 'Estilo Teddy Swims. Voz forte e sentida.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-  { id: 'rock', name: 'Pop Rock Romântico', desc: 'Estilo Bryan Adams. Clássico e intemporal.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-  { id: 'pop', name: 'Pop Cinematic', desc: 'Estilo Lady Gaga. Grandioso e bonito.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
+  { 
+    id: 'soul', 
+    name: 'Alma & Emoção', 
+    desc: 'Estilo Teddy Swims. Voz forte e sentida.', 
+    url: teddyAudio // Toca o demo.mp3
+  },
+  { 
+    id: 'rock', 
+    name: 'R&B Romântico', // Ajustado para o estilo Ivandro que falámos
+    desc: 'Estilo Ivandro. Suave e envolvente.', 
+    url: ivandroAudio // Toca o ficheiro do Ivandro
+  },
+  { 
+    id: 'pop', 
+    name: 'Pop Acústico', // Ajustado para o estilo Vitor Kley
+    desc: 'Estilo Vitor Kley. Boa vibe e solar.', 
+    url: vitorAudio // Toca o ficheiro do Vitor Kley
+  }
 ];
 
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
@@ -44,6 +66,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   }, []);
 
   const handleStripe = () => {
+    // LINKS REAIS QUE FORNECERSTE
     const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
     const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
     
@@ -98,7 +121,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       <button 
         onClick={() => setStep(2)} 
         disabled={!formData.senderName || !formData.recipientName} 
-        className="w-full bg-slate-900 hover:bg-black text-white p-5 rounded-2xl font-bold shadow-xl disabled:opacity-30 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+        className="w-full bg-rose-600 hover:bg-rose-700 text-white p-5 rounded-2xl font-bold shadow-xl disabled:opacity-30 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
       >
         Continuar <ChevronRight size={16} />
       </button>
@@ -113,8 +136,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       </div>
 
       <div className="space-y-5">
-        
-        {/* TODAS AS PERGUNTAS PRINCIPAIS JUNTAS */}
         
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
@@ -167,7 +188,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           />
         </div>
 
-        {/* SECÇÃO EXTRA (SEPARADA) */}
         <div className="pt-6 border-t border-slate-100">
             <div className="space-y-2">
                 <label className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
@@ -187,8 +207,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-600">Voltar</button>
         <button 
           onClick={() => setStep(3)} 
-          // Botão SEMPRE ativo (Disabled removido)
-          className="flex-1 bg-slate-900 text-white p-4 rounded-xl font-bold shadow-lg uppercase tracking-widest text-xs hover:bg-black transition-all"
+          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-100 uppercase tracking-widest text-xs transition-all"
         >
           Próximo Passo
         </button>
@@ -210,7 +229,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
             onClick={() => setFormData({...formData, style: s.id})}
             className={`p-5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between group ${
               formData.style === s.id 
-                ? 'border-rose-500 bg-rose-50 shadow-md' 
+                ? 'border-rose-500 bg-rose-50 shadow-md ring-1 ring-rose-200' 
                 : 'border-slate-100 hover:border-slate-300 bg-white'
             }`}
           >
@@ -238,7 +257,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         <button 
           onClick={() => { if(playing) toggleAudio(playing); setStep(4); }} 
           disabled={!formData.style} 
-          className="flex-1 bg-slate-900 text-white p-4 rounded-xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs"
+          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs"
         >
           Ver Resumo
         </button>
@@ -333,7 +352,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
       <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
         
-        {/* Barra de Progresso */}
         {step < 5 && (
           <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-50">
             <div className="h-full bg-rose-500 transition-all duration-700 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
