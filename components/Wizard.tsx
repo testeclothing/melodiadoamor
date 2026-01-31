@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 
 // --- IMPORTAÇÃO DOS ÁUDIOS ---
-import sofiaAudio from '../assets/sofia2.mp3';     
+import sofiaAudio from '../assets/sofia.mp3';     
 import ivandroAudio from '../assets/ivandro.mp3'; 
 import vitorAudio from '../assets/vitor.mp3';     
 
@@ -91,20 +91,18 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
           body: formDataToSend,
-          mode: "no-cors" // Crucial para não haver bloqueio de segurança do Google
+          mode: "no-cors" 
         })
         .then(() => {
           console.log("Sucesso: Pedido guardado no Excel!");
-          localStorage.removeItem('pendingOrder'); // Limpa para não duplicar se der refresh
+          localStorage.removeItem('pendingOrder'); 
         })
         .catch(err => console.error("Erro Excel:", err));
       }
 
-      // Rastreio Pixel
       const amt = urlParams.get('amt') || '24.99';
       if ((window as any).ttq) (window as any).ttq.track('CompletePayment', { value: parseFloat(amt), currency: 'EUR' });
       
-      // Limpa o URL para ficar limpo
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -112,12 +110,11 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const handleStripe = () => {
     setIsSubmitting(true);
 
-    // LINKS DO TEU STRIPE (Produção)
     const L_STD = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001";
     const L_FAST = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000";
+    
     const paymentLink = formData.fastDelivery ? L_FAST : L_STD;
 
-    // GUARDA NO BOLSO DO NAVEGADOR
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
       styleName: MUSIC_STYLES.find(s => s.id === formData.style)?.name || formData.style,
@@ -125,6 +122,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     }));
 
     if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
+    
     window.location.href = paymentLink;
   };
 
@@ -135,11 +133,19 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     if (current) { if (playing === id) { current.pause(); setPlaying(null); } else { current.play(); setPlaying(id); } }
   };
 
-  // --- COMPONENTES VISUAIS (DESIGN ORIGINAL) ---
+  // --- COMPONENTES VISUAIS ---
 
   const renderStep1 = () => (
-    <div className="space-y-8 animate-fadeIn">
-      <div className="text-center space-y-2">
+    <div className="space-y-8 animate-fadeIn relative">
+      {/* NOVO BOTAO VOLTAR ADICIONADO AQUI */}
+      <button 
+        onClick={onBack}
+        className="absolute -top-4 -left-4 flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
+      >
+        <ArrowLeft size={12} /> Voltar
+      </button>
+
+      <div className="text-center space-y-2 pt-4">
         <h2 className="text-3xl font-serif font-bold text-slate-900 italic">Vamos começar</h2>
         <p className="text-slate-500 text-sm">Identifica quem oferece e quem recebe esta prenda.</p>
       </div>
