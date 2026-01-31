@@ -38,7 +38,7 @@ const MUSIC_STYLES = [
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [step, setStep] = useState(1);
   const [playing, setPlaying] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Novo estado para bloquear o botão
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
     senderName: '',    
@@ -54,21 +54,18 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
 
-  // --- LÓGICA DE RETORNO DO STRIPE & GOOGLE SHEETS ---
+  // --- LÓGICA DE SUCESSO E ENVIO PARA GOOGLE SHEETS ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Se o pagamento foi sucesso (o cliente voltou do Stripe)
     if (urlParams.get('status') === 'success') {
       setStep(5);
       
-      // 1. Vai buscar os dados que guardámos no "bolso" antes de ir para o Stripe
       const pendingData = localStorage.getItem('pendingOrder');
       
       if (pendingData) {
         const data = JSON.parse(pendingData);
         
-        // 2. Prepara os dados para o Google Sheets
         const formDataToSend = new FormData();
         formDataToSend.append("Nome Cliente", data.senderName);
         formDataToSend.append("Para Quem", data.recipientName);
@@ -81,26 +78,23 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Hobbies", data.hobbies);
         formDataToSend.append("Detalhes Extra", data.extraDetails);
 
-        // O TEU LINK DO GOOGLE APPS SCRIPT (Copiado do teu print)
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlWvoATyLM-fHM8D6JKZfJ7rcTnarApsOWyKbEItWTRaz28oBcLqxaiwS3FiP1y4ORCQ/exec";
+        // O TEU LINK DO GOOGLE
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7YbtCuxUj6Wogbaw0ZEeVIyRcZwyUETUH_LJFWjNfaWNI1Y4YEILgfBASHTpe4gP6Ug/exec";
 
-        // 3. Envia para o Excel (Google Sheets)
         fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
-          body: formDataToSend
+          body: formDataToSend,
+          mode: "no-cors" 
         })
         .then(() => {
-          console.log("Pedido salvo no Excel com sucesso!");
-          localStorage.removeItem('pendingOrder'); // Limpa os dados para não duplicar
+          console.log("Sucesso Excel!");
+          localStorage.removeItem('pendingOrder');
         })
-        .catch(err => console.error("Erro ao salvar no Excel:", err));
+        .catch(err => console.error("Erro Excel:", err));
       }
 
-      // Pixel e Analytics
       const amt = urlParams.get('amt') || '24.99';
       if ((window as any).ttq) (window as any).ttq.track('CompletePayment', { value: parseFloat(amt), currency: 'EUR' });
-      
-      // Limpa o URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -108,23 +102,27 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const handleStripe = () => {
     setIsSubmitting(true);
 
-    // LINKS DO TEU STRIPE (Produção)
+    // SEGURANÇA DE DOMÍNIO (pt vs www.pt)
+    if (window.location.hostname.includes('www.')) {
+      const cleanUrl = window.location.href.replace('www.', '');
+      localStorage.setItem('pendingOrder', JSON.stringify({
+        ...formData,
+        styleName: MUSIC_STYLES.find(s => s.id === formData.style)?.name || formData.style
+      }));
+      window.location.href = cleanUrl;
+      return;
+    }
+
     const L_STD = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001";
     const L_FAST = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000";
-    
     const paymentLink = formData.fastDelivery ? L_FAST : L_STD;
 
-    // --- GUARDAR NO "BOLSO" (Local Storage) ---
-    // Guardamos aqui para enviar para o Excel SÓ DEPOIS do pagamento ser confirmado
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
-      styleName: MUSIC_STYLES.find(s => s.id === formData.style)?.name || formData.style,
-      timestamp: new Date().toISOString()
+      styleName: MUSIC_STYLES.find(s => s.id === formData.style)?.name || formData.style
     }));
 
     if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
-    
-    // Redireciona para o pagamento
     window.location.href = paymentLink;
   };
 
@@ -135,7 +133,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     if (current) { if (playing === id) { current.pause(); setPlaying(null); } else { current.play(); setPlaying(id); } }
   };
 
-  // --- COMPONENTES VISUAIS ---
+  // --- COMPONENTES VISUAIS ORIGINAIS ---
 
   const renderStep1 = () => (
     <div className="space-y-8 animate-fadeIn">
@@ -190,7 +188,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       </div>
 
       <div className="space-y-5">
-        
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
             <MapPin size={14} className="text-rose-500"/> Onde/Quando se conheceram?
@@ -338,7 +335,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Upsell Card */}
         <div 
           onClick={() => !isSubmitting && setFormData({...formData, fastDelivery: !formData.fastDelivery})}
           className={`p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${
@@ -408,7 +404,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
       <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
         
-        {/* Barra de Progresso */}
         {step < 5 && (
           <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-50">
             <div className="h-full bg-rose-500 transition-all duration-700 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
