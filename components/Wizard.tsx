@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Check, Sparkles, Clock, Lightbulb, 
   MessageCircle, Mail, RotateCcw, Play, Pause, 
-  User, Users, Calendar, Heart
+  User, Users, Calendar, Heart, MapPin, Star, PenTool
 } from 'lucide-react';
 
 interface WizardProps {
@@ -22,9 +22,16 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [formData, setFormData] = useState({
     senderName: '',
     recipientName: '',
-    nicknames: '',   // Opcional
-    specialDate: '', // Opcional
-    story: '',
+    nicknames: '',
+    specialDate: '',
+    // Novos campos da história
+    meetingStory: '',
+    favoriteMemory: '',
+    loveTraits: '',
+    hobbies: '',
+    loveLanguage: '',
+    extraDetails: '', // Campo opcional
+    
     style: '',
     fastDelivery: false
   });
@@ -139,30 +146,117 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center md:text-left">
         <h2 className="text-2xl font-bold text-slate-900 font-serif italic">Mapear a Vossa História</h2>
-        <p className="text-slate-500 text-sm mt-1">Tu forneces os factos, nós imortalizamos a alma.</p>
+        <p className="text-slate-500 text-sm mt-1">Preenche os detalhes para criarmos a alma da música.</p>
       </div>
 
-      <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-3">
-        <div className="flex items-center gap-2 text-rose-600 font-bold text-[10px] uppercase tracking-[0.2em]">
-            <Lightbulb size={14} /> Guia Lírico:
+      {/* Grid de Perguntas */}
+      <div className="space-y-4">
+        
+        {/* Pergunta 1 */}
+        <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+               <MapPin size={12} /> Quando ou onde se conheceram?
+            </label>
+            <input 
+                type="text" 
+                className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium"
+                placeholder="Ex: No verão de 2019, na praia..."
+                value={formData.meetingStory}
+                onChange={(e) => setFormData({...formData, meetingStory: e.target.value})}
+            />
         </div>
-        <ul className="text-xs text-slate-600 space-y-1 font-medium italic">
-            <li>• Onde se conheceram (Escola, Ginásio, Trabalho)?</li>
-            <li>• Qual o momento que definiu o vosso percurso?</li>
-            <li>• O que torna o vosso laço inquebrável?</li>
-        </ul>
+
+        {/* Pergunta 2 */}
+        <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+               <Sparkles size={12} className="text-amber-400" /> Qual a tua memória juntos favorita?
+            </label>
+            <input 
+                type="text" 
+                className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium"
+                placeholder="Ex: A viagem a Itália..."
+                value={formData.favoriteMemory}
+                onChange={(e) => setFormData({...formData, favoriteMemory: e.target.value})}
+            />
+        </div>
+
+        {/* Pergunta 3 */}
+        <div className="space-y-1">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+               <Heart size={12} className="text-rose-500" /> O que amas mais nele (a)?
+            </label>
+            <input 
+                type="text" 
+                className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium"
+                placeholder="Ex: A forma como me faz rir..."
+                value={formData.loveTraits}
+                onChange={(e) => setFormData({...formData, loveTraits: e.target.value})}
+            />
+        </div>
+
+        {/* Pergunta 4 e 5 Lado a Lado (Mobile stack) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                    <Star size={12} /> Hobbies ou Interesses
+                </label>
+                <input 
+                    type="text" 
+                    className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium"
+                    placeholder="Ex: Surf, Cozinhar..."
+                    value={formData.hobbies}
+                    onChange={(e) => setFormData({...formData, hobbies: e.target.value})}
+                />
+            </div>
+            <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                    <MessageCircle size={12} /> Linguagem de Amor
+                </label>
+                <input 
+                    type="text" 
+                    className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium"
+                    placeholder="Ex: Toque físico..."
+                    value={formData.loveLanguage}
+                    onChange={(e) => setFormData({...formData, loveLanguage: e.target.value})}
+                />
+            </div>
+        </div>
+
+        {/* Caixa Opcional - Design do Preço/Step 1 Footer */}
+        <div className="pt-6 border-t border-slate-100 space-y-4 mt-6">
+            <p className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] text-center">
+                Detalhes Adicionais (Opcional)
+            </p>
+            <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1">
+                    <PenTool size={12} /> Queres escrever mais?
+                </label>
+                <textarea 
+                    className="w-full p-4 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium h-24 resize-none text-sm leading-relaxed"
+                    placeholder="Conta-nos qualquer outro detalhe importante aqui..."
+                    value={formData.extraDetails}
+                    onChange={(e) => setFormData({...formData, extraDetails: e.target.value})}
+                />
+            </div>
+        </div>
+
       </div>
 
-      <textarea 
-        className="w-full p-5 border-2 border-slate-100 rounded-2xl h-44 focus:ring-2 focus:ring-rose-500 outline-none resize-none text-sm font-medium leading-relaxed"
-        placeholder="Escreve aqui os vossos marcos..."
-        value={formData.story}
-        onChange={(e) => setFormData({...formData, story: e.target.value})}
-      />
-
-      <div className="flex gap-4">
+      <div className="flex gap-4 pt-4">
         <button onClick={() => setStep(1)} className="px-6 text-slate-400 font-bold text-sm">Voltar</button>
-        <button onClick={() => setStep(3)} disabled={formData.story.length < 15} className="flex-1 bg-rose-500 text-white p-5 rounded-2xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs">Escolher Estilo</button>
+        <button 
+            onClick={() => setStep(3)} 
+            disabled={
+                !formData.meetingStory || 
+                !formData.favoriteMemory || 
+                !formData.loveTraits || 
+                !formData.hobbies || 
+                !formData.loveLanguage
+            } 
+            className="flex-1 bg-rose-500 text-white p-5 rounded-2xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs"
+        >
+            Escolher Estilo
+        </button>
       </div>
     </div>
   );
@@ -271,6 +365,9 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           {step === 5 && renderStep5()}
         </div>
       </div>
+    </div>
+  );
+};
     </div>
   );
 };
