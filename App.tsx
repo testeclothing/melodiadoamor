@@ -197,7 +197,7 @@ function App() {
         </div>
       </div>
 
-      {/* HERO SECTION - Otimizada Hierarquia para Mobile */}
+      {/* HERO SECTION */}
       <section className="relative min-h-[85vh] lg:min-h-screen flex items-center pt-8 pb-12 lg:pt-24 lg:pb-16 overflow-hidden">
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[30rem] h-[30rem] bg-rose-100/50 rounded-full blur-3xl -z-10 animate-pulse"></div>
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[20rem] h-[20rem] bg-blue-100/50 rounded-full blur-3xl -z-10"></div>
@@ -214,7 +214,7 @@ function App() {
                 Surpreende a tua cara-metade com uma música personalizada feita à medida. Tu dás-nos as memórias, nós criamos a emoção.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2">
-                <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl shadow-rose-500/20 bg-rose-600 hover:bg-rose-700">
+                <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl shadow-rose-500/20 bg-rose-600 hover:bg-rose-700 text-white shadow-xl">
                   Criar a Minha Canção
                 </Button>
                 <div className="flex items-center gap-3 text-sm text-gray-500 font-medium bg-white/50 px-3 py-2 rounded-xl border border-white/50 backdrop-blur-sm">
@@ -247,7 +247,7 @@ function App() {
         </div>
       </section>
 
-      {/* SOCIAL PROOF (IMAGEM 29) */}
+      {/* SOCIAL PROOF */}
       <section className="bg-gray-50 py-12 border-y border-gray-100">
         <div className="container mx-auto px-4 max-w-6xl">
           <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">AVALIADO COM 4.9/5 ESTRELAS POR CASAIS EM PORTUGAL</p>
@@ -267,7 +267,7 @@ function App() {
         </div>
       </section>
 
-      {/* COMO FUNCIONA (IMAGEM 30) */}
+      {/* COMO FUNCIONA */}
       <section className="py-24">
         <div className="container mx-auto px-4 max-w-6xl text-center">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Como criamos a magia?</h2>
@@ -293,7 +293,7 @@ function App() {
         </div>
       </section>
 
-      {/* AUDIO SAMPLES (IMAGEM 31) */}
+      {/* AUDIO SAMPLES */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
@@ -328,7 +328,7 @@ function App() {
         </div>
       </section>
 
-      {/* PRICING SECTION - Otimizada para Mobile Scroll */}
+      {/* PRICING SECTION */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
@@ -354,7 +354,7 @@ function App() {
                </div>
             </div>
 
-            {/* LADO DIREITO (PREÇO - 60% DESCONTO) */}
+            {/* LADO DIREITO (PREÇO) */}
             <div className="flex-1 p-8 md:p-16">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-gray-400 line-through text-xl">59,99€</span>
@@ -374,7 +374,7 @@ function App() {
               </ul>
               <Button fullWidth pulse onClick={startWizard} className="py-4 text-lg bg-rose-600 hover:bg-rose-700 shadow-xl shadow-rose-500/20 transition-all">Criar Música Agora</Button>
               <p className="text-center text-[10px] text-gray-400 mt-6 uppercase font-bold tracking-widest">Pagamento 100% Seguro via Stripe. Satisfação Garantida.</p>
-              <div className="mt-8 flex justify-center gap-3 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+              <div className="mt-8 flex justify-center gap-3 opacity-50 grayscale hover:grayscale-0 transition-all duration-300">
                  <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-[10px] text-gray-600 border border-gray-200">MB WAY</div>
                  <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-[10px] text-gray-600 border border-gray-200">MULTIBANCO</div>
                  <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-[10px] text-gray-600 border border-gray-200">VISA</div>
@@ -400,7 +400,7 @@ function App() {
               <div className="bg-rose-600 p-2 rounded-xl text-white shadow-lg shadow-rose-500/20"><Music size={20} fill="currentColor" /></div>
               <span className="font-serif font-bold text-xl text-gray-900">Melodia do Amor</span>
             </div>
-            <div className="text-sm text-gray-500 flex flex-wrap justify-center gap-8 font-medium cursor-pointer">
+            <div className="text-sm text-gray-500 flex gap-8 font-medium cursor-pointer">
               <span onClick={() => { window.scrollTo(0,0); setView('terms'); }} className="hover:text-rose-600 transition-colors">Termos e Condições</span>
               <span onClick={() => { window.scrollTo(0,0); setView('privacy'); }} className="hover:text-rose-600 transition-colors">Política de Privacidade</span>
               <span onClick={() => { window.scrollTo(0,0); setView('contact'); }} className="hover:text-rose-600 transition-colors">Contactos</span>
