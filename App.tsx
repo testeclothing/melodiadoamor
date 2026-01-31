@@ -12,20 +12,40 @@ import { Wizard } from './components/Wizard';
 import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
 import { SongSample, FaqItem } from './types';
 
-// --- ALTERADO AQUI PARA SOFIA ---
+// --- IMPORTAÇÃO DE IMAGENS E ÁUDIO HERO ---
 import heroBg from './assets/12qwq.jpeg';
 import heroAudio from './assets/sofia.mp3'; 
+
+// --- IMPORTAÇÃO DOS SAMPLES (NOVOS) ---
+import sofiaAudio from './assets/sofia.mp3';     
+import ivandroAudio from './assets/ivandro.mp3'; 
+import vitorAudio from './assets/vitor.mp3';     
 
 // --- CONFIGURAÇÃO DO CONCURSO PARIS ---
 const VENDAS_ATUAIS = 28; 
 const OBJETIVO_VENDAS = 100;
 const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
 
-// DADOS DO SITE
+// --- DADOS DOS SAMPLES ATUALIZADOS ---
 const SAMPLES: SongSample[] = [
-  { id: 1, title: "A Nossa Viagem a Paris", genre: "Pop Acústico Romântico", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-  { id: 2, title: "5 Anos de Amor", genre: "Piano & Voz Emocional", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-  { id: 3, title: "O Primeiro Beijo no Cais", genre: "Indie Folk Fofinho", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+  { 
+    id: 1, 
+    title: "A Nossa Viagem a Paris", 
+    genre: "Pop Acústico (Estilo Vitor)", 
+    url: vitorAudio // Alterado para o ficheiro local
+  },
+  { 
+    id: 2, 
+    title: "5 Anos de Amor", 
+    genre: "Alma & Emoção (Estilo Sofia)", 
+    url: sofiaAudio // Alterado para o ficheiro local
+  },
+  { 
+    id: 3, 
+    title: "O Primeiro Beijo no Cais", 
+    genre: "R&B Romântico (Estilo Ivandro)", 
+    url: ivandroAudio // Alterado para o ficheiro local
+  },
 ];
 
 const FAQS: FaqItem[] = [
