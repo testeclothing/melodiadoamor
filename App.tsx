@@ -1,372 +1,369 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
-  ArrowLeft, Check, Sparkles, MessageCircle, Mail, RotateCcw, 
-  Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine
+  Heart, Star, CheckCircle2, Music, Clock, ShieldCheck, Gift, 
+  Play, Pause, X, Stamp, Trophy
 } from 'lucide-react';
 
-// --- IMPORTAÇÃO DOS ÁUDIOS ---
-// Certifica-te que os ficheiros na pasta 'src/assets' têm estes nomes exatos:
-import teddyAudio from '../assets/teddy.mp3';     
-import ivandroAudio from '../assets/ivandro.mp3'; 
-import vitorAudio from '../assets/vitor.mp3';     
+import { Button } from './components/Button';
+import { Countdown } from './components/Countdown';
+import { AudioPlayer } from './components/AudioPlayer';
+import { Faq } from './components/Faq';
+import { Wizard } from './components/Wizard';
+import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
+import { SongSample, FaqItem } from './types';
 
-interface WizardProps {
-  onBack: () => void;
-}
+// --- CORREÇÃO AQUI: USAR ./ EM VEZ DE ../ ---
+import heroBg from './assets/12qwq.jpeg';
+import heroAudio from './assets/teddy.mp3'; 
 
-// --- CONFIGURAÇÃO DOS ESTILOS (DESCRIÇÕES ATUALIZADAS) ---
-const MUSIC_STYLES = [
-  { 
-    id: 'soul', 
-    name: 'Alma & Emoção', 
-    desc: 'Voz forte e com muito sentimento.', 
-    url: teddyAudio 
-  },
-  { 
-    id: 'rock', 
-    name: 'R&B Romântico', 
-    desc: 'Voz suave, batida lenta e envolvente.', 
-    url: ivandroAudio 
-  },
-  { 
-    id: 'pop', 
-    name: 'Pop Acústico', 
-    desc: 'Guitarra, boa energia e "good vibes".', 
-    url: vitorAudio 
-  }
+// --- CONFIGURAÇÃO DO CONCURSO PARIS ---
+const VENDAS_ATUAIS = 28; 
+const OBJETIVO_VENDAS = 100;
+const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
+
+// DADOS DO SITE
+const SAMPLES: SongSample[] = [
+  { id: 1, title: "A Nossa Viagem a Paris", genre: "Pop Acústico Romântico", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+  { id: 2, title: "5 Anos de Amor", genre: "Piano & Voz Emocional", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+  { id: 3, title: "O Primeiro Beijo no Cais", genre: "Indie Folk Fofinho", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
 ];
 
-export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
-  const [step, setStep] = useState(1);
-  const [playing, setPlaying] = useState<string | null>(null);
+const FAQS: FaqItem[] = [
+  { 
+    question: "Como funciona a personalização?", 
+    answer: "É muito simples! Clicas em 'Criar Música', respondes a algumas perguntas sobre a vossa história e nós tratamos do resto." 
+  },
+  { 
+    question: "Quanto tempo demora a entrega?", 
+    answer: "A entrega standard é feita em 72h. Se precisares com urgência, podes selecionar a opção 'Entrega em 24h' no final do pedido." 
+  },
+  { 
+    question: "Posso pedir alterações?", 
+    answer: "Sim! Queremos que fiques 100% satisfeito. Tens direito a uma revisão gratuita na letra ou melodia." 
+  },
+  { 
+    question: "Em que formato recebo a música?", 
+    answer: "Recebes um ficheiro MP3 de alta qualidade e a letra completa da canção." 
+  },
+];
+
+const REVIEWS = [
+  { name: "João Silva", text: "A Maria chorou assim que ouviu os primeiros versos. Foi a melhor prenda que já lhe dei!", stars: 5 },
+  { name: "Ana Martins", text: "Incrivelmente rápido e a qualidade parece de rádio. Recomendo muito!", stars: 5 },
+  { name: "Pedro Costa", text: "Fiquei com receio que fosse genérico, mas captaram todos os detalhes da nossa história.", stars: 5 },
+];
+
+function App() {
+  const [view, setView] = useState<'landing' | 'wizard' | 'terms' | 'privacy' | 'contact'>('landing');
   
-  const [formData, setFormData] = useState({
-    senderName: '',    
-    recipientName: '', 
-    meeting: '',       
-    memory: '',        
-    loveMost: '',      
-    hobbies: '',       
-    extraDetails: '',  
-    style: '',
-    fastDelivery: false
-  });
+  const [showPopup, setShowPopup] = useState(false);
+  const [heroIsPlaying, setHeroIsPlaying] = useState(false);
+  const heroAudioRef = useRef<HTMLAudioElement>(null);
 
-  const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
-
-  // Lógica de Retorno do Stripe & Pixel
+  // --- LÓGICA DE RETORNO DO STRIPE ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('status') === 'success') {
-      setStep(5);
-      const amt = urlParams.get('amt') || '24.99';
-      if ((window as any).ttq) (window as any).ttq.track('CompletePayment', { value: parseFloat(amt), currency: 'EUR' });
-      window.history.replaceState({}, document.title, window.location.pathname);
+      setView('wizard');
+      setShowPopup(false);
     }
   }, []);
 
-  const handleStripe = () => {
-    // LINKS DO STRIPE
-    const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
-    const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
-    
-    if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
-    window.location.href = formData.fastDelivery ? L_FAST : L_STD;
+  // --- LÓGICA DO POPUP ---
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (view === 'landing' && urlParams.get('status') !== 'success') {
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+      }, 5000); 
+      return () => clearTimeout(timer);
+    }
+  }, [view]);
+
+  const toggleHeroAudio = () => {
+    if (heroAudioRef.current) {
+      if (heroIsPlaying) {
+        heroAudioRef.current.pause();
+      } else {
+        heroAudioRef.current.play();
+      }
+      setHeroIsPlaying(!heroIsPlaying);
+    }
   };
 
-  const toggleAudio = (id: string) => {
-    const audios = document.getElementsByTagName('audio');
-    for (let i = 0; i < audios.length; i++) if (audios[i].id !== `audio-${id}`) { audios[i].pause(); audios[i].currentTime = 0; }
-    const current = document.getElementById(`audio-${id}`) as HTMLAudioElement;
-    if (current) { if (playing === id) { current.pause(); setPlaying(null); } else { current.play(); setPlaying(id); } }
+  const scrollToPricing = () => {
+    const el = document.getElementById('pricing');
+    el?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // --- COMPONENTES VISUAIS ---
+  const startWizard = () => {
+    if(heroAudioRef.current) {
+      heroAudioRef.current.pause();
+      setHeroIsPlaying(false);
+    }
+    setShowPopup(false);
+    window.scrollTo(0, 0);
+    setView('wizard');
+  };
 
-  const renderStep1 = () => (
-    <div className="space-y-8 animate-fadeIn">
-      <div className="text-center space-y-2">
-        <h2 className="text-3xl font-serif font-bold text-slate-900 italic">Vamos começar</h2>
-        <p className="text-slate-500 text-sm">Identifica quem oferece e quem recebe esta prenda.</p>
-      </div>
-      
-      <div className="space-y-5">
-        <div className="group">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
-            <User size={14} /> O Teu Nome (Quem Oferece)
-          </label>
-          <input 
-            type="text" 
-            className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-lg focus:bg-white focus:border-rose-500 outline-none transition-all font-medium text-slate-800"
-            placeholder="Ex: João"
-            value={formData.senderName}
-            onChange={(e) => setFormData({...formData, senderName: e.target.value})}
-          />
-        </div>
-
-        <div className="group">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
-            <Heart size={14} className="text-rose-500" /> Nome Dele(a) (Quem Recebe)
-          </label>
-          <input 
-            type="text" 
-            className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-lg focus:bg-white focus:border-rose-500 outline-none transition-all font-medium text-slate-800"
-            placeholder="Ex: Ana"
-            value={formData.recipientName}
-            onChange={(e) => setFormData({...formData, recipientName: e.target.value})}
-          />
-        </div>
-      </div>
-
-      <button 
-        onClick={() => setStep(2)} 
-        disabled={!formData.senderName || !formData.recipientName} 
-        className="w-full bg-rose-600 hover:bg-rose-700 text-white p-5 rounded-2xl font-bold shadow-xl disabled:opacity-30 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
-      >
-        Continuar <ChevronRight size={16} />
-      </button>
-    </div>
-  );
-
-  const renderStep2 = () => (
-    <div className="space-y-6 animate-fadeIn max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-serif font-bold text-slate-900 italic">A Vossa História</h2>
-        <p className="text-slate-500 text-sm">Responde ao que quiseres. Quanto mais detalhes, melhor.</p>
-      </div>
-
-      <div className="space-y-5">
-        
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
-            <MapPin size={14} className="text-rose-500"/> Onde/Quando se conheceram?
-          </label>
-          <input 
-            type="text" 
-            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-rose-500 outline-none transition-all"
-            placeholder="Ex: Na escola secundária, em 2015..."
-            value={formData.meeting}
-            onChange={(e) => setFormData({...formData, meeting: e.target.value})}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
-            <Star size={14} className="text-rose-500"/> Memória Favorita Juntos?
-          </label>
-          <textarea 
-            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:bg-white focus:border-rose-500 outline-none transition-all"
-            placeholder="Ex: A nossa viagem a Paris..."
-            value={formData.memory}
-            onChange={(e) => setFormData({...formData, memory: e.target.value})}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
-            <Heart size={14} className="text-rose-500"/> O que mais amas nele(a)?
-          </label>
-          <input 
-            type="text" 
-            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-rose-500 outline-none transition-all"
-            placeholder="Ex: O sorriso, a forma como me apoia..."
-            value={formData.loveMost}
-            onChange={(e) => setFormData({...formData, loveMost: e.target.value})}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wide">
-            <Smile size={14} className="text-rose-500"/> Hobbies / Interesses?
-          </label>
-          <input 
-            type="text" 
-            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-rose-500 outline-none transition-all"
-            placeholder="Ex: Viajar, Body Pump, Cozinhar..."
-            value={formData.hobbies}
-            onChange={(e) => setFormData({...formData, hobbies: e.target.value})}
-          />
-        </div>
-
-        <div className="pt-6 border-t border-slate-100">
-            <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                    <PenLine size={12}/> Outros Detalhes (Opcional)
-                </label>
-                <textarea 
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm h-24 resize-none focus:border-rose-500 outline-none transition-colors"
-                    placeholder="Piadas internas, frases especiais, linguagem de amor ou qualquer outra coisa..."
-                    value={formData.extraDetails}
-                    onChange={(e) => setFormData({...formData, extraDetails: e.target.value})}
-                />
-            </div>
-        </div>
-      </div>
-
-      <div className="flex gap-4 pt-4 sticky bottom-0 bg-white pb-2">
-        <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-600">Voltar</button>
-        <button 
-          onClick={() => setStep(3)} 
-          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg uppercase tracking-widest text-xs hover:bg-black transition-all"
-        >
-          Próximo Passo
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderStep3 = () => (
-    <div className="space-y-8 animate-fadeIn">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-serif font-bold text-slate-900 italic">Estilo Musical</h2>
-        <p className="text-slate-500 text-sm">Ouve os exemplos e escolhe o teu favorito.</p>
-      </div>
-      
-      <div className="space-y-4">
-        {MUSIC_STYLES.map((s) => (
-          <div 
-            key={s.id} 
-            onClick={() => setFormData({...formData, style: s.id})}
-            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between group ${
-              formData.style === s.id 
-                ? 'border-rose-500 bg-rose-50 shadow-md ring-1 ring-rose-200' 
-                : 'border-slate-100 hover:border-slate-300 bg-white'
-            }`}
-          >
-            <div>
-              <h3 className="font-bold text-slate-800 text-sm">{s.name}</h3>
-              <p className="text-[11px] text-slate-500 mt-1">{s.desc}</p>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={(e) => { e.stopPropagation(); toggleAudio(s.id); }}
-                className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 hover:bg-rose-200 transition-colors"
-              >
-                {playing === s.id ? <Pause size={12} fill="currentColor"/> : <Play size={12} fill="currentColor"/>}
-              </button>
-              {formData.style === s.id && <div className="bg-rose-500 p-1 rounded-full"><Check size={10} className="text-white"/></div>}
-            </div>
-            <audio id={`audio-${s.id}`} src={s.url} />
-          </div>
-        ))}
-      </div>
-
-      <div className="flex gap-4 pt-4">
-        <button onClick={() => setStep(2)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-600">Voltar</button>
-        <button 
-          onClick={() => { if(playing) toggleAudio(playing); setStep(4); }} 
-          disabled={!formData.style} 
-          className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs"
-        >
-          Ver Resumo
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderStep4 = () => (
-    <div className="space-y-8 animate-fadeIn">
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-serif font-bold text-slate-900 italic">Resumo do Pedido</h2>
-        <p className="text-slate-500 text-sm">Confirma os detalhes antes de finalizar.</p>
-      </div>
-
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-6">
-        <div className="space-y-3 pb-4 border-b border-slate-100">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-500 font-medium">Música Personalizada</span>
-            <span className="font-bold text-slate-900">24,99€</span>
-          </div>
-          <div className="flex gap-2">
-             <span className="text-[10px] bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 flex items-center gap-1 font-bold"><MessageCircle size={10}/> WhatsApp</span>
-             <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded border border-blue-100 flex items-center gap-1 font-bold"><Mail size={10}/> E-mail</span>
-          </div>
-        </div>
-
-        {/* Upsell Card */}
-        <div 
-          onClick={() => setFormData({...formData, fastDelivery: !formData.fastDelivery})}
-          className={`p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${
-            formData.fastDelivery 
-              ? 'border-amber-400 bg-amber-50' 
-              : 'border-slate-100 hover:border-slate-300 bg-slate-50'
-          }`}
-        >
-          <div className="flex justify-between items-center z-10 relative">
-            <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
-              <Sparkles size={14} className={formData.fastDelivery ? "text-amber-500" : "text-slate-400"} /> 
-              Quero em 24 Horas
-            </span>
-            <span className="text-amber-600 font-bold text-sm">+4,99€</span>
-          </div>
-          <p className="text-[10px] text-slate-500 mt-1 ml-6">Passamos o pedido para a frente da fila.</p>
-        </div>
-
-        <div className="flex justify-between items-center pt-2">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total a Pagar</span>
-          <span className="text-3xl font-serif font-bold text-rose-600">{finalPrice.toFixed(2)}€</span>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <button 
-          onClick={handleStripe} 
-          className="w-full bg-green-600 hover:bg-green-700 text-white p-5 rounded-2xl font-bold shadow-xl shadow-green-100 transition-all transform active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
-        >
-          Finalizar Pedido <ShieldCheck size={16} />
-        </button>
-        <button onClick={() => setStep(3)} className="w-full text-slate-400 text-xs font-bold hover:text-slate-600 uppercase tracking-widest">Voltar</button>
-      </div>
-      
-      <p className="text-[10px] text-center text-slate-400 flex items-center justify-center gap-1 opacity-60">
-        <RotateCcw size={10} /> Ajustes incluídos até a letra ficar perfeita.
-      </p>
-    </div>
-  );
-
-  const renderStep5 = () => (
-    <div className="text-center space-y-8 py-10 animate-fadeIn px-4">
-      <div className="bg-green-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto text-green-600 shadow-xl">
-        <Check size={48} strokeWidth={3} />
-      </div>
-      <div className="space-y-2">
-        <h2 className="text-3xl font-serif font-bold text-slate-900 italic">Pagamento Confirmado!</h2>
-        <p className="text-slate-500 text-sm">A vossa história já está na nossa lista de produção.</p>
-      </div>
-      
-      <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200 shadow-sm">
-         <p className="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Entrega Estimada</p>
-         <p className="text-2xl font-bold text-slate-900 mb-6">{formData.fastDelivery ? 'Menos de 24 Horas' : 'Até 72 Horas'}</p>
-         <div className="flex justify-center gap-3">
-            <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><MessageCircle size={14} className="text-green-500"/> WhatsApp</span>
-            <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><Mail size={14} className="text-blue-500"/> Email</span>
-         </div>
-      </div>
-      
-      <button onClick={onBack} className="text-rose-500 font-bold text-xs uppercase tracking-widest hover:underline">Voltar ao Início</button>
-    </div>
-  );
+  // --- ROTEAMENTO ---
+  if (view === 'wizard') return <Wizard onBack={() => setView('landing')} />;
+  if (view === 'contact') return <ContactPage onBack={() => setView('landing')} />;
+  if (view === 'terms') return <TermsPage onBack={() => setView('landing')} />;
+  if (view === 'privacy') return <PrivacyPage onBack={() => setView('landing')} />;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
-        
-        {/* Barra de Progresso */}
-        {step < 5 && (
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-50">
-            <div className="h-full bg-rose-500 transition-all duration-700 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
-          </div>
-        )}
+    <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-rose-100 selection:text-rose-900">
+      
+      <audio ref={heroAudioRef} src={heroAudio} onEnded={() => setHeroIsPlaying(false)} />
 
-        <div className="p-8 md:p-12">
-          {step === 1 && renderStep1()} 
-          {step === 2 && renderStep2()}
-          {step === 3 && renderStep3()} 
-          {step === 4 && renderStep4()}
-          {step === 5 && renderStep5()}
+      {/* --- POPUP DE PARIS --- */}
+      {showPopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setShowPopup(false)}></div>
+          <div className="relative w-full max-w-lg bg-[#fffbf0] rounded-xl shadow-2xl transform rotate-1 transition-all animate-slide-up overflow-hidden border-4 border-white">
+            <button onClick={() => setShowPopup(false)} className="absolute top-2 right-2 z-20 bg-black/10 hover:bg-black/20 p-1 rounded-full transition-colors"><X size={20} className="text-slate-600" /></button>
+            <div className="flex flex-col">
+              <div className="h-40 bg-slate-200 relative overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1000&auto=format&fit=crop" alt="Paris" className="w-full h-full object-cover"/>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#fffbf0] to-transparent"></div>
+                <div className="absolute top-4 right-12 bg-white p-2 shadow-md rotate-12 border-2 border-dotted border-slate-300"><Stamp className="text-rose-400 opacity-80" size={32} /></div>
+              </div>
+              <div className="px-8 pb-8 pt-2 text-center relative">
+                <div className="flex justify-center mb-2">
+                   <div className="bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-amber-200">Concurso Exclusivo</div>
+                </div>
+                <h2 className="text-3xl font-serif font-bold text-slate-900 mb-2 leading-tight">Ganha uma Viagem a <span className="text-rose-600 italic">Paris!</span></h2>
+                <p className="text-slate-600 text-sm mb-6 leading-relaxed">A história de amor mais bonita das primeiras <strong className="text-slate-900">100 encomendas</strong> ganha voo + hotel para duas pessoas.</p>
+                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
+                   <div className="flex justify-between text-xs font-bold mb-2"><span className="text-rose-500 flex items-center gap-1"><Clock size={12}/> Quase a esgotar</span><span className="text-slate-700">{VENDAS_ATUAIS}/100 Vendidos</span></div>
+                   <div className="h-3 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-rose-500 to-amber-500" style={{ width: `${PERCENTAGEM}%` }}></div></div>
+                </div>
+                <Button onClick={startWizard} pulse fullWidth className="bg-slate-900 hover:bg-slate-800 text-white shadow-xl py-4">Participar Agora</Button>
+                <p className="text-[10px] text-slate-400 mt-3">Ao clicar, começas a criar a tua música e habilitas-te automaticamente.</p>
+              </div>
+            </div>
+            <div className="absolute bottom-0 left-0 w-full h-2 bg-[repeating-linear-gradient(45deg,#ef4444,#ef4444_10px,#fff_10px,#fff_20px,#3b82f6,#3b82f6_30px,#fff_30px,#fff_40px)]"></div>
+          </div>
         </div>
+      )}
+
+      {/* HEADER */}
+      <header className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-rose-100 shadow-sm h-16">
+        <div className="container mx-auto px-4 h-full flex items-center justify-between max-w-7xl">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('landing')}>
+            <div className="bg-rose-500 p-1.5 rounded-lg text-white"><Music size={20} fill="currentColor" /></div>
+            <span className="font-serif font-bold text-xl tracking-tight text-slate-800">Melodia do Amor</span>
+          </div>
+          <div className="hidden md:flex"><Countdown /></div>
+          <button onClick={scrollToPricing} className="md:hidden bg-rose-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">Criar Agora</button>
+        </div>
+        <div className="md:hidden bg-rose-50 py-2 flex justify-center border-b border-rose-100"><Countdown /></div>
+      </header>
+
+      {/* HERO SECTION */}
+      <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[30rem] h-[30rem] bg-rose-100/50 rounded-full blur-3xl -z-10 animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[20rem] h-[20rem] bg-blue-100/50 rounded-full blur-3xl -z-10"></div>
+        <div className="container mx-auto px-4 relative z-10 max-w-6xl">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20">
+            <div className="flex-1 text-center lg:text-left space-y-8 max-w-xl">
+              <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full text-sm font-bold border border-rose-100 uppercase tracking-wide shadow-sm hover:scale-105 transition-transform">
+                <Heart size={14} fill="currentColor" /><span>Oferta Dia dos Namorados</span>
+              </div>
+              <h1 className="text-4xl lg:text-6xl font-serif font-bold leading-[1.1] text-gray-900 tracking-tight">
+                A vossa história merece uma <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">banda sonora única.</span>
+              </h1>
+              <p className="text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                Surpreende a tua cara-metade com uma música personalizada feita à medida. Tu dás-nos as memórias, nós criamos a emoção.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-5 justify-center lg:justify-start pt-2">
+                <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl shadow-rose-500/20 bg-rose-600 hover:bg-rose-700">
+                  Criar a Minha Canção
+                </Button>
+                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium bg-white/50 px-3 py-2 rounded-xl border border-white/50 backdrop-blur-sm">
+                  <div className="flex -space-x-3">
+                    {[1,2,3,4].map(i => (<img key={i} src={`https://picsum.photos/40/40?random=${i}`} className="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="User" />))}
+                  </div>
+                  <div className="flex flex-col leading-none gap-0.5"><span className="font-bold text-gray-900">+2500 casais</span><span className="text-xs">felizes</span></div>
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 w-full max-w-[500px] lg:max-w-[550px] relative mt-8 lg:mt-0">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-all duration-700 border-[6px] border-white group">
+                <img src={heroBg} alt="Casal feliz" className={`w-full h-auto object-cover aspect-[4/5] lg:aspect-[3/4] transition-transform duration-[20s] ease-linear ${heroIsPlaying ? 'scale-110' : 'scale-100 group-hover:scale-105'}`}/>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+                <div className="absolute bottom-6 left-6 right-6 z-20">
+                  <button onClick={toggleHeroAudio} className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-4 flex items-center gap-4 shadow-xl border border-white/40 hover:bg-white transition-all cursor-pointer group/player text-left">
+                    <div className={`relative w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all duration-300 ${heroIsPlaying ? 'bg-rose-500 scale-105' : 'bg-rose-600 group-hover/player:scale-110'}`}>
+                      {heroIsPlaying ? (<Pause size={20} fill="currentColor" />) : (<Play size={20} fill="currentColor" className="ml-1" />)}
+                      {heroIsPlaying && (<span className="absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75 animate-ping"></span>)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                         <p className="font-bold text-base text-gray-900 truncate">Exemplo: A Nossa História</p>
+                         {heroIsPlaying && (
+                           <div className="flex items-end gap-1 h-4">
+                             <span className="w-1 bg-rose-500 rounded-full animate-[bounce_1s_infinite]"></span><span className="w-1 bg-rose-500 rounded-full animate-[bounce_1.2s_infinite] h-3"></span><span className="w-1 bg-rose-500 rounded-full animate-[bounce_0.8s_infinite] h-2"></span><span className="w-1 bg-rose-500 rounded-full animate-[bounce_1.1s_infinite]"></span>
+                           </div>
+                         )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-gray-500 font-mono">{heroIsPlaying ? 'A Tocar...' : 'Ouvir Exemplo'}</span>
+                        <div className="flex-1 bg-gray-200 rounded-full h-1"><div className={`bg-rose-500 h-1 rounded-full transition-all duration-1000 ${heroIsPlaying ? 'w-full opacity-100 animate-pulse' : 'w-0 opacity-0'}`}></div></div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SOCIAL PROOF */}
+      <section className="bg-gray-50 py-12 border-y border-gray-100">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">Avaliado com 4.9/5 estrelas por casais em Portugal</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {REVIEWS.map((review, i) => (
+              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div className="flex gap-1 text-yellow-400 mb-3">{[...Array(review.stars)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}</div>
+                <p className="text-gray-700 italic mb-4 leading-relaxed">"{review.text}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center text-rose-700 font-bold text-sm">{review.name.charAt(0)}</div>
+                  <span className="font-bold text-sm text-gray-900">{review.name}</span>
+                  <CheckCircle2 size={16} className="text-blue-500 ml-auto" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* COMO FUNCIONA */}
+      <section className="py-24">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Como criamos a magia?</h2>
+            <p className="text-gray-600 text-lg">Tu contas a história, nós transformamos em melodia. O processo é simples e rápido.</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
+            <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-transform duration-300">
+              <div className="w-24 h-24 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Heart size={40} /></div>
+              <h3 className="text-xl font-bold mb-3">1. Partilha a História</h3>
+              <p className="text-gray-600">Preenche um formulário simples com os vossos nomes, memórias e o estilo musical que mais gostam.</p>
+            </div>
+            <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-transform duration-300">
+              <div className="w-24 h-24 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Music size={40} /></div>
+              <h3 className="text-xl font-bold mb-3">2. Produção Profissional</h3>
+              <p className="text-gray-600">Os nossos artistas e tecnologia compõem uma letra emocionante e uma melodia única baseada nos teus detalhes.</p>
+            </div>
+            <div className="bg-white p-8 rounded-2xl text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-transform duration-300">
+              <div className="w-24 h-24 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Gift size={40} /></div>
+              <h3 className="text-xl font-bold mb-3">3. Recebe em 72h</h3>
+              <p className="text-gray-600">Recebe o ficheiro MP3 e a letra no teu e-mail. Pronta a oferecer e a emocionar!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AUDIO SAMPLES */}
+      <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div className="container mx-auto px-4 relative z-10 max-w-6xl">
+          <div className="flex flex-col lg:flex-row gap-16 items-center">
+            <div className="flex-1 w-full"><AudioPlayer samples={SAMPLES} /></div>
+            <div className="flex-1 space-y-8">
+              <h2 className="text-3xl md:text-5xl font-serif font-bold leading-tight">Mais do que uma música, <span className="text-rose-400">uma memória eterna.</span></h2>
+              <ul className="space-y-6">
+                {[
+                  { icon: Clock, title: "Entrega em 72 Horas", desc: "Recebe a tua música pronta e masterizada no teu email em 3 dias." },
+                  { icon: Music, title: "Qualidade de Estúdio", desc: "Produção profissional com vozes claras e instrumentos envolventes." },
+                  { icon: CheckCircle2, title: "100% Personalizado", desc: "A letra fala sobre VÓS. Os vossos nomes, o vosso lugar especial, a vossa data." },
+                  { icon: Trophy, title: "Habilita-te a Paris", desc: "A tua história entra automaticamente no concurso para a viagem de sonho." }
+                ].map((item, i) => (
+                  <li key={i} className="flex gap-5">
+                    <div className="bg-rose-600/20 p-3 rounded-xl h-fit text-rose-400 border border-rose-500/20"><item.icon size={24} /></div>
+                    <div><h4 className="font-bold text-xl mb-1 text-white">{item.title}</h4><p className="text-gray-400 leading-relaxed">{item.desc}</p></div>
+                  </li>
+                ))}
+              </ul>
+              <div className="pt-6"><Button onClick={startWizard} variant="primary" className="shadow-rose-500/50 py-4 px-8 text-lg bg-rose-600 hover:bg-rose-700">Começar a Minha Música</Button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PRICING SECTION */}
+      <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-transform duration-500">
+            <div className="flex-1 p-10 md:p-16 flex flex-col justify-center bg-rose-600 text-white relative overflow-hidden">
+               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 to-rose-700"></div>
+               <div className="relative z-10">
+                 <h3 className="text-2xl font-bold mb-2 text-rose-100">Oferta Limitada</h3>
+                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">Dia dos Namorados</h2>
+                 <p className="text-rose-100 mb-8 text-lg leading-relaxed">O preço vai subir assim que o contador chegar a zero. Aproveita agora o preço promocional de lançamento!</p>
+                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                   <div className="flex items-center gap-4"><div className="bg-white/20 p-2 rounded-full"><Clock className="text-white" size={24} /></div><div><p className="text-xs text-rose-100 uppercase font-bold tracking-wider">Entrega Garantida</p><p className="font-bold text-xl">Em 72 Horas</p></div></div>
+                 </div>
+               </div>
+            </div>
+            <div className="flex-1 p-10 md:p-16">
+              <div className="flex items-center justify-between mb-2"><span className="text-gray-400 line-through text-xl">€99,00</span><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">70% Desconto</span></div>
+              <div className="flex items-baseline gap-1 mb-8"><span className="text-6xl font-bold text-rose-600 tracking-tight">29,99€</span><span className="text-gray-500 font-medium">/ música</span></div>
+              <ul className="space-y-4 mb-10">
+                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Standard (72h)", "Participação Concurso Paris"].map((feat, i) => (
+                  <li key={i} className="flex items-center gap-3 text-gray-700 text-lg"><div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600 shrink-0" /></div><span>{feat}</span></li>
+                ))}
+              </ul>
+              <Button fullWidth pulse onClick={startWizard} className="py-4 text-lg bg-rose-600 hover:bg-rose-700 shadow-xl shadow-rose-500/20">Criar Música Agora</Button>
+              <p className="text-center text-xs text-gray-400 mt-6">Pagamento 100% Seguro via Stripe. Satisfação Garantida.</p>
+              <div className="mt-8 flex justify-center gap-3 opacity-50 grayscale hover:grayscale-0 transition-all duration-300">
+                 <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-200">MB WAY</div>
+                 <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-200">MULTIBANCO</div>
+                 <div className="h-8 bg-gray-100 px-3 rounded flex items-center font-bold text-xs text-gray-600 border border-gray-200">VISA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-16"><h2 className="text-3xl font-serif font-bold text-gray-900">Perguntas Frequentes</h2></div>
+          <Faq items={FAQS} />
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="bg-gray-50 border-t border-gray-200 py-16 mt-24">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-3">
+              <div className="bg-rose-600 p-2 rounded-xl text-white shadow-lg shadow-rose-500/20"><Music size={20} fill="currentColor" /></div>
+              <span className="font-serif font-bold text-xl text-gray-900">Melodia do Amor</span>
+            </div>
+            <div className="text-sm text-gray-500 flex flex-wrap justify-center gap-8 font-medium cursor-pointer">
+              <span onClick={() => { window.scrollTo(0,0); setView('terms'); }} className="hover:text-rose-600 transition-colors">Termos e Condições</span>
+              <span onClick={() => { window.scrollTo(0,0); setView('privacy'); }} className="hover:text-rose-600 transition-colors">Política de Privacidade</span>
+              <span onClick={() => { window.scrollTo(0,0); setView('contact'); }} className="hover:text-rose-600 transition-colors">Contactos</span>
+            </div>
+            <div className="text-xs text-gray-400">© {new Date().getFullYear()} Melodia do Amor Portugal.</div>
+          </div>
+        </div>
+      </footer>
+      
+      {/* STICKY MOBILE CTA */}
+      <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
+         <Button fullWidth className="shadow-2xl border border-white/20 py-4 text-lg bg-rose-600 hover:bg-rose-700" onClick={startWizard}>Criar Música (29,99€)</Button>
       </div>
+
     </div>
   );
-};
+}
+
+export default App;
