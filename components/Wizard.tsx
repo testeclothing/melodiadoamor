@@ -4,8 +4,8 @@ import {
   Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine
 } from 'lucide-react';
 
-// --- IMPORTAÇÃO DOS ÁUDIOS (CORRIGIDO CONFORME O TEU PRINT) ---
-import teddyAudio from '../assets/teddy.mp3';     // Antes era demo.mp3
+// --- IMPORTAÇÃO DOS ÁUDIOS (ALTERADO TEDDY PARA SOFIA) ---
+import sofiaAudio from '../assets/sofia.mp3';     
 import ivandroAudio from '../assets/ivandro.mp3'; 
 import vitorAudio from '../assets/vitor.mp3';     
 
@@ -18,8 +18,8 @@ const MUSIC_STYLES = [
   { 
     id: 'soul', 
     name: 'Alma & Emoção', 
-    desc: 'Estilo Teddy Swims. Voz forte e sentida.', 
-    url: teddyAudio 
+    desc: 'Estilo Sofia. Voz forte e sentida.', // Atualizei a descrição também
+    url: sofiaAudio 
   },
   { 
     id: 'rock', 
