@@ -30,20 +30,20 @@ const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
 const SAMPLES: SongSample[] = [
   { 
     id: 1, 
-    title: "A Nossa Viagem a Paris", 
-    genre: "Pop Acústico (Estilo Vitor)", 
+    title: "Margarida", 
+    genre: "Pop Acústico", 
     url: vitorAudio // Alterado para o ficheiro local
   },
   { 
     id: 2, 
-    title: "5 Anos de Amor", 
-    genre: "Alma & Emoção (Estilo Sofia)", 
+    title: "Sabia quem eras", 
+    genre: "Alma & Emoção", 
     url: sofiaAudio // Alterado para o ficheiro local
   },
   { 
     id: 3, 
-    title: "O Primeiro Beijo no Cais", 
-    genre: "R&B Romântico (Estilo Ivandro)", 
+    title: "Lugar Seguro", 
+    genre: "R&B Romântico", 
     url: ivandroAudio // Alterado para o ficheiro local
   },
 ];
