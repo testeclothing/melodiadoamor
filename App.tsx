@@ -72,15 +72,27 @@ function App() {
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
 
+  // --- NOVA LÓGICA: DETETAR RETORNO DO PAGAMENTO ---
+  useEffect(() => {
+    // Verifica se existe ?status=success no URL (vindo do Stripe)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('status') === 'success') {
+      setView('wizard'); // Abre o Wizard imediatamente
+      setShowPopup(false); // Garante que o popup não incomoda
+    }
+  }, []);
+  // ------------------------------------------------
+
   // Efeito para mostrar o Popup após 5 segundos
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (view === 'landing') {
+    const urlParams = new URLSearchParams(window.location.search);
+    // Só mostra o popup se NÃO estivermos no modo sucesso
+    if (view === 'landing' && urlParams.get('status') !== 'success') {
+      const timer = setTimeout(() => {
         setShowPopup(true);
-      }
-    }, 5000); 
-
-    return () => clearTimeout(timer);
+      }, 5000); 
+      return () => clearTimeout(timer);
+    }
   }, [view]);
 
   const toggleHeroAudio = () => {
