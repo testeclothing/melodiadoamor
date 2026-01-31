@@ -189,7 +189,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   );
 
   const renderStep2 = () => (
-    <div className="space-y-6 animate-fadeIn max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+    <div className="space-y-6 animate-fadeIn">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-serif font-bold text-slate-900 italic">A Vossa História</h2>
         <p className="text-slate-500 text-sm">Responde ao que quiseres. Quanto mais detalhes, melhor.</p>
@@ -412,16 +412,17 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
-      <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
+      <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border border-slate-100 relative flex flex-col overflow-hidden">
         
         {/* Barra de Progresso */}
         {step < 5 && (
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-50">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-50 z-20">
             <div className="h-full bg-rose-500 transition-all duration-700 ease-out" style={{ width: `${(step / 4) * 100}%` }}></div>
           </div>
         )}
 
-        <div className="p-8 md:p-12">
+        {/* ÁREA DE CONTEÚDO COM SCROLL PARA MOBILE */}
+        <div className="p-6 md:p-12 max-h-[85vh] overflow-y-auto custom-scrollbar">
           {step === 1 && renderStep1()} 
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()} 
