@@ -1,328 +1,204 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ChevronRight, Check, Sparkles, Volume2, MessageCircle, Mail, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Check, Sparkles, Clock, Lightbulb, MessageCircleHeart, Play, Pause, MessageCircle, Mail, RotateCcw } from 'lucide-react';
 
 interface WizardProps {
   onBack: () => void;
 }
 
+const MUSIC_STYLES = [
+  { id: 'soul', name: 'Alma & Intensidade', desc: 'Vibe Teddy Swims. Visceral.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+  { id: 'rock', name: 'Eterno Rock', desc: 'Vibe Bryan Adams. Lealdade.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+  { id: 'pop', name: 'Cinema & Romance', desc: 'Vibe Lady Gaga. Épico.', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' }
+];
+
 export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [step, setStep] = useState(1);
-  const totalSteps = 11;
-  const progress = Math.round((step / totalSteps) * 100);
-
+  const [playing, setPlaying] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    voice: '',
-    senderName: '',
-    recipientName: '',
-    relationship: '',
-    style: '',
-    mood: '',
-    pace: '',
-    howMet: '',
-    moments: '',
-    insideJokes: '',
-    mainMessage: '',
-    deliverySpeed: 'standard'
+    names: '', meeting: '', memory: '', loveMost: '', hobbies: '', loveLanguage: '', extra: '', style: '', fastDelivery: false
   });
+
+  const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
 
   // Lógica de Retorno do Stripe
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('status') === 'success') {
-      setStep(12); // Ecrã de Sucesso Final
+      setStep(5);
       const amt = urlParams.get('amt') || '24.99';
       if ((window as any).ttq) (window as any).ttq.track('CompletePayment', { value: parseFloat(amt), currency: 'EUR' });
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
-  const handleNext = () => setStep(s => Math.min(s + 1, totalSteps));
-  const handleBack = () => step === 1 ? onBack() : setStep(s => s - 1);
-
-  const handleFinalCheckout = () => {
+  const handleStripe = () => {
     const L_STD = "https://buy.stripe.com/test_5kQbJ30KG8kg7NUeVofUQ00";
     const L_FAST = "https://buy.stripe.com/test_8x24gB0KGaso7NU00ufUQ01";
-    const target = formData.deliverySpeed === 'fast' ? L_FAST : L_STD;
-    
-    if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: formData.deliverySpeed === 'fast' ? 29.98 : 24.99, currency: 'EUR' });
-    window.location.href = target;
+    if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
+    window.location.href = formData.fastDelivery ? L_FAST : L_STD;
   };
 
-  // --- COMPONENTES DE OPÇÃO (ESTILO TRUE LOVE SONG) ---
-  const OptionCard = ({ label, selected, onClick }: any) => (
-    <button 
-      onClick={onClick}
-      className={`w-full p-5 rounded-xl border-2 text-left transition-all flex items-center justify-between ${
-        selected ? 'border-rose-500 bg-rose-500/10 text-white' : 'border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-700'
-      }`}
-    >
-      <span className="font-medium">{label}</span>
-      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selected ? 'border-rose-500 bg-rose-500' : 'border-zinc-700'}`}>
-        {selected && <Check size={12} className="text-white" />}
+  const toggleAudio = (id: string) => {
+    const audios = document.getElementsByTagName('audio');
+    for (let i = 0; i < audios.length; i++) if (audios[i].id !== `audio-${id}`) { audios[i].pause(); audios[i].currentTime = 0; }
+    const current = document.getElementById(`audio-${id}`) as HTMLAudioElement;
+    if (current) { if (playing === id) { current.pause(); setPlaying(null); } else { current.play(); setPlaying(id); } }
+  };
+
+  // --- RENDERS DOS 4 PASSOS ---
+
+  const renderStep1 = () => (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Quem são os protagonistas?</h2>
+        <p className="text-slate-500 text-sm mt-1 text-balance">Diz-nos os nomes que vão imortalizar esta canção.</p>
       </div>
-    </button>
+      <div className="space-y-4">
+        <input 
+          type="text" 
+          className="w-full p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-500 outline-none transition-all font-medium"
+          placeholder="Ex: Carlos e Carla"
+          value={formData.names}
+          onChange={(e) => setFormData({...formData, names: e.target.value})}
+        />
+        <button onClick={() => setStep(2)} disabled={!formData.names} className="w-full bg-rose-500 hover:bg-rose-600 text-white p-4 rounded-xl font-bold disabled:opacity-50 transition-all shadow-lg shadow-rose-500/20">Continuar</button>
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="space-y-6 animate-fadeIn max-h-[70vh] overflow-y-auto pr-1">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">A Vossa História</h2>
+        <p className="text-slate-500 text-sm mt-1">Tu dás os detalhes, nós criamos a alma.</p>
+      </div>
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Onde se conheceram?</label>
+          <input type="text" className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none focus:bg-white" placeholder="Ex: Escola básica / No ginásio" value={formData.meeting} onChange={(e) => setFormData({...formData, meeting: e.target.value})} />
+        </div>
+        <div className="space-y-1">
+          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Memória favorita?</label>
+          <textarea className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm h-20 outline-none resize-none focus:bg-white" placeholder="Ex: A viagem à Figueira da Foz..." value={formData.memory} onChange={(e) => setFormData({...formData, memory: e.target.value})} />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <input type="text" className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none" placeholder="O que mais amas nele/a?" value={formData.loveMost} onChange={(e) => setFormData({...formData, loveMost: e.target.value})} />
+          <input type="text" className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none" placeholder="Linguagem de amor?" value={formData.loveLanguage} onChange={(e) => setFormData({...formData, loveLanguage: e.target.value})} />
+        </div>
+        <input type="text" className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none" placeholder="Piada interna ou extra (Opcional)" value={formData.extra} onChange={(e) => setFormData({...formData, extra: e.target.value})} />
+      </div>
+      <div className="flex gap-4 pt-2">
+        <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-sm">Voltar</button>
+        <button onClick={() => setStep(3)} disabled={!formData.meeting || !formData.memory} className="flex-1 bg-rose-500 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-500/20">Avançar</button>
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800">Escolhe a Vibe</h2>
+        <p className="text-slate-500 text-sm mt-1 italic">Ouve os exemplos e escolhe o teu favorito.</p>
+      </div>
+      <div className="space-y-3">
+        {MUSIC_STYLES.map((s) => (
+          <div key={s.id} onClick={() => setFormData({...formData, style: s.id})} className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${formData.style === s.id ? 'border-rose-500 bg-rose-50' : 'border-slate-100 hover:border-slate-200'}`}>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-bold text-slate-900">{s.name}</h3>
+              {formData.style === s.id && <Check className="text-rose-500" size={20} />}
+            </div>
+            <button onClick={(e) => { e.stopPropagation(); toggleAudio(s.id); }} className="flex items-center gap-2 text-[10px] font-bold text-rose-600 bg-white border border-rose-100 px-3 py-1.5 rounded-full shadow-sm">
+              {playing === s.id ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
+              {playing === s.id ? 'Parar Exemplo' : 'Ouvir Exemplo'}
+              <audio id={`audio-${s.id}`} src={s.url} />
+            </button>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-4">
+        <button onClick={() => setStep(2)} className="px-4 text-slate-400 font-bold text-sm">Voltar</button>
+        <button onClick={() => setStep(4)} disabled={!formData.style} className="flex-1 bg-rose-500 text-white p-4 rounded-xl font-bold shadow-lg shadow-rose-500/20">Ver Resumo</button>
+      </div>
+    </div>
+  );
+
+  const renderStep4 = () => (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-slate-800 italic font-serif">Resumo do Pedido</h2>
+        <p className="text-slate-500 text-sm mt-1">Confirma os detalhes antes de selarmos o pacto.</p>
+      </div>
+      <div className="bg-slate-50 p-6 rounded-2xl space-y-4 border border-slate-100 shadow-inner">
+        <div className="flex justify-between border-b pb-3 text-sm">
+          <span className="text-slate-500 italic">WhatsApp + E-mail (MP3 HD)</span>
+          <Check size={16} className="text-green-500" />
+        </div>
+        <div className="flex justify-between border-b pb-3">
+          <span className="text-slate-500 text-sm">Música Personalizada</span>
+          <span className="font-bold text-slate-800">24,99€</span>
+        </div>
+        <label className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.fastDelivery ? 'border-amber-400 bg-amber-50 shadow-md' : 'border-slate-200 bg-white'}`}>
+          <input type="checkbox" checked={formData.fastDelivery} onChange={(e) => setFormData({...formData, fastDelivery: e.target.checked})} className="mt-1 w-4 h-4 accent-amber-500" />
+          <div className="flex-1">
+            <div className="flex justify-between font-bold text-sm">
+                <span><Sparkles size={14} className="inline mr-1 text-amber-500" />Quero em 24 Horas</span>
+                <span className="text-amber-600">+4,99€</span>
+            </div>
+            <p className="text-[10px] text-slate-400 uppercase tracking-tighter">O teu pedido passa para o topo da produção.</p>
+          </div>
+        </label>
+        <div className="flex justify-between items-center pt-2">
+          <span className="font-bold text-slate-400 uppercase text-xs tracking-widest">Total</span>
+          <span className="font-bold text-rose-600 text-3xl italic font-serif tracking-tighter">{finalPrice.toFixed(2)}€</span>
+        </div>
+      </div>
+      <div className="flex flex-col gap-4">
+        <button onClick={handleStripe} className="w-full bg-slate-900 hover:bg-black text-white p-5 rounded-2xl font-bold shadow-2xl transition-all transform active:scale-95 text-lg">Selar o Pacto Agora</button>
+        <button onClick={() => setStep(3)} className="text-slate-400 text-sm hover:underline">Voltar</button>
+      </div>
+      <p className="text-[10px] text-center text-slate-400 flex items-center justify-center gap-1 opacity-60">
+        <RotateCcw size={10} /> Ajustes de letra incluídos. Só paramos quando for perfeita.
+      </p>
+    </div>
+  );
+
+  const renderStep5 = () => (
+    <div className="text-center space-y-8 py-12 animate-fadeIn">
+      <div className="bg-green-500 w-24 h-24 rounded-full flex items-center justify-center mx-auto text-white shadow-xl shadow-green-100 animate-bounce">
+        <Check size={48} strokeWidth={3} />
+      </div>
+      <div className="space-y-2">
+        <h2 className="text-3xl font-serif font-bold italic text-slate-900">Veredito Selado!</h2>
+        <p className="text-slate-400 font-medium">A vossa música entrou em produção oficial.</p>
+      </div>
+      <div className="bg-slate-900 text-white p-8 rounded-3xl space-y-4 shadow-3xl">
+         <div className="flex justify-center gap-4">
+            <MessageCircle className="text-green-500" /> <Mail className="text-rose-400" />
+         </div>
+         <p className="text-sm font-medium">Receberás o link de download em menos de {formData.fastDelivery ? '24' : '72'} horas.</p>
+      </div>
+      <button onClick={onBack} className="text-slate-400 hover:text-slate-900 transition-colors text-sm font-bold uppercase tracking-widest">Voltar ao Início</button>
+    </div>
   );
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans flex flex-col">
-      
-      {/* HEADER / PROGRESS BAR */}
-      {step < 12 && (
-        <div className="p-4 md:p-8 max-w-4xl mx-auto w-full">
-          <div className="flex items-center justify-between mb-4">
-            <button onClick={handleBack} className="p-2 hover:bg-zinc-900 rounded-full transition-colors">
-              <ArrowLeft size={24} />
-            </button>
-            <div className="text-rose-500 font-bold text-sm tracking-tighter italic">Melodia do Amor</div>
-            <div className="relative w-10 h-10 flex items-center justify-center">
-                <svg className="w-full h-full transform -rotate-90">
-                    <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-zinc-800" />
-                    <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-rose-500" strokeDasharray={113} strokeDashoffset={113 - (113 * progress) / 100} strokeLinecap="round" />
-                </svg>
-                <span className="absolute text-[10px] font-bold">{progress}%</span>
-            </div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans selection:bg-rose-100">
+      <div className="bg-white w-full max-w-lg rounded-[2rem] shadow-[0_30px_70px_rgba(0,0,0,0.1)] overflow-hidden border border-slate-100 relative">
+        
+        {step < 5 && (
+          <div className="bg-slate-900 p-5 flex items-center text-white">
+            <button onClick={onBack} className="p-2 hover:bg-slate-800 rounded-full transition-colors"><ArrowLeft size={20} /></button>
+            <div className="flex-1 text-center font-bold text-xs uppercase tracking-[0.2em]">Passo {step} de 4</div>
+            <div className="w-10"></div>
           </div>
-          <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
-            <div className="h-full bg-rose-500 transition-all duration-500" style={{ width: `${progress}%` }}></div>
-          </div>
-        </div>
-      )}
-
-      {/* CONTEÚDO PRINCIPAL (CENTRADO) */}
-      <div className="flex-1 flex items-center justify-center p-6 md:p-12">
-        <div className="max-w-xl w-full space-y-8 animate-fadeIn">
-          
-          {/* STEP 1: VOZ */}
-          {step === 1 && (
-            <>
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 tracking-tight">Em que voz deve ser a canção?</h2>
-              <div className="space-y-3">
-                {['Voz Masculina', 'Voz Feminina', 'Prefiro não escolher'].map(v => (
-                  <OptionCard key={v} label={v} selected={formData.voice === v} onClick={() => { setFormData({...formData, voice: v}); handleNext(); }} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* STEP 2: NOME DO UTILIZADOR */}
-          {step === 2 && (
-            <>
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 tracking-tight">Insere o teu nome</h2>
-              <input 
-                autoFocus
-                type="text"
-                className="w-full bg-zinc-900 border-2 border-zinc-800 p-5 rounded-xl text-xl text-center focus:border-rose-500 outline-none transition-all"
-                placeholder="O teu nome"
-                value={formData.senderName}
-                onChange={(e) => setFormData({...formData, senderName: e.target.value})}
-              />
-              <button onClick={handleNext} disabled={!formData.senderName} className="w-full bg-rose-600 hover:bg-rose-700 p-5 rounded-xl font-bold transition-all disabled:opacity-30">Próximo</button>
-            </>
-          )}
-
-          {/* STEP 3: NOME DO DESTINATÁRIO */}
-          {step === 3 && (
-            <>
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 tracking-tight">Para quem é a canção?</h2>
-              <p className="text-zinc-500 text-center mb-10">O nome da tua cara-metade que aparecerá na letra.</p>
-              <input 
-                autoFocus
-                type="text"
-                className="w-full bg-zinc-900 border-2 border-zinc-800 p-5 rounded-xl text-xl text-center focus:border-rose-500 outline-none"
-                placeholder="Nome dela ou dele"
-                value={formData.recipientName}
-                onChange={(e) => setFormData({...formData, recipientName: e.target.value})}
-              />
-              <button onClick={handleNext} disabled={!formData.recipientName} className="w-full bg-rose-600 p-5 rounded-xl font-bold mt-4">Próximo</button>
-            </>
-          )}
-
-          {/* STEP 4: RELAÇÃO */}
-          {step === 4 && (
-            <>
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Qual é a vossa relação?</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {['Esposa', 'Marido', 'Namorada', 'Namorado', 'Noiva', 'Outro'].map(r => (
-                  <button 
-                    key={r}
-                    onClick={() => { setFormData({...formData, relationship: r}); handleNext(); }}
-                    className={`p-4 rounded-xl border-2 font-medium transition-all ${formData.relationship === r ? 'border-rose-500 bg-rose-500/20' : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-600'}`}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* STEP 5: ESTILO MUSICAL */}
-          {step === 5 && (
-            <>
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Escolhe o estilo musical</h2>
-              <div className="flex flex-wrap justify-center gap-3">
-                {['Soul Intenso', 'Rock Eterno', 'Pop Cinema', 'Acústico', 'R&B Moderno'].map(s => (
-                  <button 
-                    key={s}
-                    onClick={() => { setFormData({...formData, style: s}); handleNext(); }}
-                    className={`px-6 py-3 rounded-full border-2 transition-all ${formData.style === s ? 'border-rose-500 bg-rose-500 text-white' : 'border-zinc-800 text-zinc-400'}`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* STEP 6: MOOD */}
-          {step === 6 && (
-            <>
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Qual deve ser o "feeling"?</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {['Romântico', 'Alegre', 'Nostálgico', 'Profundo'].map(m => (
-                  <OptionCard key={m} label={m} selected={formData.mood === m} onClick={() => { setFormData({...formData, mood: m}); handleNext(); }} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* STEP 7: RITMO */}
-          {step === 7 && (
-            <>
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">Velocidade da música</h2>
-              <div className="space-y-3">
-                {['Lenta (Emocional)', 'Normal (Rádio)', 'Rápida (Energética)'].map(p => (
-                  <OptionCard key={p} label={p} selected={formData.pace === p} onClick={() => { setFormData({...formData, pace: p}); handleNext(); }} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* STEP 8: HISTÓRIA (COMO SE CONHECERAM) */}
-          {step === 8 && (
-            <>
-              <h2 className="text-3xl font-bold mb-4">Onde tudo começou?</h2>
-              <p className="text-zinc-500 mb-6 font-medium">Onde ou quando é que se conheceram?</p>
-              <textarea 
-                autoFocus
-                className="w-full bg-zinc-900 border-2 border-zinc-800 p-5 rounded-xl h-32 focus:border-rose-500 outline-none"
-                placeholder="Ex: No ginásio em 2018..."
-                value={formData.howMet}
-                onChange={(e) => setFormData({...formData, howMet: e.target.value})}
-              />
-              <button onClick={handleNext} disabled={!formData.howMet} className="w-full bg-rose-600 p-5 rounded-xl font-bold">Próximo</button>
-            </>
-          )}
-
-          {/* STEP 9: MEMÓRIAS/DETALHES */}
-          {step === 9 && (
-            <>
-              <h2 className="text-3xl font-bold mb-4">Marcos e Detalhes</h2>
-              <p className="text-zinc-500 mb-6 font-medium">Qual a vossa melhor memória ou o que mais amas nele/a?</p>
-              <textarea 
-                autoFocus
-                className="w-full bg-zinc-900 border-2 border-zinc-800 p-5 rounded-xl h-40 focus:border-rose-500 outline-none"
-                placeholder="Ex: A viagem à Figueira, o facto de ela ser um poço de vida..."
-                value={formData.moments}
-                onChange={(e) => setFormData({...formData, moments: e.target.value})}
-              />
-              <button onClick={handleNext} disabled={!formData.moments} className="w-full bg-rose-600 p-5 rounded-xl font-bold">Próximo</button>
-            </>
-          )}
-
-          {/* STEP 10: PIADA INTERNA */}
-          {step === 10 && (
-            <>
-              <h2 className="text-3xl font-bold mb-4">Alguma piada interna?</h2>
-              <p className="text-zinc-500 mb-6 font-medium">Frases ou expressões que só vocês entendem (Opcional).</p>
-              <input 
-                autoFocus
-                type="text"
-                className="w-full bg-zinc-900 border-2 border-zinc-800 p-5 rounded-xl focus:border-rose-500 outline-none"
-                placeholder="Ex: 'Brincar é no parque'..."
-                value={formData.insideJokes}
-                onChange={(e) => setFormData({...formData, insideJokes: e.target.value})}
-              />
-              <button onClick={handleNext} className="w-full bg-rose-600 p-5 rounded-xl font-bold mt-4">Próximo</button>
-            </>
-          )}
-
-          {/* STEP 11: UPSELL & CHECKOUT */}
-          {step === 11 && (
-            <>
-              <h2 className="text-4xl font-bold text-center mb-4 italic">Tudo pronto.</h2>
-              <p className="text-zinc-500 text-center mb-10">Escolhe a velocidade de entrega para selarmos o pacto.</p>
-              
-              <div className="space-y-4">
-                <div 
-                  onClick={() => setFormData({...formData, deliverySpeed: 'standard'})}
-                  className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${formData.deliverySpeed === 'standard' ? 'border-rose-500 bg-rose-500/10' : 'border-zinc-800 bg-zinc-900'}`}
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-lg text-white">Entrega Standard (72h)</span>
-                    <span className="text-green-500 font-bold">€24,99</span>
-                  </div>
-                  <p className="text-xs text-zinc-500 italic">Recebe no WhatsApp e E-mail com qualidade de estúdio.</p>
-                </div>
-
-                <div 
-                  onClick={() => setFormData({...formData, deliverySpeed: 'fast'})}
-                  className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${formData.deliverySpeed === 'fast' ? 'border-amber-500 bg-amber-500/10' : 'border-zinc-800 bg-zinc-900'}`}
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-lg text-white flex items-center gap-2"><Sparkles size={18} className="text-amber-500" /> Prioridade Máxima (24h)</span>
-                    <span className="text-amber-500 font-bold">€29,98</span>
-                  </div>
-                  <p className="text-xs text-zinc-500 italic">O teu pedido passa para o topo da nossa fila de produção.</p>
-                </div>
-              </div>
-
-              <button 
-                onClick={handleFinalCheckout}
-                className="w-full bg-rose-600 hover:bg-rose-700 p-6 rounded-2xl font-black text-xl shadow-2xl shadow-rose-500/20 transform transition-transform active:scale-95 mt-8 uppercase tracking-widest"
-              >
-                Imortalizar Agora
-              </button>
-              <div className="flex items-center justify-center gap-4 mt-6 opacity-30">
-                <ShieldCheck size={16} /> <span className="text-[10px] font-bold uppercase tracking-widest">Pagamento Seguro via Stripe</span>
-              </div>
-            </>
-          )}
-
-          {/* STEP 12: SUCESSO FINAL */}
-          {step === 12 && (
-            <div className="text-center space-y-8 py-10">
-              <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto shadow-2xl">
-                <Check size={48} strokeWidth={3} />
-              </div>
-              <h2 className="text-4xl font-serif font-bold italic">Veredito Selado.</h2>
-              <p className="text-zinc-400">A vossa história já está na mão dos nossos artistas.</p>
-              <div className="bg-zinc-900 p-8 rounded-3xl space-y-4">
-                 <p className="text-xs uppercase tracking-[0.2em] opacity-40">O que acontece agora?</p>
-                 <div className="flex justify-center gap-4">
-                    <MessageCircle className="text-green-500" /> <Mail className="text-rose-500" />
-                 </div>
-                 <p className="text-sm font-medium">Receberás o link de download no WhatsApp e no teu E-mail em menos de {formData.deliverySpeed === 'fast' ? '24' : '72'} horas.</p>
-              </div>
-              <button onClick={onBack} className="text-zinc-500 hover:text-white transition-colors text-sm font-bold">Voltar ao Início</button>
-            </div>
-          )}
-
+        )}
+        
+        <div className="p-8 md:p-12">
+          {step === 1 && renderStep1()} {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()} {step === 4 && renderStep4()}
+          {step === 5 && renderStep5()}
         </div>
       </div>
-
-      {/* FOOTER NAVIGATION */}
-      {step < 11 && (
-        <div className="p-6 bg-black/80 backdrop-blur-md border-t border-zinc-900">
-           <div className="max-w-xl mx-auto flex gap-4">
-             <button onClick={handleBack} className="flex-1 p-4 rounded-xl font-bold text-zinc-500 hover:text-white transition-colors">Voltar</button>
-             {/* O botão "Próximo" só aparece se não for um passo de clique direto */}
-             {![1, 4, 5, 6, 7].includes(step) && (
-               <button onClick={handleNext} className="flex-1 bg-zinc-800 hover:bg-zinc-700 p-4 rounded-xl font-bold">Próximo</button>
-             )}
-           </div>
-        </div>
-      )}
-
     </div>
   );
 };
