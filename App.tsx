@@ -13,7 +13,7 @@ import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO HERO ---
 import heroBg from './assets/12qwq.jpeg';
-import heroAudio from './assets/sofia.mp3'; 
+import heroAudio from './assets/sofia2.mp3'; 
 
 // --- IMPORTAÇÃO DOS SAMPLES (LOCAIS) ---
 import sofiaAudio from './assets/sofia2.mp3';     
