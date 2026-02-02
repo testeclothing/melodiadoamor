@@ -52,7 +52,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     fastDelivery: false
   });
 
-  const finalPrice = formData.fastDelivery ? 29.98 : 24.99;
+  const finalPrice = formData.fastDelivery ? 34.98 : 24.99;
 
   // --- 1. SEGURANÇA DE DOMÍNIO (EVITA O ERRO DO WWW) ---
   useEffect(() => {
@@ -77,7 +77,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Nome Cliente", data.senderName);
         formDataToSend.append("Para Quem", data.recipientName);
         formDataToSend.append("Estilo", data.styleName);
-        formDataToSend.append("Preco", data.fastDelivery ? "29.98€" : "24.99€");
+        formDataToSend.append("Preco", data.fastDelivery ? "34.98€" : "24.99€");
         formDataToSend.append("Entrega Rapida", data.fastDelivery ? "SIM" : "NÃO");
         formDataToSend.append("Historia", data.meeting);
         formDataToSend.append("Memoria", data.memory);
@@ -358,7 +358,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
               </span>
               Quero em 24 Horas
             </span>
-            <span className="text-amber-600 font-bold text-sm">+4,99€</span>
+            <span className="text-amber-600 font-bold text-sm">+9,99€</span>
           </div>
           <p className="text-[10px] text-slate-500 mt-1 ml-6">Passamos o pedido para a frente da fila.</p>
         </div>
