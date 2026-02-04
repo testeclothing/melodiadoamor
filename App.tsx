@@ -289,7 +289,7 @@ function App() {
                 <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-all duration-300">
                     <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Music size={32} /></div>
                     <h3 className="text-xl font-bold mb-3">2. Produção Profissional</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">Os nossos artistas e tecnologia compõem uma letra emocionante e uma melodia única baseada nos teus detalhes.</p>
+                    <p className="text-gray-600 text-sm leading-relaxed">Compomos uma letra emocionante e aliamos tecnologia avançada para criar uma melodia única.</p>
                 </div>
                 <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-all duration-300">
                     <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Gift size={32} /></div>
