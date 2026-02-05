@@ -86,7 +86,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Detalhes Extra", data.extraDetails);
 
         // O TEU LINK DO GOOGLE ATUALIZADO
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzS4hHMbcxWvJr-HCMTELAnVcyQWennOcRomspdI0vVdXYnRt6aakyaFm1xbipaEf7T1w/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmzgu7QrPEf067vfrzY9QZ-obnVNba-NyM6fDLEqzAexABu2PWXeL7MszzIVsWvZm6CQ/exec";
 
         fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
