@@ -101,13 +101,34 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       }
 
       const amt = urlParams.get('amt') || '24.99';
-      if ((window as any).ttq) (window as any).ttq.track('CompletePayment', { value: parseFloat(amt), currency: 'EUR' });
+      
+      // --- CORREÇÃO TIKTOK ADS (INICIO) ---
+      // Verifica se já enviámos o evento para esta sessão específica
+      const successFlag = localStorage.getItem('tt_order_finalized');
+
+      if (!successFlag && (window as any).ttq) {
+        // Gera um ID único para deduplicação no servidor do TikTok
+        const transactionId = "ORDER_" + new Date().getTime();
+
+        (window as any).ttq.track('CompletePayment', { 
+            value: parseFloat(amt), 
+            currency: 'EUR',
+            event_id: transactionId // Identificador único para evitar duplicados
+        });
+
+        // Marca como enviado para bloquear disparos no Refresh (F5)
+        localStorage.setItem('tt_order_finalized', 'true');
+      }
+      // --- CORREÇÃO TIKTOK ADS (FIM) ---
       
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
   const handleStripe = () => {
+    // Limpa a flag de sucesso anterior para permitir uma nova compra futura
+    localStorage.removeItem('tt_order_finalized');
+    
     setIsSubmitting(true);
 
     const L_STD = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001";
