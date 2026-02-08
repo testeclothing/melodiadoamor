@@ -61,15 +61,17 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     }
   }, []);
 
-  // --- 2. LÓGICA DE RETORNO DO STRIPE & GOOGLE SHEETS ---
+  // --- 2. LÓGICA DE SUCESSO BLINDADA (TIKTOK + GOOGLE SHEETS) ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const amt = urlParams.get('amt') || '24.99'; // Valor padrão
     
-    if (urlParams.get('status') === 'success') {
+    if (status === 'success') {
       setStep(5);
       
+      // A. ENVIAR PARA GOOGLE SHEETS (Mantido igual)
       const pendingData = localStorage.getItem('pendingOrder');
-      
       if (pendingData) {
         const data = JSON.parse(pendingData);
         
@@ -85,7 +87,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Hobbies", data.hobbies);
         formDataToSend.append("Detalhes Extra", data.extraDetails);
 
-        // O TEU LINK DO GOOGLE ATUALIZADO
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmzgu7QrPEf067vfrzY9QZ-obnVNba-NyM6fDLEqzAexABu2PWXeL7MszzIVsWvZm6CQ/exec";
 
         fetch(GOOGLE_SCRIPT_URL, {
@@ -100,35 +101,34 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         .catch(err => console.error("Erro Excel:", err));
       }
 
-      const amt = urlParams.get('amt') || '24.99';
-      
-      // --- CORREÇÃO TIKTOK ADS (INICIO) ---
-      // Verifica se já enviámos o evento para esta sessão específica
-      const successFlag = localStorage.getItem('tt_order_finalized');
+      // B. CORREÇÃO TIKTOK ADS (Lógica de Bloqueio Temporal)
+      // Verifica se houve uma venda nos últimos 5 minutos (evita refresh)
+      const lastSaleTime = localStorage.getItem('last_sale_timestamp');
+      const now = new Date().getTime();
+      const isDuplicate = lastSaleTime && (now - parseInt(lastSaleTime) < 300000); // 300000ms = 5 minutos
 
-      if (!successFlag && (window as any).ttq) {
-        // Gera um ID único para deduplicação no servidor do TikTok
-        const transactionId = "ORDER_" + new Date().getTime();
+      if (!isDuplicate && (window as any).ttq) {
+        // Geramos um ID único para este evento
+        const uniqueEventId = `order_${now}_${Math.random().toString(36).substr(2, 9)}`;
 
         (window as any).ttq.track('CompletePayment', { 
             value: parseFloat(amt), 
             currency: 'EUR',
-            event_id: transactionId // Identificador único para evitar duplicados
+            event_id: uniqueEventId // O TikTok usa isto para deduplicar
         });
 
-        // Marca como enviado para bloquear disparos no Refresh (F5)
-        localStorage.setItem('tt_order_finalized', 'true');
+        // Grava o momento da venda para bloquear repetições
+        localStorage.setItem('last_sale_timestamp', now.toString());
+        console.log("✅ Venda real enviada e bloqueada contra duplicados.");
       }
-      // --- CORREÇÃO TIKTOK ADS (FIM) ---
-      
+
+      // C. LIMPEZA DA URL (Remove o ?status=success para impedir reenvios)
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
   const handleStripe = () => {
-    // Limpa a flag de sucesso anterior para permitir uma nova compra futura
-    localStorage.removeItem('tt_order_finalized');
-    
+    // Não precisamos de limpar o timestamp aqui para manter a proteção ativa
     setIsSubmitting(true);
 
     const L_STD = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001";
@@ -158,7 +158,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   const renderStep1 = () => (
     <div className="space-y-8 animate-fadeIn relative">
-      {/* BOTÃO VOLTAR PARA HOME PAGE */}
       <button 
         onClick={onBack}
         className="absolute -top-4 -left-2 flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-rose-500 transition-colors"
