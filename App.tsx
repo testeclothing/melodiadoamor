@@ -21,7 +21,7 @@ import ivandroAudio from './assets/ivandro.mp3';
 import vitorAudio from './assets/vitor.mp3';     
 
 // --- CONFIGURAÇÃO DO CONCURSO PARIS ---
-const VENDAS_ATUAIS = 53; 
+const VENDAS_ATUAIS = 87; 
 const OBJETIVO_VENDAS = 100;
 const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
 
