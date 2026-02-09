@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Check, Sparkles, MessageCircle, Mail, RotateCcw, 
-  Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine
+  Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine, Clock, Zap
 } from 'lucide-react';
 
 // --- IMPORTAÇÃO DOS ÁUDIOS ---
@@ -49,10 +49,13 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     hobbies: '',       
     extraDetails: '',  
     style: '',
-    fastDelivery: false
+    deliveryOption: '72h' // Opções: '72h' | '48h' | '24h'
   });
 
-  const finalPrice = formData.fastDelivery ? 34.98 : 24.99;
+  // Cálculo do Preço Final baseado na escolha
+  let finalPrice = 24.99;
+  if (formData.deliveryOption === '48h') finalPrice = 29.98;
+  if (formData.deliveryOption === '24h') finalPrice = 34.98;
 
   // --- 1. SEGURANÇA DE DOMÍNIO (EVITA O ERRO DO WWW) ---
   useEffect(() => {
@@ -65,12 +68,12 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
-    const amt = urlParams.get('amt') || '24.99'; // Valor padrão
+    const amt = urlParams.get('amt') || '24.99'; 
     
     if (status === 'success') {
       setStep(5);
       
-      // A. ENVIAR PARA GOOGLE SHEETS (Mantido igual)
+      // A. ENVIAR PARA GOOGLE SHEETS
       const pendingData = localStorage.getItem('pendingOrder');
       if (pendingData) {
         const data = JSON.parse(pendingData);
@@ -79,8 +82,15 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Nome Cliente", data.senderName);
         formDataToSend.append("Para Quem", data.recipientName);
         formDataToSend.append("Estilo", data.styleName);
-        formDataToSend.append("Preco", data.fastDelivery ? "34.98€" : "24.99€");
-        formDataToSend.append("Entrega Rapida", data.fastDelivery ? "SIM" : "NÃO");
+        
+        // Define o preço string e a opção de entrega para o Excel
+        let priceStr = "24.99€";
+        if (data.deliveryOption === '48h') priceStr = "29.98€";
+        if (data.deliveryOption === '24h') priceStr = "34.98€";
+
+        formDataToSend.append("Preco", priceStr);
+        formDataToSend.append("Entrega Rapida", data.deliveryOption); // Vai aparecer '72h', '48h' ou '24h'
+        
         formDataToSend.append("Historia", data.meeting);
         formDataToSend.append("Memoria", data.memory);
         formDataToSend.append("O Que Ama", data.loveMost);
@@ -102,39 +112,39 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       }
 
       // B. CORREÇÃO TIKTOK ADS (Lógica de Bloqueio Temporal)
-      // Verifica se houve uma venda nos últimos 5 minutos (evita refresh)
       const lastSaleTime = localStorage.getItem('last_sale_timestamp');
       const now = new Date().getTime();
-      const isDuplicate = lastSaleTime && (now - parseInt(lastSaleTime) < 300000); // 300000ms = 5 minutos
+      const isDuplicate = lastSaleTime && (now - parseInt(lastSaleTime) < 300000); 
 
       if (!isDuplicate && (window as any).ttq) {
-        // Geramos um ID único para este evento
         const uniqueEventId = `order_${now}_${Math.random().toString(36).substr(2, 9)}`;
 
         (window as any).ttq.track('CompletePayment', { 
             value: parseFloat(amt), 
             currency: 'EUR',
-            event_id: uniqueEventId // O TikTok usa isto para deduplicar
+            event_id: uniqueEventId 
         });
 
-        // Grava o momento da venda para bloquear repetições
         localStorage.setItem('last_sale_timestamp', now.toString());
         console.log("✅ Venda real enviada e bloqueada contra duplicados.");
       }
 
-      // C. LIMPEZA DA URL (Remove o ?status=success para impedir reenvios)
+      // C. LIMPEZA DA URL
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
   const handleStripe = () => {
-    // Não precisamos de limpar o timestamp aqui para manter a proteção ativa
     setIsSubmitting(true);
 
-    const L_STD = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001";
-    const L_FAST = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000";
-    
-    const paymentLink = formData.fastDelivery ? L_FAST : L_STD;
+    // LINKS DE PAGAMENTO DO STRIPE
+    const L_72H = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001"; // Normal (24.99€)
+    const L_48H = "https://buy.stripe.com/14A28t9hegtX0UO7J76c002"; // NOVO 48H (29.98€)
+    const L_24H = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000"; // Prioridade 24H (34.98€)
+
+    let paymentLink = L_72H;
+    if (formData.deliveryOption === '48h') paymentLink = L_48H;
+    if (formData.deliveryOption === '24h') paymentLink = L_24H;
 
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
@@ -363,24 +373,66 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           </div>
         </div>
 
-        <div 
-          onClick={() => !isSubmitting && setFormData({...formData, fastDelivery: !formData.fastDelivery})}
-          className={`p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${
-            formData.fastDelivery 
-              ? 'border-amber-400 bg-amber-50' 
-              : 'border-slate-100 hover:border-slate-300 bg-slate-50'
-          }`}
-        >
-          <div className="flex justify-between items-center z-10 relative">
-            <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
-              <span className={formData.fastDelivery ? "text-amber-500" : "text-slate-400"}>
-                <Sparkles size={14} /> 
-              </span>
-              Quero em 24 Horas
-            </span>
-            <span className="text-amber-600 font-bold text-sm">+9,99€</span>
+        {/* SELEÇÃO DE ENTREGA (Escada de Valor com 3 Opções) */}
+        <div className="space-y-3">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Tempo de Entrega</p>
+          
+          {/* OPÇÃO 1: 72 HORAS */}
+          <div 
+            onClick={() => setFormData({...formData, deliveryOption: '72h'})}
+            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex justify-between items-center ${
+              formData.deliveryOption === '72h' ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-200' : 'border-slate-100 bg-white hover:border-slate-200'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.deliveryOption === '72h' ? 'border-rose-500' : 'border-slate-300'}`}>
+                {formData.deliveryOption === '72h' && <div className="w-2.5 h-2.5 bg-rose-500 rounded-full"/>}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 flex items-center gap-2"><Clock size={14} className="text-slate-400"/> Normal (72h)</p>
+                <p className="text-[10px] text-slate-500">Entrega grátis</p>
+              </div>
+            </div>
+            <span className="text-sm font-bold text-slate-900">0,00€</span>
           </div>
-          <p className="text-[10px] text-slate-500 mt-1 ml-6">Passamos o pedido para a frente da fila.</p>
+
+          {/* OPÇÃO 2: 48 HORAS (NOVO UPSELL) */}
+          <div 
+            onClick={() => setFormData({...formData, deliveryOption: '48h'})}
+            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex justify-between items-center ${
+              formData.deliveryOption === '48h' ? 'border-amber-400 bg-amber-50 ring-1 ring-amber-200' : 'border-slate-100 bg-white hover:border-slate-200'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.deliveryOption === '48h' ? 'border-amber-500' : 'border-slate-300'}`}>
+                {formData.deliveryOption === '48h' && <div className="w-2.5 h-2.5 bg-amber-500 rounded-full"/>}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 flex items-center gap-1">Quero em 48 Horas <Sparkles size={14} className="text-amber-500"/></p>
+                <p className="text-[10px] text-slate-500">Prioridade sobre a entrega normal.</p>
+              </div>
+            </div>
+            <span className="text-sm font-bold text-amber-600">+4,99€</span>
+          </div>
+
+          {/* OPÇÃO 3: 24 HORAS (PREMIUM) */}
+          <div 
+            onClick={() => setFormData({...formData, deliveryOption: '24h'})}
+            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex justify-between items-center ${
+              formData.deliveryOption === '24h' ? 'border-purple-500 bg-purple-50 ring-1 ring-purple-200' : 'border-slate-100 bg-white hover:border-slate-200'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.deliveryOption === '24h' ? 'border-purple-500' : 'border-slate-300'}`}>
+                {formData.deliveryOption === '24h' && <div className="w-2.5 h-2.5 bg-purple-500 rounded-full"/>}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 flex items-center gap-1">Quero em 24 Horas <Zap size={14} className="text-purple-500"/></p>
+                <p className="text-[10px] text-slate-500">Passamos o pedido para a frente da fila.</p>
+              </div>
+            </div>
+            <span className="text-sm font-bold text-purple-600">+9,99€</span>
+          </div>
         </div>
 
         <div className="flex justify-between items-center pt-2">
@@ -407,28 +459,34 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     </div>
   );
 
-  const renderStep5 = () => (
-    <div className="text-center space-y-8 py-10 animate-fadeIn px-4">
-      <div className="bg-green-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto text-green-600 shadow-xl">
-        <Check size={48} strokeWidth={3} />
+  const renderStep5 = () => {
+    let deliveryText = 'Até 72 Horas';
+    if (formData.deliveryOption === '48h') deliveryText = 'Até 48 Horas';
+    if (formData.deliveryOption === '24h') deliveryText = 'Menos de 24 Horas';
+
+    return (
+      <div className="text-center space-y-8 py-10 animate-fadeIn px-4">
+        <div className="bg-green-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto text-green-600 shadow-xl">
+          <Check size={48} strokeWidth={3} />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-3xl font-serif font-bold text-slate-900 italic">Pagamento Confirmado!</h2>
+          <p className="text-slate-500 text-sm">A vossa história já está na nossa lista de produção.</p>
+        </div>
+        
+        <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200 shadow-sm">
+           <p className="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Entrega Estimada</p>
+           <p className="text-2xl font-bold text-slate-900 mb-6">{deliveryText}</p>
+           <div className="flex justify-center gap-3">
+              <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><MessageCircle size={14} className="text-green-500"/> WhatsApp</span>
+              <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><Mail size={14} className="text-blue-500"/> Email</span>
+           </div>
+        </div>
+        
+        <button onClick={onBack} className="text-rose-500 font-bold text-xs uppercase tracking-widest hover:underline">Voltar ao Início</button>
       </div>
-      <div className="space-y-2">
-        <h2 className="text-3xl font-serif font-bold text-slate-900 italic">Pagamento Confirmado!</h2>
-        <p className="text-slate-500 text-sm">A vossa história já está na nossa lista de produção.</p>
-      </div>
-      
-      <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200 shadow-sm">
-         <p className="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Entrega Estimada</p>
-         <p className="text-2xl font-bold text-slate-900 mb-6">{formData.fastDelivery ? 'Menos de 24 Horas' : 'Até 72 Horas'}</p>
-         <div className="flex justify-center gap-3">
-            <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><MessageCircle size={14} className="text-green-500"/> WhatsApp</span>
-            <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><Mail size={14} className="text-blue-500"/> Email</span>
-         </div>
-      </div>
-      
-      <button onClick={onBack} className="text-rose-500 font-bold text-xs uppercase tracking-widest hover:underline">Voltar ao Início</button>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-slate-900">
