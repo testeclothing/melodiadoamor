@@ -136,7 +136,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
     // --- LINKS DE PAGAMENTO ---
     // Link Normal (24.99€) agora corresponde a 48H
-    const L_48H = "https://buy.stripe.com/14A28t9hegtX0UO7J76c002"; 
+    const L_48H = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001"; 
     // Link Premium (34.98€) corresponde a 24H
     const L_24H = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000"; 
 
