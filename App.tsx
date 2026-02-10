@@ -39,7 +39,7 @@ const FAQS: FaqItem[] = [
   },
   { 
     question: "Quanto tempo demora a entrega?", 
-    answer: "A entrega standard é feita em 72h. Se precisares com urgência, podes selecionar a opção 'Entrega em 24h' no final do pedido." 
+    answer: "A entrega standard é feita em 48h. Se precisares com urgência, podes selecionar a opção 'Entrega em 24h' no final do pedido." 
   },
   { 
     question: "Posso pedir alterações?", 
