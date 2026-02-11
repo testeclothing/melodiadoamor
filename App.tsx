@@ -20,7 +20,7 @@ import sofiaAudio from './assets/sofia2.mp3';
 import ivandroAudio from './assets/ivandro.mp3'; 
 import vitorAudio from './assets/vitor.mp3';     
 
-// --- CONFIGURAÇÃO DO CONCURSO PARIS ---
+// --- CONFIGURAÇÃO DO CONCURSO PARIS (Mantemos a lógica caso queiras usar noutro lado, mas o popup saiu) ---
 const VENDAS_ATUAIS = 87; 
 const OBJETIVO_VENDAS = 100;
 const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
@@ -59,7 +59,6 @@ const REVIEWS = [
 
 function App() {
   const [view, setView] = useState<'landing' | 'wizard' | 'terms' | 'privacy' | 'contact'>('landing');
-  const [showPopup, setShowPopup] = useState(false);
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
 
@@ -95,20 +94,8 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('status') === 'success') {
       setView('wizard');
-      setShowPopup(false);
     }
   }, []);
-
-  // --- LÓGICA DO POPUP ---
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (view === 'landing' && urlParams.get('status') !== 'success') {
-      const timer = setTimeout(() => {
-        setShowPopup(true);
-      }, 5000); 
-      return () => clearTimeout(timer);
-    }
-  }, [view]);
 
   const toggleHeroAudio = () => {
     if (heroAudioRef.current) {
@@ -126,7 +113,6 @@ function App() {
       heroAudioRef.current.pause();
       setHeroIsPlaying(false);
     }
-    setShowPopup(false);
     window.scrollTo(0, 0);
     setView('wizard');
   };
@@ -146,37 +132,6 @@ function App() {
     <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-rose-100 selection:text-rose-900">
       
       <audio ref={heroAudioRef} src={heroAudio} onEnded={() => setHeroIsPlaying(false)} />
-
-      {/* --- POPUP DE PARIS --- */}
-      {showPopup && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={() => setShowPopup(false)}></div>
-          <div className="relative w-full max-w-lg bg-[#fffbf0] rounded-xl shadow-2xl transform rotate-1 transition-all animate-slide-up overflow-hidden border-4 border-white">
-            <button onClick={() => setShowPopup(false)} className="absolute top-2 right-2 z-20 bg-black/10 hover:bg-black/20 p-1 rounded-full transition-colors"><X size={20} className="text-slate-600" /></button>
-            <div className="flex flex-col">
-              <div className="h-40 bg-slate-200 relative overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1000&auto=format&fit=crop" alt="Paris" className="w-full h-full object-cover"/>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#fffbf0] to-transparent"></div>
-                <div className="absolute top-4 right-12 bg-white p-2 shadow-md rotate-12 border-2 border-dotted border-slate-300"><Stamp className="text-rose-400 opacity-80" size={32} /></div>
-              </div>
-              <div className="px-8 pb-8 pt-2 text-center relative">
-                <div className="flex justify-center mb-2">
-                   <div className="bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-amber-200">Concurso Exclusivo</div>
-                </div>
-                <h2 className="text-3xl font-serif font-bold text-slate-900 mb-2 leading-tight">Ganha uma Viagem a <span className="text-rose-600 italic">Paris!</span></h2>
-                <p className="text-slate-600 text-sm mb-6 leading-relaxed">A história de amor mais bonita das primeiras <strong className="text-slate-900">100 encomendas</strong> ganha voo + hotel para duas pessoas.</p>
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
-                   <div className="flex justify-between text-xs font-bold mb-2"><span className="text-rose-500 flex items-center gap-1"><Clock size={12}/> Quase a esgotar</span><span className="text-slate-700">{VENDAS_ATUAIS}/100 Vendidos</span></div>
-                   <div className="h-3 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-rose-500 to-amber-500" style={{ width: `${PERCENTAGEM}%` }}></div></div>
-                </div>
-                <Button onClick={startWizard} pulse fullWidth className="bg-slate-900 hover:bg-slate-800 text-white shadow-xl py-4">Participar Agora</Button>
-                <p className="text-[10px] text-slate-400 mt-3">Ao clicar, começas a criar a tua música e habilitas-te automaticamente.</p>
-              </div>
-            </div>
-            <div className="absolute bottom-0 left-0 w-full h-2 bg-[repeating-linear-gradient(45deg,#ef4444,#ef4444_10px,#fff_10px,#fff_20px,#3b82f6,#3b82f6_30px,#fff_30px,#fff_40px)]"></div>
-          </div>
-        </div>
-      )}
 
       {/* HEADER */}
       <header className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-rose-100 shadow-sm h-16">
@@ -254,7 +209,7 @@ function App() {
         </div>
       </section>
 
-      {/* SOCIAL PROOF (IMAGEM 29) */}
+      {/* SOCIAL PROOF */}
       <section className="bg-gray-50 py-12 border-y border-gray-100">
         <div className="container mx-auto px-4 max-w-6xl">
           <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">AVALIADO COM 4.9/5 ESTRELAS POR CASAIS EM PORTUGAL</p>
@@ -274,7 +229,7 @@ function App() {
         </div>
       </section>
 
-      {/* COMO FUNCIONA (IMAGEM 30) */}
+      {/* COMO FUNCIONA */}
       <section className="py-24">
         <div className="container mx-auto px-4 max-w-6xl text-center">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Como criamos a magia?</h2>
@@ -293,14 +248,14 @@ function App() {
                 </div>
                 <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-all duration-300">
                     <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Gift size={32} /></div>
-                    <h3 className="text-xl font-bold mb-3">3. Recebe em 72h</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">Recebe o ficheiro MP3 e a letra no teu e-mail. Pronta a oferecer e a emocionar!</p>
+                    <h3 className="text-xl font-bold mb-3">3. Recebe em 48h</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">Recebe o ficheiro MP3 e a letra no teu e-mail em até 2 dias. Pronta a oferecer e a emocionar!</p>
                 </div>
             </div>
         </div>
       </section>
 
-      {/* AUDIO SAMPLES (IMAGEM 31) */}
+      {/* AUDIO SAMPLES */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
@@ -314,7 +269,7 @@ function App() {
               <h2 className="text-3xl md:text-5xl font-serif font-bold leading-tight">Mais do que uma música, <span className="text-rose-400">uma memória eterna.</span></h2>
               <ul className="space-y-6">
                 {[
-                  { icon: Clock, title: "Entrega em 72 Horas", desc: "Recebe a tua música pronta e masterizada no teu email em 3 dias." },
+                  { icon: Clock, title: "Entrega em 48 Horas", desc: "Recebe a tua música pronta e masterizada no teu email em 2 dias." },
                   { icon: Music, title: "Qualidade de Estúdio", desc: "Produção profissional com vozes claras e instrumentos envolventes." },
                   { icon: CheckCircle2, title: "100% Personalizado", desc: "A letra fala sobre VÓS. Os vossos nomes, o vosso lugar especial, a vossa data." },
                   { icon: Trophy, title: "Habilita-te a Paris", desc: "A tua história entra automaticamente no concurso para a viagem de sonho." }
@@ -368,7 +323,7 @@ function App() {
                 <span className="text-gray-500 font-medium">/ música</span>
               </div>
               <ul className="space-y-3 mb-10 text-gray-700">
-                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Standard (72h)", "Participação Concurso Paris"].map((feat, i) => (
+                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Expresso (48h)", "Participação Concurso Paris"].map((feat, i) => (
                   <li key={i} className="flex items-center gap-3 text-base">
                     <div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600 shrink-0" /></div>
                     <span>{feat}</span>
