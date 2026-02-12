@@ -20,18 +20,19 @@ import sofiaAudio from './assets/sofia2.mp3';
 import ivandroAudio from './assets/ivandro.mp3'; 
 import vitorAudio from './assets/vitor.mp3';     
 
-// --- CONFIGURAÇÃO DO CONCURSO PARIS (Mantemos a lógica caso queiras usar noutro lado, mas o popup saiu) ---
+// --- CONFIGURAÇÃO DO CONCURSO PARIS ---
 const VENDAS_ATUAIS = 87; 
 const OBJETIVO_VENDAS = 100;
 const PERCENTAGEM = Math.min((VENDAS_ATUAIS / OBJETIVO_VENDAS) * 100, 100);
 
-// --- DADOS DOS SAMPLES ATUALIZADOS ---
+// --- DADOS DOS SAMPLES ---
 const SAMPLES: SongSample[] = [
   { id: 1, title: "Margarida", genre: "Pop Acústico", url: vitorAudio },
   { id: 2, title: "Sabia quem eras", genre: "Alma & Emoção", url: sofiaAudio },
   { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
 ];
 
+// --- FAQS ATUALIZADAS PARA URGÊNCIA ---
 const FAQS: FaqItem[] = [
   { 
     question: "Como funciona a personalização?", 
@@ -39,7 +40,7 @@ const FAQS: FaqItem[] = [
   },
   { 
     question: "Quanto tempo demora a entrega?", 
-    answer: "A entrega standard é feita em 48h. Se precisares com urgência, podes selecionar a opção 'Entrega em 24h' no final do pedido." 
+    answer: "Estamos em modo de urgência! A entrega normal é feita em 24h (para receberes sexta-feira). Se precisares para HOJE, escolhe a opção Super Urgente no final." 
   },
   { 
     question: "Posso pedir alterações?", 
@@ -62,31 +63,14 @@ function App() {
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
 
-  // --- LÓGICA DINÂMICA: TEMPO PARA O DIA DOS NAMORADOS ---
+  // --- LÓGICA DINÂMICA: MENSAGEM DE URGÊNCIA (12/02) ---
   const [tempoValentine, setTempoValentine] = useState("");
   const [diasFaltam, setDiasFaltam] = useState(0);
 
   useEffect(() => {
-    const calcular = () => {
-      const agora = new Date();
-      const alvo = new Date('2026-02-14T00:00:00');
-      const diff = alvo.getTime() - agora.getTime();
-      
-      const d = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-      setDiasFaltam(d);
-
-      if (diff <= 0) {
-        setTempoValentine("É hoje o Dia dos Namorados!");
-        return;
-      }
-
-      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      setTempoValentine(`Faltam ${dias} dias e ${horas}h para o Dia dos Namorados`);
-    };
-    calcular();
-    const timer = setInterval(calcular, 60000);
-    return () => clearInterval(timer);
+    // Forçamos a mensagem estática para garantir que todos veem a segurança da entrega
+    setTempoValentine("⚡ ENCOMENDAS HOJE (12/02) ➤ ENTREGUES EM 24H! ⚡");
+    setDiasFaltam(2); // Mantemos um valor para não quebrar o layout visual do preço
   }, []);
 
   // --- LÓGICA DE RETORNO DO STRIPE ---
@@ -248,14 +232,14 @@ function App() {
                 </div>
                 <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-all duration-300">
                     <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Gift size={32} /></div>
-                    <h3 className="text-xl font-bold mb-3">3. Recebe em 48h</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">Recebe o ficheiro MP3 e a letra no teu e-mail em até 2 dias. Pronta a oferecer e a emocionar!</p>
+                    <h3 className="text-xl font-bold mb-3">3. Recebe em 24h</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">Recebe o ficheiro MP3 e a letra no teu e-mail em 24h. Pronta a oferecer e a emocionar!</p>
                 </div>
             </div>
         </div>
       </section>
 
-      {/* AUDIO SAMPLES */}
+      {/* AUDIO SAMPLES - ATUALIZADO 24H */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
@@ -269,7 +253,7 @@ function App() {
               <h2 className="text-3xl md:text-5xl font-serif font-bold leading-tight">Mais do que uma música, <span className="text-rose-400">uma memória eterna.</span></h2>
               <ul className="space-y-6">
                 {[
-                  { icon: Clock, title: "Entrega em 48 Horas", desc: "Recebe a tua música pronta e masterizada no teu email em 2 dias." },
+                  { icon: Clock, title: "Entrega em 24 Horas", desc: "Recebe a tua música pronta e masterizada no teu email amanhã." },
                   { icon: Music, title: "Qualidade de Estúdio", desc: "Produção profissional com vozes claras e instrumentos envolventes." },
                   { icon: CheckCircle2, title: "100% Personalizado", desc: "A letra fala sobre VÓS. Os vossos nomes, o vosso lugar especial, a vossa data." },
                   { icon: Trophy, title: "Habilita-te a Paris", desc: "A tua história entra automaticamente no concurso para a viagem de sonho." }
@@ -286,7 +270,7 @@ function App() {
         </div>
       </section>
 
-      {/* PRICING SECTION - Otimizada Hierarquia */}
+      {/* PRICING SECTION - ATUALIZADO 24H */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
@@ -323,7 +307,7 @@ function App() {
                 <span className="text-gray-500 font-medium">/ música</span>
               </div>
               <ul className="space-y-3 mb-10 text-gray-700">
-                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Expresso (48h)", "Participação Concurso Paris"].map((feat, i) => (
+                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega em 24h (Garantido)", "Participação Concurso Paris"].map((feat, i) => (
                   <li key={i} className="flex items-center gap-3 text-base">
                     <div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600 shrink-0" /></div>
                     <span>{feat}</span>
