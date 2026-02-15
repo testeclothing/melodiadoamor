@@ -270,7 +270,7 @@ function App() {
         </div>
       </section>
 
-      {/* PRICING SECTION - ATUALIZADO 24H */}
+      {/* PRICING SECTION - CORRIGIDO E ATUALIZADO 24H */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
