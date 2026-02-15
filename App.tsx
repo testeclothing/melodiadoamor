@@ -32,7 +32,7 @@ const SAMPLES: SongSample[] = [
   { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
 ];
 
-// --- FAQS ATUALIZADAS PARA URGÊNCIA ---
+// --- FAQS ATUALIZADAS PARA MODO EVERGREEN ---
 const FAQS: FaqItem[] = [
   { 
     question: "Como funciona a personalização?", 
@@ -40,7 +40,7 @@ const FAQS: FaqItem[] = [
   },
   { 
     question: "Quanto tempo demora a entrega?", 
-    answer: "Estamos em modo de urgência! A entrega normal é feita em 24h (para receberes sexta-feira). Se precisares para HOJE, escolhe a opção Super Urgente no final." 
+    answer: "A entrega standard é feita em até 72h. Se tiveres urgência para um aniversário ou data especial, podes selecionar a opção 'Entrega em 24h' no final do pedido." 
   },
   { 
     question: "Posso pedir alterações?", 
@@ -63,14 +63,14 @@ function App() {
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
 
-  // --- LÓGICA DINÂMICA: MENSAGEM DE URGÊNCIA (12/02) ---
+  // --- LÓGICA EVERGREEN (PÓS-VALENTINE) ---
   const [tempoValentine, setTempoValentine] = useState("");
   const [diasFaltam, setDiasFaltam] = useState(0);
 
   useEffect(() => {
-    // Forçamos a mensagem estática para garantir que todos veem a segurança da entrega
-    setTempoValentine("⚡ ENCOMENDAS HOJE (12/02) ➤ ENTREGUES EM 24H! ⚡");
-    setDiasFaltam(2); // Mantemos um valor para não quebrar o layout visual do preço
+    // Nova mensagem fixa de benefício focada em aniversários e datas especiais
+    setTempoValentine("✨ O PRESENTE MAIS EMOCIONANTE PARA O VOSSO ANIVERSÁRIO ✨");
+    setDiasFaltam(0); 
   }, []);
 
   // --- LÓGICA DE RETORNO DO STRIPE ---
@@ -127,7 +127,7 @@ function App() {
           
           {/* BARRA DE ANÚNCIO DESKTOP */}
           <div className="hidden md:flex items-center gap-2 bg-rose-50 px-4 py-1.5 rounded-full border border-rose-100">
-            <Clock size={14} className="text-rose-600" />
+            <Sparkles size={14} className="text-rose-600" />
             <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">{tempoValentine}</span>
           </div>
 
@@ -138,7 +138,7 @@ function App() {
       {/* BARRA DE ANÚNCIO MOBILE */}
       <div className="md:hidden mt-16 bg-rose-50 py-2 flex justify-center border-b border-rose-100 px-4 text-center">
         <div className="flex items-center gap-2">
-          <Clock size={12} className="text-rose-600" />
+          <Sparkles size={12} className="text-rose-600" />
           <span className="text-[10px] font-bold text-rose-600 uppercase tracking-widest">{tempoValentine}</span>
         </div>
       </div>
@@ -151,13 +151,13 @@ function App() {
           <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-20">
             <div className="flex-1 text-center lg:text-left space-y-4 lg:space-y-8 max-w-xl">
               <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full text-sm font-bold border border-rose-100 uppercase tracking-wide shadow-sm hover:scale-105 transition-transform">
-                <Heart size={14} fill="currentColor" /><span>OFERTA DIA DOS NAMORADOS</span>
+                <Heart size={14} fill="currentColor" /><span>PRESENTES COM ALMA</span>
               </div>
               <h1 className="text-4xl lg:text-6xl font-serif font-bold leading-[1.1] text-gray-900 tracking-tight">
                 A vossa história merece uma <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">banda sonora única.</span>
               </h1>
               <p className="text-base lg:text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Surpreende a tua cara-metade com uma música personalizada feita à medida. Tu dás-nos as memórias, nós criamos a emoção.
+                Surpreende a tua cara-metade no vosso aniversário com uma música personalizada feita à medida. Tu dás-nos as memórias, nós criamos a emoção.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2">
                 <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl shadow-rose-500/20 bg-rose-600 hover:bg-rose-700 text-white shadow-xl">
@@ -232,14 +232,14 @@ function App() {
                 </div>
                 <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-all duration-300">
                     <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Gift size={32} /></div>
-                    <h3 className="text-xl font-bold mb-3">3. Recebe em 24h</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">Recebe o ficheiro MP3 e a letra no teu e-mail em 24h. Pronta a oferecer e a emocionar!</p>
+                    <h3 className="text-xl font-bold mb-3">3. Recebe em 72h</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">Recebe o ficheiro MP3 e a letra no teu e-mail em até 3 dias. Pronta a oferecer e a emocionar!</p>
                 </div>
             </div>
         </div>
       </section>
 
-      {/* AUDIO SAMPLES - ATUALIZADO 24H */}
+      {/* AUDIO SAMPLES - MODO EVERGREEN */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
@@ -253,7 +253,7 @@ function App() {
               <h2 className="text-3xl md:text-5xl font-serif font-bold leading-tight">Mais do que uma música, <span className="text-rose-400">uma memória eterna.</span></h2>
               <ul className="space-y-6">
                 {[
-                  { icon: Clock, title: "Entrega em 24 Horas", desc: "Recebe a tua música pronta e masterizada no teu email amanhã." },
+                  { icon: Clock, title: "Entrega em 72 Horas", desc: "Recebe a tua música pronta e masterizada no teu email em até 3 dias." },
                   { icon: Music, title: "Qualidade de Estúdio", desc: "Produção profissional com vozes claras e instrumentos envolventes." },
                   { icon: CheckCircle2, title: "100% Personalizado", desc: "A letra fala sobre VÓS. Os vossos nomes, o vosso lugar especial, a vossa data." },
                   { icon: Trophy, title: "Habilita-te a Paris", desc: "A tua história entra automaticamente no concurso para a viagem de sonho." }
@@ -270,7 +270,7 @@ function App() {
         </div>
       </section>
 
-      {/* PRICING SECTION - ATUALIZADO 24H */}
+      {/* PRICING SECTION - MODO EVERGREEN */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
@@ -279,17 +279,17 @@ function App() {
             <div className="flex-1 p-8 md:p-16 flex flex-col justify-center bg-rose-600 text-white relative overflow-hidden text-center md:text-left">
                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 to-rose-700"></div>
                <div className="relative z-10">
-                 <h3 className="text-lg font-bold mb-2 text-rose-100 uppercase tracking-widest opacity-90">Oferta Limitada</h3>
-                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 italic">Dia dos Namorados</h2>
+                 <h3 className="text-lg font-bold mb-2 text-rose-100 uppercase tracking-widest opacity-90">Prenda Inesquecível</h3>
+                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 italic">Aniversários & Datas</h2>
                  <p className="text-rose-50 mb-8 text-base lg:text-lg leading-relaxed">
-                   Faltam apenas <span className="font-bold text-white underline">{diasFaltam} dias</span> para o Dia dos Namorados. Aproveita agora o preço promocional de lançamento!
+                   Surpreende no vosso dia especial. O presente perfeito para marcar uma data inesquecível.
                  </p>
                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/20 inline-block md:block mx-auto md:mx-0">
                    <div className="flex items-center gap-4">
-                     <div className="bg-white/20 p-2 rounded-full hidden sm:block animate-pulse"><Clock className="text-white" size={20} /></div>
+                     <div className="bg-white/20 p-2 rounded-full hidden sm:block animate-pulse"><Sparkles className="text-white" size={20} /></div>
                      <div>
-                       <p className="text-[10px] md:text-xs text-rose-100 uppercase font-bold tracking-wider">APROVEITA JÁ:</p>
-                       <p className="font-bold text-sm md:text-xl uppercase tracking-tight">{tempoValentine}</p>
+                       <p className="text-[10px] md:text-xs text-rose-100 uppercase font-bold tracking-wider">OFERTA ATUAL:</p>
+                       <p className="font-bold text-sm md:text-xl uppercase tracking-tight">PREÇO PROMOCIONAL ATIVO</p>
                      </div>
                    </div>
                  </div>
@@ -307,7 +307,7 @@ function App() {
                 <span className="text-gray-500 font-medium">/ música</span>
               </div>
               <ul className="space-y-3 mb-10 text-gray-700">
-                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega em 24h (Garantido)", "Participação Concurso Paris"].map((feat, i) => (
+                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega Standard (48h-72h)", "Participação Concurso Paris"].map((feat, i) => (
                   <li key={i} className="flex items-center gap-3 text-base">
                     <div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600 shrink-0" /></div>
                     <span>{feat}</span>
