@@ -40,7 +40,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [playing, setPlaying] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false); 
   
-  // ESTADO DO FORMULÁRIO (Padrão volta a ser '72h')
+  // ESTADO DO FORMULÁRIO (Padrão: 24h)
   const [formData, setFormData] = useState({
     senderName: '',    
     recipientName: '', 
@@ -50,11 +50,11 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     hobbies: '',       
     extraDetails: '',  
     style: '',
-    deliveryOption: '72h' // Opções: '72h' (Normal) | '24h' (Upsell)
+    deliveryOption: '24h' // Opções: '24h' (Normal) | '12h' (Upsell)
   });
 
-  // CÁLCULO DO PREÇO (24.99€ Base | 34.98€ Upsell 24h)
-  const finalPrice = formData.deliveryOption === '24h' ? 34.98 : 24.99;
+  // CÁLCULO DO PREÇO (24.99€ Base | 29.98€ Upsell)
+  const finalPrice = formData.deliveryOption === '12h' ? 29.98 : 24.99;
 
   // --- 1. SEGURANÇA DE DOMÍNIO ---
   useEffect(() => {
@@ -83,8 +83,8 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Estilo", data.styleName);
         
         // Define o preço string e a entrega para o Excel
-        const priceStr = data.deliveryOption === '24h' ? "34.98€" : "24.99€";
-        const deliveryStr = data.deliveryOption === '24h' ? "24 Horas" : "72 Horas";
+        const priceStr = data.deliveryOption === '12h' ? "29.98€" : "24.99€";
+        const deliveryStr = data.deliveryOption === '12h' ? "12 Horas" : "24 Horas";
 
         formDataToSend.append("Preco", priceStr);
         formDataToSend.append("Entrega Rapida", deliveryStr);
@@ -135,12 +135,12 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const handleStripe = () => {
     setIsSubmitting(true);
 
-    // --- LINKS DE PAGAMENTO EVERGREEN ---
-    const L_NORMAL = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001"; // 24.99€ (72h)
-    const L_PRIORITY = "https://buy.stripe.com/aFabJ33WU3Hbbzs8Nb6c000"; // 34.98€ (24h)
+    // --- LINKS DE PAGAMENTO CONFIGURADOS ---
+    const L_24H_NORMAL = "https://buy.stripe.com/4gM28tfFCgtX6f8bZn6c001"; // 24.99€
+    const L_12H_URGENT = "https://buy.stripe.com/14A28t9hegtX0UO7J76c002"; // 29.98€
 
     // Seleção de Link
-    const paymentLink = formData.deliveryOption === '24h' ? L_PRIORITY : L_NORMAL;
+    const paymentLink = formData.deliveryOption === '12h' ? L_12H_URGENT : L_24H_NORMAL;
 
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
@@ -369,46 +369,46 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* SELEÇÃO DE ENTREGA (EVERGREEN - NORMAL 72H + UPSELL 24H) */}
+        {/* SELEÇÃO DE ENTREGA (24h vs 12h) */}
         <div className="space-y-3">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Tempo de Entrega</p>
           
-          {/* OPÇÃO 1: 72 HORAS (Normal) */}
-          <div 
-            onClick={() => setFormData({...formData, deliveryOption: '72h'})}
-            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex justify-between items-center ${
-              formData.deliveryOption === '72h' ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-200' : 'border-slate-100 bg-white hover:border-slate-200'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.deliveryOption === '72h' ? 'border-rose-500' : 'border-slate-300'}`}>
-                {formData.deliveryOption === '72h' && <div className="w-2.5 h-2.5 bg-rose-500 rounded-full"/>}
-              </div>
-              <div>
-                <p className="text-sm font-bold text-slate-800 flex items-center gap-2"><Clock size={14} className="text-slate-400"/> Entrega Standard (Até 72h)</p>
-                <p className="text-[10px] text-slate-500">O tempo perfeito para uma letra cuidada.</p>
-              </div>
-            </div>
-            <span className="text-sm font-bold text-slate-900">Grátis</span>
-          </div>
-
-          {/* OPÇÃO 2: 24 HORAS (UPSELL +9.99€) */}
+          {/* OPÇÃO 1: 24 HORAS (Normal) */}
           <div 
             onClick={() => setFormData({...formData, deliveryOption: '24h'})}
             className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex justify-between items-center ${
-              formData.deliveryOption === '24h' ? 'border-amber-400 bg-amber-50 ring-1 ring-amber-200' : 'border-slate-100 bg-white hover:border-slate-200'
+              formData.deliveryOption === '24h' ? 'border-green-500 bg-green-50 ring-1 ring-green-200' : 'border-slate-100 bg-white hover:border-slate-200'
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.deliveryOption === '24h' ? 'border-amber-500' : 'border-slate-300'}`}>
-                {formData.deliveryOption === '24h' && <div className="w-2.5 h-2.5 bg-amber-500 rounded-full"/>}
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.deliveryOption === '24h' ? 'border-green-500' : 'border-slate-300'}`}>
+                {formData.deliveryOption === '24h' && <div className="w-2.5 h-2.5 bg-green-500 rounded-full"/>}
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-800 flex items-center gap-1">Entrega Prioritária (24h) <Sparkles size={14} className="text-amber-500"/></p>
-                <p className="text-[10px] text-slate-500">Passas para a frente da nossa fila.</p>
+                <p className="text-sm font-bold text-slate-800 flex items-center gap-2"><Clock size={14} className="text-green-500"/> Entrega em 24h</p>
+                <p className="text-[10px] text-slate-500">Recebe a tua música amanhã.</p>
               </div>
             </div>
-            <span className="text-sm font-bold text-amber-600">+9,99€</span>
+            <span className="text-sm font-bold text-slate-900">0,00€</span>
+          </div>
+
+          {/* OPÇÃO 2: 12 HORAS (UPSELL +4.99€) */}
+          <div 
+            onClick={() => setFormData({...formData, deliveryOption: '12h'})}
+            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex justify-between items-center ${
+              formData.deliveryOption === '12h' ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-200' : 'border-slate-100 bg-white hover:border-slate-200'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.deliveryOption === '12h' ? 'border-rose-500' : 'border-slate-300'}`}>
+                {formData.deliveryOption === '12h' && <div className="w-2.5 h-2.5 bg-rose-500 rounded-full"/>}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 flex items-center gap-1">Super Urgente (12h) <Zap size={14} className="text-rose-500"/></p>
+                <p className="text-[10px] text-slate-500">Prioridade máxima na produção.</p>
+              </div>
+            </div>
+            <span className="text-sm font-bold text-rose-600">+4,99€</span>
           </div>
         </div>
 
@@ -449,9 +449,8 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         
         <div className="bg-slate-50 p-8 rounded-3xl border border-slate-200 shadow-sm">
            <p className="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Entrega Estimada</p>
-           {/* Texto Dinâmico de Confirmação Atualizado */}
            <p className="text-2xl font-bold text-slate-900 mb-6">
-              {formData.deliveryOption === '24h' ? 'Dentro de 24 Horas' : 'Até 72 Horas'}
+              {formData.deliveryOption === '12h' ? 'Menos de 12 Horas' : 'Até 24 Horas'}
            </p>
            <div className="flex justify-center gap-3">
               <span className="flex items-center gap-1 bg-white px-3 py-2 rounded-lg border border-slate-100 text-xs font-bold text-slate-600 shadow-sm"><MessageCircle size={14} className="text-green-500"/> WhatsApp</span>
