@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
 import { 
   Heart, Star, CheckCircle2, Music, Clock, ShieldCheck, Gift, 
-  Play, Pause, X, Stamp, Trophy
+  Play, Pause, X, Stamp, Trophy, Sparkles
 } from 'lucide-react';
 
 import { Button } from './components/Button';
