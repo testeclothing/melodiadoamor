@@ -27,7 +27,7 @@ const SAMPLES: SongSample[] = [
   { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
 ];
 
-// --- FAQS (MANTENDO A PROMESSA DE 24H) ---
+// --- FAQS (ATUALIZADAS COM A ENTREGA 48H vs 12H) ---
 const FAQS: FaqItem[] = [
   { 
     question: "Como funciona a personalização?", 
@@ -35,7 +35,7 @@ const FAQS: FaqItem[] = [
   },
   { 
     question: "Quanto tempo demora a entrega?", 
-    answer: "Somos super rápidos! A entrega normal é feita em 24h. Se tiveres ainda mais pressa, temos uma opção Super Urgente (12h) no checkout." 
+    answer: "A entrega normal é feita em 48h (Grátis). Se tiveres pressa, temos uma opção Super Urgente (12h) no checkout." 
   },
   { 
     question: "Posso pedir alterações?", 
@@ -224,14 +224,14 @@ function App() {
                 </div>
                 <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-all duration-300">
                     <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Gift size={32} /></div>
-                    <h3 className="text-xl font-bold mb-3">3. Recebe em 24h</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">Recebe o ficheiro MP3 e a letra no teu e-mail em até 24h. Pronta a oferecer e a emocionar!</p>
+                    <h3 className="text-xl font-bold mb-3">3. Recebe em 48h</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">Recebe o ficheiro MP3 e a letra no teu e-mail em até 48h (ou 12h se escolheres a opção urgente). Pronta a oferecer!</p>
                 </div>
             </div>
         </div>
       </section>
 
-      {/* AUDIO SAMPLES - 24H MANTIDO */}
+      {/* AUDIO SAMPLES */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
@@ -245,7 +245,7 @@ function App() {
               <h2 className="text-3xl md:text-5xl font-serif font-bold leading-tight">Mais do que uma música, <span className="text-rose-400">uma memória eterna.</span></h2>
               <ul className="space-y-6">
                 {[
-                  { icon: Clock, title: "Entrega em 24 Horas", desc: "Recebe a tua música pronta e masterizada no teu email." },
+                  { icon: Clock, title: "Entrega em 48 Horas", desc: "Recebe a tua música pronta e masterizada no teu email." },
                   { icon: Music, title: "Qualidade de Estúdio", desc: "Produção profissional com vozes claras e instrumentos envolventes." },
                   { icon: CheckCircle2, title: "100% Personalizado", desc: "A letra fala sobre VÓS. Os vossos nomes, o vosso lugar especial, a vossa data." },
                   { icon: ShieldCheck, title: "Satisfação Garantida", desc: "Se não adorares a primeira versão, revemos a letra contigo." }
@@ -262,7 +262,7 @@ function App() {
         </div>
       </section>
 
-      {/* PRICING SECTION - ATUALIZADA (SEM PARIS, SEM VALENTINE) */}
+      {/* PRICING SECTION */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
@@ -281,7 +281,7 @@ function App() {
                      <div className="bg-white/20 p-2 rounded-full hidden sm:block animate-pulse"><Sparkles className="text-white" size={20} /></div>
                      <div>
                        <p className="text-[10px] md:text-xs text-rose-100 uppercase font-bold tracking-wider">OFERTA ATUAL:</p>
-                       <p className="font-bold text-sm md:text-xl uppercase tracking-tight">ENTREGAS EM 24H</p>
+                       <p className="font-bold text-sm md:text-xl uppercase tracking-tight">19,99€ (48H)</p>
                      </div>
                    </div>
                  </div>
@@ -295,11 +295,11 @@ function App() {
                 <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border border-green-100">60% DESCONTO</span>
               </div>
               <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-6xl font-bold text-rose-600 tracking-tight">24,99€</span>
+                <span className="text-6xl font-bold text-rose-600 tracking-tight">19,99€</span>
                 <span className="text-gray-500 font-medium">/ música</span>
               </div>
               <ul className="space-y-3 mb-10 text-gray-700">
-                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega em 24h", "Suporte Dedicado"].map((feat, i) => (
+                {["Música MP3 Completa (3-4 min)", "Letra 100% Personalizada", "Revisão Gratuita", "Entrega em 48h (Opção 12h no checkout)", "Suporte Dedicado"].map((feat, i) => (
                   <li key={i} className="flex items-center gap-3 text-base">
                     <div className="bg-rose-50 rounded-full p-1"><CheckCircle2 size={16} className="text-rose-600 shrink-0" /></div>
                     <span>{feat}</span>
@@ -346,7 +346,7 @@ function App() {
       
       {/* STICKY MOBILE CTA */}
       <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
-         <Button fullWidth className="shadow-2xl border border-white/20 py-4 text-lg bg-rose-600 hover:bg-rose-700 text-white" onClick={startWizard}>Criar Música (24,99€)</Button>
+         <Button fullWidth className="shadow-2xl border border-white/20 py-4 text-lg bg-rose-600 hover:bg-rose-700 text-white" onClick={startWizard}>Criar Música (19,99€)</Button>
       </div>
 
     </div>
