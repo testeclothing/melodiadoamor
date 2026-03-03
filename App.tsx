@@ -12,7 +12,7 @@ import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
 import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO HERO ---
-import heroBg from './assets/12qwq.jpeg';
+import heroBg from './assets/12qwq.jpeg'; // Podes querer mudar esta imagem para uma de Pai/Filha se tiveres
 import heroAudio from './assets/sofia2.mp3'; 
 
 // --- IMPORTAÇÃO DOS SAMPLES (LOCAIS) ---
@@ -22,20 +22,20 @@ import vitorAudio from './assets/vitor.mp3';
 
 // --- DADOS DOS SAMPLES ---
 const SAMPLES: SongSample[] = [
-  { id: 1, title: "Margarida", genre: "Pop Acústico", url: vitorAudio },
-  { id: 2, title: "Sabia quem eras", genre: "Alma & Emoção", url: sofiaAudio },
+  { id: 1, title: "O Meu Herói", genre: "Pop Acústico", url: vitorAudio },
+  { id: 2, title: "O Melhor Pai do Mundo", genre: "Alma & Emoção", url: sofiaAudio },
   { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
 ];
 
-// --- FAQS ATUALIZADAS (48H vs 12H) ---
+// --- FAQS (FOCADAS NO DIA DO PAI) ---
 const FAQS: FaqItem[] = [
   { 
     question: "Como funciona a personalização?", 
-    answer: "É muito simples! Clicas em 'Criar Música', contas-nos a vossa história, escolhes o estilo e nós tratamos do resto." 
+    answer: "É muito simples! Clicas em 'Criar Música', contas-nos a história do teu pai (as manias, as piadas, o que mais gostas nele) e nós tratamos do resto." 
   },
   { 
     question: "Quanto tempo demora a entrega?", 
-    answer: "A entrega normal é feita em 48h (Grátis). Se tiveres pressa para o Dia da Mulher, temos uma opção Super Urgente (12h) no checkout." 
+    answer: "A entrega normal é feita em 48h (Grátis). Se tiveres pressa para o Dia do Pai, temos uma opção Super Urgente (12h) no checkout." 
   },
   { 
     question: "Posso pedir alterações?", 
@@ -48,9 +48,9 @@ const FAQS: FaqItem[] = [
 ];
 
 const REVIEWS = [
-  { name: "João Silva", text: "A Maria chorou assim que ouviu os primeiros versos. Foi a melhor prenda que já lhe dei!", stars: 5 },
-  { name: "Ana Martins", text: "Incrivelmente rápido e a qualidade parece de rádio. Recomendo muito!", stars: 5 },
-  { name: "Pedro Costa", text: "Fiquei com receio que fosse genérico, mas captaram todos os detalhes da nossa história.", stars: 5 },
+  { name: "Maria Santos", text: "O meu pai chorou baba e ranho quando ouviu a música sobre a oficina dele. Foi a melhor prenda de sempre!", stars: 5 },
+  { name: "Tiago Gomes", text: "Nunca sei o que dar ao meu pai, mas isto superou tudo. A reação dele foi impagável.", stars: 5 },
+  { name: "Ana Costa", text: "Fiquei com receio que fosse genérico, mas captaram todos os detalhes das piadas secas dele!", stars: 5 },
 ];
 
 function App() {
@@ -58,11 +58,11 @@ function App() {
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
 
-  // --- BARRA DE TOPO (Focada no Dia da Mulher) ---
+  // --- BARRA DE TOPO (Dia do Pai) ---
   const [textoTopo, setTextoTopo] = useState("");
 
   useEffect(() => {
-    setTextoTopo("✨ SURPREENDE A MULHER DA TUA VIDA (8 DE MARÇO) - ENTREGA EM 48H ✨");
+    setTextoTopo("✨ O PRESENTE MAIS EMOCIONANTE PARA O DIA DO PAI (19 DE MARÇO) ✨");
   }, []);
 
   // --- LÓGICA DE RETORNO DO STRIPE ---
@@ -143,29 +143,29 @@ function App() {
           <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-20">
             <div className="flex-1 text-center lg:text-left space-y-4 lg:space-y-8 max-w-xl">
               <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full text-sm font-bold border border-rose-100 uppercase tracking-wide shadow-sm hover:scale-105 transition-transform">
-                <Heart size={14} fill="currentColor" /><span>O PRESENTE PERFEITO</span>
+                <Heart size={14} fill="currentColor" /><span>PARA O MELHOR PAI</span>
               </div>
               <h1 className="text-4xl lg:text-6xl font-serif font-bold leading-[1.1] text-gray-900 tracking-tight">
-                A vossa história merece uma <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">banda sonora única.</span>
+                A história do teu herói merece uma <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">banda sonora única.</span>
               </h1>
               <p className="text-base lg:text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Este Dia da Mulher, oferece mais do que flores. Oferece uma música personalizada feita à medida das vossas memórias.
+                Este Dia do Pai, oferece mais do que meias ou perfumes. Oferece uma música personalizada com as histórias e memórias dele.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2">
                 <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl shadow-rose-500/20 bg-rose-600 hover:bg-rose-700 text-white shadow-xl">
-                  Criar a Minha Canção
+                  Criar Música do Pai
                 </Button>
                 <div className="flex items-center gap-3 text-sm text-gray-500 font-medium bg-white/50 px-3 py-2 rounded-xl border border-white/50 backdrop-blur-sm">
                   <div className="flex -space-x-3">
                     {[1,2,3,4].map(i => (<img key={i} src={`https://picsum.photos/40/40?random=${i}`} className="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="User" />))}
                   </div>
-                  <div className="flex flex-col leading-none text-left"><span className="font-bold text-gray-900">+550 mulheres</span><span className="text-xs">surpreendidas</span></div>
+                  <div className="flex flex-col leading-none text-left"><span className="font-bold text-gray-900">+550 pais</span><span className="text-xs">surpreendidos</span></div>
                 </div>
               </div>
             </div>
             <div className="flex-1 w-full max-w-[450px] lg:max-w-[550px] relative">
               <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-all duration-700 border-[6px] border-white group">
-                <img src={heroBg} alt="Casal feliz" className="w-full h-auto object-cover aspect-[4/5] lg:aspect-[3/4] transition-transform duration-[20s] ease-linear group-hover:scale-110"/>
+                <img src={heroBg} alt="Pai feliz" className="w-full h-auto object-cover aspect-[4/5] lg:aspect-[3/4] transition-transform duration-[20s] ease-linear group-hover:scale-110"/>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
                 <div className="absolute bottom-4 left-4 right-4 z-20">
                   <button onClick={toggleHeroAudio} className="w-full bg-white/95 backdrop-blur-xl rounded-2xl p-3 flex items-center gap-4 shadow-xl border border-white/40 hover:bg-white transition-all cursor-pointer group/player text-left">
@@ -174,7 +174,7 @@ function App() {
                       {heroIsPlaying && (<span className="absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75 animate-ping"></span>)}
                     </div>
                     <div className="flex-1 min-w-0">
-                         <p className="font-bold text-sm text-gray-900 truncate">Exemplo: A Nossa História</p>
+                         <p className="font-bold text-sm text-gray-900 truncate">Exemplo: O Melhor Pai</p>
                          <p className="text-[10px] text-gray-500 font-mono">{heroIsPlaying ? 'A Tocar...' : 'Ouvir Exemplo'}</p>
                     </div>
                   </button>
@@ -188,7 +188,7 @@ function App() {
       {/* SOCIAL PROOF */}
       <section className="bg-gray-50 py-12 border-y border-gray-100">
         <div className="container mx-auto px-4 max-w-6xl">
-          <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">AVALIADO COM 4.9/5 ESTRELAS POR CASAIS EM PORTUGAL</p>
+          <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-8">AVALIADO COM 4.9/5 ESTRELAS POR FAMÍLIAS EM PORTUGAL</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {REVIEWS.map((review, i) => (
               <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-left">
@@ -209,13 +209,13 @@ function App() {
       <section className="py-24">
         <div className="container mx-auto px-4 max-w-6xl text-center">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Como criamos a magia?</h2>
-            <p className="text-gray-600 text-lg mb-16 max-w-xl mx-auto leading-relaxed">Tu contas a história, nós transformamos em melodia. O processo é simples e rápido.</p>
+            <p className="text-gray-600 text-lg mb-16 max-w-xl mx-auto leading-relaxed">Tu contas a história dele, nós transformamos em melodia. O processo é simples e rápido.</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
                 <div className="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 -z-10"></div>
                 <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-all duration-300">
                     <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Heart size={32} /></div>
                     <h3 className="text-xl font-bold mb-3">1. Partilha a História</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">Preenche um formulário simples com os vossos nomes, memórias e o estilo musical que mais gostam.</p>
+                    <p className="text-gray-600 text-sm leading-relaxed">Preenche um formulário simples com o nome dele, as manias engraçadas e o estilo musical que ele gosta.</p>
                 </div>
                 <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-lg relative group hover:-translate-y-1 transition-all duration-300">
                     <div className="w-20 h-20 mx-auto bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-6 border-4 border-white shadow-sm group-hover:scale-110 transition-transform"><Music size={32} /></div>
@@ -231,7 +231,7 @@ function App() {
         </div>
       </section>
 
-      {/* AUDIO SAMPLES - 48H ATUALIZADO */}
+      {/* AUDIO SAMPLES */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
@@ -247,7 +247,7 @@ function App() {
                 {[
                   { icon: Clock, title: "Entrega em 48 Horas", desc: "Recebe a tua música pronta e masterizada no teu email." },
                   { icon: Music, title: "Qualidade de Estúdio", desc: "Produção profissional com vozes claras e instrumentos envolventes." },
-                  { icon: CheckCircle2, title: "100% Personalizado", desc: "A letra fala sobre VÓS. Os vossos nomes, o vosso lugar especial, a vossa data." },
+                  { icon: CheckCircle2, title: "100% Personalizado", desc: "A letra fala sobre ELE. O nome, as piadas, a oficina, o clube." },
                   { icon: ShieldCheck, title: "Satisfação Garantida", desc: "Se não adorares a primeira versão, revemos a letra contigo." }
                 ].map((item, i) => (
                   <li key={i} className="flex gap-5 group">
@@ -262,7 +262,7 @@ function App() {
         </div>
       </section>
 
-      {/* PRICING SECTION - 19.99€ ATUALIZADO */}
+      {/* PRICING SECTION */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
@@ -272,9 +272,9 @@ function App() {
                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 to-rose-700"></div>
                <div className="relative z-10">
                  <h3 className="text-lg font-bold mb-2 text-rose-100 uppercase tracking-widest opacity-90">Prenda Inesquecível</h3>
-                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 italic">Dia da Mulher & Datas</h2>
+                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 italic">Dia do Pai</h2>
                  <p className="text-rose-50 mb-8 text-base lg:text-lg leading-relaxed">
-                   Surpreende no vosso dia especial. O presente perfeito para marcar uma data inesquecível.
+                   Surpreende no Dia do Pai. O presente perfeito para marcar uma data inesquecível.
                  </p>
                  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-6 border border-white/20 inline-block md:block mx-auto md:mx-0">
                    <div className="flex items-center gap-4">
