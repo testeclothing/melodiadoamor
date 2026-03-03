@@ -27,15 +27,15 @@ const SAMPLES: SongSample[] = [
   { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
 ];
 
-// --- FAQS (ATUALIZADAS COM A ENTREGA 48H vs 12H) ---
+// --- FAQS ATUALIZADAS (48H vs 12H) ---
 const FAQS: FaqItem[] = [
   { 
     question: "Como funciona a personalização?", 
-    answer: "É muito simples! Clicas em 'Criar Música', respondes a algumas perguntas sobre a vossa história e nós tratamos do resto." 
+    answer: "É muito simples! Clicas em 'Criar Música', contas-nos a vossa história, escolhes o estilo e nós tratamos do resto." 
   },
   { 
     question: "Quanto tempo demora a entrega?", 
-    answer: "A entrega normal é feita em 48h (Grátis). Se tiveres pressa, temos uma opção Super Urgente (12h) no checkout." 
+    answer: "A entrega normal é feita em 48h (Grátis). Se tiveres pressa para o Dia da Mulher, temos uma opção Super Urgente (12h) no checkout." 
   },
   { 
     question: "Posso pedir alterações?", 
@@ -43,7 +43,7 @@ const FAQS: FaqItem[] = [
   },
   { 
     question: "Em que formato recebo a música?", 
-    answer: "Recebes um ficheiro MP3 de alta qualidade e a letra completa da canção." 
+    answer: "Recebes um ficheiro MP3 de alta qualidade e a letra completa da canção no teu email e WhatsApp." 
   },
 ];
 
@@ -58,11 +58,11 @@ function App() {
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
 
-  // --- BARRA DE TOPO EVERGREEN ---
+  // --- BARRA DE TOPO (Focada no Dia da Mulher) ---
   const [textoTopo, setTextoTopo] = useState("");
 
   useEffect(() => {
-    setTextoTopo("✨ O PRESENTE MAIS EMOCIONANTE PARA O VOSSO ANIVERSÁRIO ✨");
+    setTextoTopo("✨ SURPREENDE A MULHER DA TUA VIDA (8 DE MARÇO) - ENTREGA EM 48H ✨");
   }, []);
 
   // --- LÓGICA DE RETORNO DO STRIPE ---
@@ -143,13 +143,13 @@ function App() {
           <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-20">
             <div className="flex-1 text-center lg:text-left space-y-4 lg:space-y-8 max-w-xl">
               <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-600 px-4 py-1.5 rounded-full text-sm font-bold border border-rose-100 uppercase tracking-wide shadow-sm hover:scale-105 transition-transform">
-                <Heart size={14} fill="currentColor" /><span>PRESENTES COM ALMA</span>
+                <Heart size={14} fill="currentColor" /><span>O PRESENTE PERFEITO</span>
               </div>
               <h1 className="text-4xl lg:text-6xl font-serif font-bold leading-[1.1] text-gray-900 tracking-tight">
                 A vossa história merece uma <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">banda sonora única.</span>
               </h1>
               <p className="text-base lg:text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Surpreende a tua cara-metade com uma música personalizada feita à medida. Tu dás-nos as memórias, nós criamos a emoção.
+                Este Dia da Mulher, oferece mais do que flores. Oferece uma música personalizada feita à medida das vossas memórias.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start pt-2">
                 <Button onClick={startWizard} pulse className="w-full sm:w-auto px-8 py-4 text-lg shadow-xl shadow-rose-500/20 bg-rose-600 hover:bg-rose-700 text-white shadow-xl">
@@ -159,7 +159,7 @@ function App() {
                   <div className="flex -space-x-3">
                     {[1,2,3,4].map(i => (<img key={i} src={`https://picsum.photos/40/40?random=${i}`} className="w-9 h-9 rounded-full border-2 border-white shadow-sm" alt="User" />))}
                   </div>
-                  <div className="flex flex-col leading-none text-left"><span className="font-bold text-gray-900">+550 casais</span><span className="text-xs">felizes</span></div>
+                  <div className="flex flex-col leading-none text-left"><span className="font-bold text-gray-900">+550 mulheres</span><span className="text-xs">surpreendidas</span></div>
                 </div>
               </div>
             </div>
@@ -231,7 +231,7 @@ function App() {
         </div>
       </section>
 
-      {/* AUDIO SAMPLES */}
+      {/* AUDIO SAMPLES - 48H ATUALIZADO */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 max-w-6xl">
@@ -262,7 +262,7 @@ function App() {
         </div>
       </section>
 
-      {/* PRICING SECTION */}
+      {/* PRICING SECTION - 19.99€ ATUALIZADO */}
       <section id="pricing" className="py-24 bg-gradient-to-b from-white to-rose-50/50">
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-rose-100 flex flex-col md:flex-row transform hover:scale-[1.01] transition-all duration-500">
@@ -272,7 +272,7 @@ function App() {
                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-rose-500 to-rose-700"></div>
                <div className="relative z-10">
                  <h3 className="text-lg font-bold mb-2 text-rose-100 uppercase tracking-widest opacity-90">Prenda Inesquecível</h3>
-                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 italic">Aniversários & Datas</h2>
+                 <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 italic">Dia da Mulher & Datas</h2>
                  <p className="text-rose-50 mb-8 text-base lg:text-lg leading-relaxed">
                    Surpreende no vosso dia especial. O presente perfeito para marcar uma data inesquecível.
                  </p>
@@ -344,7 +344,7 @@ function App() {
         </div>
       </footer>
       
-      {/* STICKY MOBILE CTA */}
+      {/* STICKY MOBILE CTA - 19.99€ */}
       <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
          <Button fullWidth className="shadow-2xl border border-white/20 py-4 text-lg bg-rose-600 hover:bg-rose-700 text-white" onClick={startWizard}>Criar Música (19,99€)</Button>
       </div>
