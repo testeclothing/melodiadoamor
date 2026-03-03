@@ -9,10 +9,11 @@ import { AudioPlayer } from './components/AudioPlayer';
 import { Faq } from './components/Faq';
 import { Wizard } from './components/Wizard';
 import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
+import LuxuryExperience from './components/LuxuryExperience'; // Importante: Tem de estar importado
 import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO HERO ---
-import heroBg from './assets/12qwq.jpeg'; // Podes querer mudar esta imagem para uma de Pai/Filha se tiveres
+import heroBg from './assets/12qwq.jpeg';
 import heroAudio from './assets/sofia2.mp3'; 
 
 // --- IMPORTAÇÃO DOS SAMPLES (LOCAIS) ---
@@ -23,54 +24,45 @@ import vitorAudio from './assets/vitor.mp3';
 // --- DADOS DOS SAMPLES ---
 const SAMPLES: SongSample[] = [
   { id: 1, title: "O Meu Herói", genre: "Pop Acústico", url: vitorAudio },
-  { id: 2, title: "O Melhor Pai do Mundo", genre: "Alma & Emoção", url: sofiaAudio },
+  { id: 2, title: "O Melhor Pai", genre: "Alma & Emoção", url: sofiaAudio },
   { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
 ];
 
-// --- FAQS (FOCADAS NO DIA DO PAI) ---
 const FAQS: FaqItem[] = [
-  { 
-    question: "Como funciona a personalização?", 
-    answer: "É muito simples! Clicas em 'Criar Música', contas-nos a história do teu pai (as manias, as piadas, o que mais gostas nele) e nós tratamos do resto." 
-  },
-  { 
-    question: "Quanto tempo demora a entrega?", 
-    answer: "A entrega normal é feita em 48h (Grátis). Se tiveres pressa para o Dia do Pai, temos uma opção Super Urgente (12h) no checkout." 
-  },
-  { 
-    question: "Posso pedir alterações?", 
-    answer: "Sim! Queremos que fiques 100% satisfeito. Tens direito a uma revisão gratuita na letra ou melodia." 
-  },
-  { 
-    question: "Em que formato recebo a música?", 
-    answer: "Recebes um ficheiro MP3 de alta qualidade e a letra completa da canção no teu email e WhatsApp." 
-  },
+  { question: "Como funciona?", answer: "Clicas em 'Criar Música', contas a história do pai e nós fazemos a magia." },
+  { question: "Quanto tempo demora?", answer: "Entrega normal em 48h (Grátis). Opção 12h disponível no checkout." },
+  { question: "Posso pedir alterações?", answer: "Sim! Tens revisão gratuita." },
+  { question: "Formato?", answer: "MP3 de alta qualidade e letra completa." },
 ];
 
 const REVIEWS = [
-  { name: "Maria Santos", text: "O meu pai chorou baba e ranho quando ouviu a música sobre a oficina dele. Foi a melhor prenda de sempre!", stars: 5 },
-  { name: "Tiago Gomes", text: "Nunca sei o que dar ao meu pai, mas isto superou tudo. A reação dele foi impagável.", stars: 5 },
-  { name: "Ana Costa", text: "Fiquei com receio que fosse genérico, mas captaram todos os detalhes das piadas secas dele!", stars: 5 },
+  { name: "Maria Santos", text: "O meu pai chorou baba e ranho. Melhor prenda de sempre!", stars: 5 },
+  { name: "Tiago Gomes", text: "A reação dele foi impagável. Recomendo muito.", stars: 5 },
+  { name: "Ana Costa", text: "Captaram todos os detalhes das piadas dele!", stars: 5 },
 ];
 
 function App() {
-  const [view, setView] = useState<'landing' | 'wizard' | 'terms' | 'privacy' | 'contact'>('landing');
+  // --- A CORREÇÃO ESTÁ AQUI (Lógica de Inicialização) ---
+  // O site verifica o link ANTES de decidir o que mostrar
+  const [view, setView] = useState<'landing' | 'wizard' | 'terms' | 'privacy' | 'contact' | 'experience'>(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('view') === 'experience') return 'experience';
+    if (params.get('status') === 'success') return 'wizard';
+    return 'landing';
+  });
+
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
+  const [textoTopo, setTextoTopo] = useState("✨ O PRESENTE MAIS EMOCIONANTE PARA O DIA DO PAI (19 DE MARÇO) ✨");
 
-  // --- BARRA DE TOPO (Dia do Pai) ---
-  const [textoTopo, setTextoTopo] = useState("");
-
+  // Hook para garantir que a navegação funciona se mudarmos o URL
   useEffect(() => {
-    setTextoTopo("✨ O PRESENTE MAIS EMOCIONANTE PARA O DIA DO PAI (19 DE MARÇO) ✨");
-  }, []);
-
-  // --- LÓGICA DE RETORNO DO STRIPE ---
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('status') === 'success') {
-      setView('wizard');
-    }
+    const handlePopState = () => {
+       const params = new URLSearchParams(window.location.search);
+       if (params.get('view') === 'experience') setView('experience');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const toggleHeroAudio = () => {
@@ -93,12 +85,11 @@ function App() {
     setView('wizard');
   };
 
-  const scrollToPricing = () => {
-    const el = document.getElementById('pricing');
-    el?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // --- RENDERIZAÇÃO CONDICIONAL ---
+  
+  // SE FOR A EXPERIÊNCIA, MOSTRA SÓ ISSO
+  if (view === 'experience') return <LuxuryExperience />;
 
-  // --- ROTEAMENTO ---
   if (view === 'wizard') return <Wizard onBack={() => setView('landing')} />;
   if (view === 'contact') return <ContactPage onBack={() => setView('landing')} />;
   if (view === 'terms') return <TermsPage onBack={() => setView('landing')} />;
@@ -117,7 +108,6 @@ function App() {
             <span className="font-serif font-bold text-xl tracking-tight text-slate-800">Melodia do Amor</span>
           </div>
           
-          {/* BARRA DE ANÚNCIO DESKTOP */}
           <div className="hidden md:flex items-center gap-2 bg-rose-50 px-4 py-1.5 rounded-full border border-rose-100">
             <Sparkles size={14} className="text-rose-600" />
             <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">{textoTopo}</span>
@@ -127,7 +117,7 @@ function App() {
         </div>
       </header>
 
-      {/* BARRA DE ANÚNCIO MOBILE */}
+      {/* BARRA MOBILE */}
       <div className="md:hidden mt-16 bg-rose-50 py-2 flex justify-center border-b border-rose-100 px-4 text-center">
         <div className="flex items-center gap-2">
           <Sparkles size={12} className="text-rose-600" />
@@ -315,14 +305,6 @@ function App() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-16"><h2 className="text-3xl font-serif font-bold text-gray-900">Perguntas Frequentes</h2></div>
-          <Faq items={FAQS} />
         </div>
       </section>
 
