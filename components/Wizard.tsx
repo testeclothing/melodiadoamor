@@ -4,8 +4,7 @@ import {
   Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine, Clock, Zap
 } from 'lucide-react';
 
-// --- IMPORTAÇÃO DOS ÁUDIOS (Atualizados para bater certo com o App.tsx) ---
-// Nota: O Wizard está em /components, por isso usamos ../assets
+// --- IMPORTAÇÃO DOS ÁUDIOS ---
 import almaAudio from '../assets/almapai.mp3';     
 import rockAudio from '../assets/rock.mp3'; 
 import pimbaAudio from '../assets/pimba.mp3';     
@@ -14,7 +13,7 @@ interface WizardProps {
   onBack: () => void;
 }
 
-// CONFIGURAÇÃO DOS ESTILOS (Atualizados)
+// CONFIGURAÇÃO DOS ESTILOS
 const MUSIC_STYLES = [
   { 
     id: 'alma', 
@@ -41,24 +40,25 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [playing, setPlaying] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false); 
   
-  // ESTADO DO FORMULÁRIO (Padrão 48h)
+  // ESTADO DO FORMULÁRIO
   const [formData, setFormData] = useState({
     senderName: '',    
     recipientName: '', 
     
-    // Mapeamento das Novas Perguntas:
-    meeting: '',       // "3 Palavras"
-    loveMost: '',      // "Frase de Pai"
-    hobbies: '',       // "Lição de Vida"
-    memory: '',        // "Memória Favorita"
-    extraDetails: '',  // "Outros Detalhes"
+    // Novas Perguntas
+    meeting: '',       
+    loveMost: '',      
+    hobbies: '',       
+    memory: '',        
+    extraDetails: '',  
 
     styleBase: '',        
+    // customStyle removido da UI, mas mantido no state para não quebrar lógica antiga
     customStyle: '',      
     deliveryOption: '48h' 
   });
 
-  // --- CÁLCULO DE PREÇO (19.99€ Base | 29.98€ Upsell Tempo) ---
+  // --- CÁLCULO DE PREÇO ---
   const finalPrice = formData.deliveryOption === '12h' ? 29.98 : 19.99;
 
   // --- 1. SEGURANÇA DE DOMÍNIO ---
@@ -77,7 +77,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     if (status === 'success') {
       setStep(5);
       
-      // A. ENVIAR PARA GOOGLE SHEETS
       const pendingData = localStorage.getItem('pendingOrder');
       if (pendingData) {
         const data = JSON.parse(pendingData);
@@ -86,10 +85,8 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Nome Cliente", data.senderName);
         formDataToSend.append("Para Quem", data.recipientName);
         
-        // Define o estilo para o Excel
-        const estiloFinal = data.customStyle && data.customStyle.length > 0 
-          ? `PERSONALIZADO: ${data.customStyle}` 
-          : (MUSIC_STYLES.find((s: any) => s.id === data.styleBase)?.name || "N/A");
+        // Estilo selecionado
+        const estiloFinal = MUSIC_STYLES.find((s: any) => s.id === data.styleBase)?.name || "N/A";
 
         formDataToSend.append("Estilo", estiloFinal);
         
@@ -99,7 +96,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Preco", priceStr);
         formDataToSend.append("Entrega Rapida", deliveryStr);
         
-        // Mapeamento para o Excel (Atualizado com nomes das novas perguntas)
+        // Perguntas
         formDataToSend.append("3 Palavras", data.meeting);
         formDataToSend.append("Frase de Pai", data.loveMost);
         formDataToSend.append("Licao de Vida", data.hobbies);
@@ -155,7 +152,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
       styleBase: formData.styleBase,
-      customStyle: formData.customStyle,
+      customStyle: formData.customStyle, // Vai vazio
       deliveryOption: formData.deliveryOption,
       timestamp: new Date().toISOString()
     }));
@@ -209,35 +206,31 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       </div>
       <div className="space-y-5">
         
-        {/* PERGUNTA 1: 3 PALAVRAS */}
+        {/* PERGUNTAS */}
         <div className="group">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">3 Palavras que o descrevem</label>
           <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
             placeholder="Ex: Trabalhador, Engraçado, Protetor" value={formData.meeting} onChange={(e) => setFormData({...formData, meeting: e.target.value})} />
         </div>
 
-        {/* PERGUNTA 2: FRASE DE PAI */}
         <div className="group">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Frase que ele mais repete</label>
           <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
             placeholder='Ex: "Juízo nessa cabeça!"' value={formData.loveMost} onChange={(e) => setFormData({...formData, loveMost: e.target.value})} />
         </div>
 
-        {/* PERGUNTA 3: LIÇÃO DE VIDA */}
         <div className="group">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Uma lição que aprendeste com ele</label>
           <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
             placeholder="Ex: Nunca desistir dos sonhos." value={formData.hobbies} onChange={(e) => setFormData({...formData, hobbies: e.target.value})} />
         </div>
 
-        {/* PERGUNTA 4: MEMÓRIA */}
         <div className="group">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Memória Favorita Juntos</label>
           <textarea className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:border-rose-500 outline-none"
             placeholder="Aquele dia na praia, o primeiro jogo de futebol..." value={formData.memory} onChange={(e) => setFormData({...formData, memory: e.target.value})} />
         </div>
 
-        {/* PERGUNTA 5: EXTRAS */}
         <div className="group">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Outros detalhes / Piadas internas</label>
           <textarea className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm h-24 resize-none focus:border-rose-500 outline-none"
@@ -256,7 +249,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-serif font-bold text-slate-900 italic">Estilo Musical</h2>
-        <p className="text-slate-500 text-sm">Escolhe um dos nossos ou diz-nos o que imaginas.</p>
+        <p className="text-slate-500 text-sm">Escolhe a sonoridade da tua música.</p>
       </div>
       
       {/* OPÇÕES BASE */}
@@ -265,7 +258,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           <div key={s.id} 
             onClick={() => setFormData({...formData, styleBase: s.id, customStyle: ''})} 
             className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between ${
-              formData.styleBase === s.id && !formData.customStyle ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-200' : 'border-slate-100 bg-white'
+              formData.styleBase === s.id ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-200' : 'border-slate-100 bg-white'
             }`}
           >
             <div>
@@ -282,28 +275,10 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         ))}
       </div>
 
-      {/* CAIXA DE ESTILO PERSONALIZADO (SEM CUSTO EXTRA) */}
-      <div className={`p-5 rounded-2xl border-2 transition-all ${
-          formData.customStyle.length > 0 ? 'border-amber-400 bg-amber-50 ring-1 ring-amber-200' : 'border-slate-200 border-dashed bg-slate-50'
-        }`}>
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles size={16} className="text-amber-500" />
-          <span className="font-bold text-slate-900 text-sm">Outro Estilo / Artista (Incluído)</span>
-        </div>
-        <input 
-          type="text" 
-          className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm focus:border-amber-500 outline-none"
-          placeholder="Ex: Rock à Xutos, Fado, Estilo Coldplay..."
-          value={formData.customStyle}
-          onChange={(e) => setFormData({...formData, customStyle: e.target.value, styleBase: ''})} 
-        />
-        <p className="text-[10px] text-slate-500 mt-2 ml-1">Escreve a tua referência e nós criamos.</p>
-      </div>
-
       <div className="flex gap-4 pt-4">
         <button onClick={() => setStep(2)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest">Voltar</button>
         <button onClick={() => { if(playing) toggleAudio(playing); setStep(4); }} 
-          disabled={!formData.styleBase && !formData.customStyle} 
+          disabled={!formData.styleBase} 
           className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs">
           Ver Resumo
         </button>
@@ -328,7 +303,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         <div className="flex justify-between items-center text-sm pb-2 border-b border-slate-50">
            <span className="text-slate-500 font-medium">Estilo</span>
            <span className="font-bold text-slate-800 text-xs uppercase">
-             {formData.customStyle ? 'Personalizado' : MUSIC_STYLES.find(s => s.id === formData.styleBase)?.name}
+             {MUSIC_STYLES.find(s => s.id === formData.styleBase)?.name}
            </span>
         </div>
 
