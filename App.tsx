@@ -27,11 +27,24 @@ const SAMPLES: SongSample[] = [
   { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
 ];
 
+// --- FAQS ---
 const FAQS: FaqItem[] = [
-  { question: "Como funciona?", answer: "Clicas em 'Criar Música', contas a história do pai e nós fazemos a magia." },
-  { question: "Quanto tempo demora?", answer: "Entrega normal em 48h (Grátis). Opção 12h disponível no checkout." },
-  { question: "Posso pedir alterações?", answer: "Sim! Tens revisão gratuita." },
-  { question: "Formato?", answer: "MP3 de alta qualidade e letra completa." },
+  { 
+    question: "Como funciona a personalização?", 
+    answer: "É muito simples! Clicas em 'Criar Música', contas a história do pai (manias, piadas, memórias) e nós tratamos do resto." 
+  },
+  { 
+    question: "Quanto tempo demora a entrega?", 
+    answer: "A entrega normal é feita em 48h (Grátis). Se tiveres pressa, temos uma opção Super Urgente (12h) no checkout." 
+  },
+  { 
+    question: "Posso pedir alterações?", 
+    answer: "Sim! Queremos que fiques 100% satisfeito. Tens direito a uma revisão gratuita na letra ou melodia." 
+  },
+  { 
+    question: "Em que formato recebo a música?", 
+    answer: "Recebes um ficheiro MP3 de alta qualidade e a letra completa da canção no teu email e WhatsApp." 
+  },
 ];
 
 const REVIEWS = [
@@ -41,14 +54,12 @@ const REVIEWS = [
 ];
 
 function App() {
-  // VOLTAMOS AO ESTADO ORIGINAL (SEM EXPERIENCE)
   const [view, setView] = useState<'landing' | 'wizard' | 'terms' | 'privacy' | 'contact'>('landing');
-  
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
   const [textoTopo, setTextoTopo] = useState("✨ O PRESENTE MAIS EMOCIONANTE PARA O DIA DO PAI (19 DE MARÇO) ✨");
 
-  // Lógica original de retorno do Stripe
+  // Lógica de retorno do Stripe
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('status') === 'success') {
@@ -76,7 +87,6 @@ function App() {
     setView('wizard');
   };
 
-  // --- RENDERIZAÇÃO CONDICIONAL PADRÃO ---
   if (view === 'wizard') return <Wizard onBack={() => setView('landing')} />;
   if (view === 'contact') return <ContactPage onBack={() => setView('landing')} />;
   if (view === 'terms') return <TermsPage onBack={() => setView('landing')} />;
@@ -292,6 +302,14 @@ function App() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-16"><h2 className="text-3xl font-serif font-bold text-gray-900">Perguntas Frequentes</h2></div>
+          <Faq items={FAQS} />
         </div>
       </section>
 
