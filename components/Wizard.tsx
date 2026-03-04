@@ -4,34 +4,35 @@ import {
   Play, Pause, MapPin, Heart, Star, Smile, User, ShieldCheck, ChevronRight, PenLine, Clock, Zap
 } from 'lucide-react';
 
-// --- IMPORTAÇÃO DOS ÁUDIOS ---
-import sofiaAudio from '../assets/sofia2.mp3';     
-import ivandroAudio from '../assets/ivandro.mp3'; 
-import vitorAudio from '../assets/vitor.mp3';     
+// --- IMPORTAÇÃO DOS ÁUDIOS (Atualizados para bater certo com o App.tsx) ---
+// Nota: O Wizard está em /components, por isso usamos ../assets
+import almaAudio from '../assets/almapai.mp3';     
+import rockAudio from '../assets/rock.mp3'; 
+import pimbaAudio from '../assets/pimba.mp3';     
 
 interface WizardProps {
   onBack: () => void;
 }
 
-// CONFIGURAÇÃO DOS ESTILOS
+// CONFIGURAÇÃO DOS ESTILOS (Atualizados)
 const MUSIC_STYLES = [
   { 
-    id: 'soul', 
+    id: 'alma', 
     name: 'Alma & Emoção', 
     desc: 'Voz forte e com muito sentimento.', 
-    url: sofiaAudio 
+    url: almaAudio 
   },
   { 
     id: 'rock', 
-    name: 'R&B Romântico', 
-    desc: 'Voz suave, batida lenta e envolvente.', 
-    url: ivandroAudio 
+    name: 'ROCK', 
+    desc: 'Energia, guitarras e força.', 
+    url: rockAudio 
   },
   { 
-    id: 'pop', 
-    name: 'Pop Acústico', 
-    desc: 'Guitarra, boa energia e "good vibes".', 
-    url: vitorAudio 
+    id: 'pimba', 
+    name: 'Pimba / Popular', 
+    desc: 'Alegre, divertido e brincalhão.', 
+    url: pimbaAudio 
   }
 ];
 
@@ -44,14 +45,17 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [formData, setFormData] = useState({
     senderName: '',    
     recipientName: '', 
-    meeting: '',       
-    memory: '',        
-    loveMost: '',      
-    hobbies: '',       
-    extraDetails: '',  
-    styleBase: '',        // ID do estilo (botões)
-    customStyle: '',      // Texto do estilo personalizado
-    deliveryOption: '48h' // Opções: '48h' (Normal) | '12h' (Upsell)
+    
+    // Mapeamento das Novas Perguntas:
+    meeting: '',       // "3 Palavras"
+    loveMost: '',      // "Frase de Pai"
+    hobbies: '',       // "Lição de Vida"
+    memory: '',        // "Memória Favorita"
+    extraDetails: '',  // "Outros Detalhes"
+
+    styleBase: '',        
+    customStyle: '',      
+    deliveryOption: '48h' 
   });
 
   // --- CÁLCULO DE PREÇO (19.99€ Base | 29.98€ Upsell Tempo) ---
@@ -64,7 +68,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     }
   }, []);
 
-  // --- 2. LÓGICA DE SUCESSO (TIKTOK + GOOGLE SHEETS) ---
+  // --- 2. LÓGICA DE SUCESSO ---
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
@@ -89,20 +93,20 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
         formDataToSend.append("Estilo", estiloFinal);
         
-        // Strings atualizadas para o Excel
         const priceStr = data.deliveryOption === '12h' ? "29.98€" : "19.99€";
         const deliveryStr = data.deliveryOption === '12h' ? "12 Horas (URGENTE)" : "48 Horas (Normal)";
 
         formDataToSend.append("Preco", priceStr);
         formDataToSend.append("Entrega Rapida", deliveryStr);
         
-        formDataToSend.append("Historia", data.meeting);
+        // Mapeamento para o Excel (Atualizado com nomes das novas perguntas)
+        formDataToSend.append("3 Palavras", data.meeting);
+        formDataToSend.append("Frase de Pai", data.loveMost);
+        formDataToSend.append("Licao de Vida", data.hobbies);
         formDataToSend.append("Memoria", data.memory);
-        formDataToSend.append("O Que Ama", data.loveMost);
-        formDataToSend.append("Hobbies", data.hobbies);
         formDataToSend.append("Detalhes Extra", data.extraDetails);
 
-        // URL DO SCRIPT (Confirmado)
+        // URL DO SCRIPT
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmzgu7QrPEf067vfrzY9QZ-obnVNba-NyM6fDLEqzAexABu2PWXeL7MszzIVsWvZm6CQ/exec";
 
         fetch(GOOGLE_SCRIPT_URL, {
@@ -188,7 +192,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         <div className="group">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Nome Dele(a)</label>
           <input type="text" className="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-lg focus:bg-white focus:border-rose-500 outline-none font-medium text-slate-800"
-            placeholder="Ex: Ana" value={formData.recipientName} onChange={(e) => setFormData({...formData, recipientName: e.target.value})} />
+            placeholder="Ex: Carlos (O Melhor Pai)" value={formData.recipientName} onChange={(e) => setFormData({...formData, recipientName: e.target.value})} />
         </div>
       </div>
       <button onClick={() => setStep(2)} disabled={!formData.senderName || !formData.recipientName} className="w-full bg-rose-600 hover:bg-rose-700 text-white p-5 rounded-2xl font-bold shadow-xl disabled:opacity-30 uppercase tracking-widest text-xs flex items-center justify-center gap-2">
@@ -204,16 +208,42 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         <p className="text-slate-500 text-sm">Conta-nos os detalhes para a letra.</p>
       </div>
       <div className="space-y-5">
-        <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
-          placeholder="Se o tivesses de descrever em 3 palavras, quais seriam?" value={formData.meeting} onChange={(e) => setFormData({...formData, meeting: e.target.value})} />
-        <textarea className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:border-rose-500 outline-none"
-          placeholder="Memória favorita juntos?" value={formData.memory} onChange={(e) => setFormData({...formData, memory: e.target.value})} />
-        <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
-          placeholder="O que mais amas nele(a)?" value={formData.loveMost} onChange={(e) => setFormData({...formData, loveMost: e.target.value})} />
-        <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
-          placeholder="Hobbies (ex: Viajar, Cozinhar)?" value={formData.hobbies} onChange={(e) => setFormData({...formData, hobbies: e.target.value})} />
-        <textarea className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm h-24 resize-none focus:border-rose-500 outline-none"
-          placeholder="Outros detalhes (Piadas, frases especiais...)" value={formData.extraDetails} onChange={(e) => setFormData({...formData, extraDetails: e.target.value})} />
+        
+        {/* PERGUNTA 1: 3 PALAVRAS */}
+        <div className="group">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">3 Palavras que o descrevem</label>
+          <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
+            placeholder="Ex: Trabalhador, Engraçado, Protetor" value={formData.meeting} onChange={(e) => setFormData({...formData, meeting: e.target.value})} />
+        </div>
+
+        {/* PERGUNTA 2: FRASE DE PAI */}
+        <div className="group">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Frase que ele mais repete</label>
+          <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
+            placeholder='Ex: "Juízo nessa cabeça!"' value={formData.loveMost} onChange={(e) => setFormData({...formData, loveMost: e.target.value})} />
+        </div>
+
+        {/* PERGUNTA 3: LIÇÃO DE VIDA */}
+        <div className="group">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Uma lição que aprendeste com ele</label>
+          <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
+            placeholder="Ex: Nunca desistir dos sonhos." value={formData.hobbies} onChange={(e) => setFormData({...formData, hobbies: e.target.value})} />
+        </div>
+
+        {/* PERGUNTA 4: MEMÓRIA */}
+        <div className="group">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Memória Favorita Juntos</label>
+          <textarea className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:border-rose-500 outline-none"
+            placeholder="Aquele dia na praia, o primeiro jogo de futebol..." value={formData.memory} onChange={(e) => setFormData({...formData, memory: e.target.value})} />
+        </div>
+
+        {/* PERGUNTA 5: EXTRAS */}
+        <div className="group">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Outros detalhes / Piadas internas</label>
+          <textarea className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm h-24 resize-none focus:border-rose-500 outline-none"
+            placeholder="Conta-nos mais para tornarmos a letra única..." value={formData.extraDetails} onChange={(e) => setFormData({...formData, extraDetails: e.target.value})} />
+        </div>
+
       </div>
       <div className="flex gap-4 pt-4 sticky bottom-0 bg-white pb-2">
         <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest">Voltar</button>
