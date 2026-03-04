@@ -45,7 +45,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     senderName: '',    
     recipientName: '', 
     
-    // Novas Perguntas
+    // Perguntas
     meeting: '',       
     loveMost: '',      
     hobbies: '',       
@@ -53,12 +53,18 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     extraDetails: '',  
 
     styleBase: '',        
-    customStyle: '',      
+    customStyle: '', // Agora vamos usar isto
     deliveryOption: '48h' 
   });
 
-  // --- CÁLCULO DE PREÇO (ATUALIZADO: 24.99€ Base | 34.98€ Upsell Tempo) ---
-  const finalPrice = formData.deliveryOption === '12h' ? 34.98 : 24.99;
+  // --- CÁLCULO DE PREÇO (LÓGICA DOS UPSELLS) ---
+  const hasCustomStyle = formData.customStyle.trim().length > 0;
+  const isPriority12h = formData.deliveryOption === '12h';
+
+  // Base 24.99 + 9.99 (Estilo) + 9.99 (Tempo)
+  let currentPrice = 24.99;
+  if (hasCustomStyle && isPriority12h) currentPrice = 44.97;
+  else if (hasCustomStyle || isPriority12h) currentPrice = 34.98;
 
   // --- 1. SEGURANÇA DE DOMÍNIO ---
   useEffect(() => {
@@ -71,7 +77,8 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
-    const amt = urlParams.get('amt') || '24.99'; 
+    // Tenta apanhar o valor da URL, senão usa o base
+    const amt = urlParams.get('amt'); 
     
     if (status === 'success') {
       setStep(5);
@@ -84,15 +91,24 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Nome Cliente", data.senderName);
         formDataToSend.append("Para Quem", data.recipientName);
         
-        const estiloFinal = MUSIC_STYLES.find((s: any) => s.id === data.styleBase)?.name || "N/A";
+        // Define o estilo para o Excel (Lógica corrigida)
+        const estiloFinal = data.customStyle && data.customStyle.length > 0 
+          ? `PERSONALIZADO: ${data.customStyle}` 
+          : (MUSIC_STYLES.find((s: any) => s.id === data.styleBase)?.name || "N/A");
 
         formDataToSend.append("Estilo", estiloFinal);
         
-        // Strings atualizadas para o Excel
-        const priceStr = data.deliveryOption === '12h' ? "34.98€" : "24.99€";
-        const deliveryStr = data.deliveryOption === '12h' ? "12 Horas (URGENTE)" : "48 Horas (Normal)";
+        // Preço Formatado para o Excel
+        // Recalcular preço baseado nos dados guardados para garantir precisão
+        const hadCustom = data.customStyle && data.customStyle.length > 0;
+        const was12h = data.deliveryOption === '12h';
+        let priceCalc = 24.99;
+        if(hadCustom && was12h) priceCalc = 44.97;
+        else if(hadCustom || was12h) priceCalc = 34.98;
+        
+        const deliveryStr = was12h ? "12 Horas (URGENTE)" : "48 Horas (Normal)";
 
-        formDataToSend.append("Preco", priceStr);
+        formDataToSend.append("Preco", `${priceCalc.toFixed(2)}€`);
         formDataToSend.append("Entrega Rapida", deliveryStr);
         
         formDataToSend.append("3 Palavras", data.meeting);
@@ -122,7 +138,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       if (!isDuplicate && (window as any).ttq) {
         const uniqueEventId = `order_${now}_${Math.random().toString(36).substr(2, 9)}`;
         (window as any).ttq.track('CompletePayment', { 
-            value: parseFloat(amt), 
+            value: amt ? parseFloat(amt) : currentPrice, // Usa o valor real
             currency: 'EUR',
             event_id: uniqueEventId 
         });
@@ -135,13 +151,22 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   const handleStripe = () => {
     setIsSubmitting(true);
-    const is12h = formData.deliveryOption === '12h';
 
-    // --- LINKS REAIS ATUALIZADOS ---
-    const L_NORMAL_24 = "https://buy.stripe.com/dRm6oHbdags568H4mL7EQ00";
-    const L_URGENTE_34 = "https://buy.stripe.com/eVq5kD6WU6RvfJh6uT7EQ02";
+    // --- LINKS REAIS (LÓGICA DE 4 CAMINHOS) ---
+    const L_STANDARD = "https://buy.stripe.com/dRm6oHbdags568H4mL7EQ00"; // 24.99
+    const L_STYLE_UP = "https://buy.stripe.com/14A8wP9525Nr2Wv7yX7EQ01"; // 34.98 (Só Estilo)
+    const L_TIME_UP  = "https://buy.stripe.com/eVq5kD6WU6RvfJh6uT7EQ02"; // 34.98 (Só Tempo)
+    const L_VIP      = "https://buy.stripe.com/dRmcN59528ZDgNl2eD7EQ03"; // 44.97 (Tudo)
 
-    const paymentLink = is12h ? L_URGENTE_34 : L_NORMAL_24;
+    let paymentLink = L_STANDARD;
+
+    if (hasCustomStyle && isPriority12h) {
+      paymentLink = L_VIP;
+    } else if (hasCustomStyle && !isPriority12h) {
+      paymentLink = L_STYLE_UP;
+    } else if (!hasCustomStyle && isPriority12h) {
+      paymentLink = L_TIME_UP;
+    }
 
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
@@ -151,7 +176,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       timestamp: new Date().toISOString()
     }));
 
-    if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: finalPrice, currency: 'EUR' });
+    if ((window as any).ttq) (window as any).ttq.track('InitiateCheckout', { value: currentPrice, currency: 'EUR' });
     
     window.location.href = paymentLink;
   };
@@ -245,12 +270,13 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         <p className="text-slate-500 text-sm">Escolhe a sonoridade da tua música.</p>
       </div>
       
+      {/* OPÇÕES BASE */}
       <div className="grid gap-3">
         {MUSIC_STYLES.map((s) => (
           <div key={s.id} 
             onClick={() => setFormData({...formData, styleBase: s.id, customStyle: ''})} 
             className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between ${
-              formData.styleBase === s.id ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-200' : 'border-slate-100 bg-white'
+              formData.styleBase === s.id && !formData.customStyle ? 'border-rose-500 bg-rose-50 ring-1 ring-rose-200' : 'border-slate-100 bg-white'
             }`}
           >
             <div>
@@ -267,10 +293,28 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         ))}
       </div>
 
+       {/* CAIXA DE ESTILO PERSONALIZADO (UPSELL) */}
+       <div className={`p-5 rounded-2xl border-2 transition-all ${
+          formData.customStyle.length > 0 ? 'border-amber-400 bg-amber-50 ring-1 ring-amber-200' : 'border-slate-200 border-dashed bg-slate-50'
+        }`}>
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles size={16} className="text-amber-500" />
+          <span className="font-bold text-slate-900 text-sm">Outro Estilo / Artista (+9,99€)</span>
+        </div>
+        <input 
+          type="text" 
+          className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm focus:border-amber-500 outline-none"
+          placeholder="Ex: Rock à Xutos, Fado, Estilo Coldplay..."
+          value={formData.customStyle}
+          onChange={(e) => setFormData({...formData, customStyle: e.target.value, styleBase: ''})} 
+        />
+        <p className="text-[10px] text-slate-500 mt-2 ml-1">Escreve a tua referência e nós criamos à medida.</p>
+      </div>
+
       <div className="flex gap-4 pt-8">
         <button onClick={() => setStep(2)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest">Voltar</button>
         <button onClick={() => { if(playing) toggleAudio(playing); setStep(4); }} 
-          disabled={!formData.styleBase} 
+          disabled={!formData.styleBase && !formData.customStyle} 
           className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg disabled:opacity-30 uppercase tracking-widest text-xs">
           Ver Resumo
         </button>
@@ -287,16 +331,24 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
       <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-4">
         <div className="flex justify-between items-center text-sm pb-2 border-b border-slate-50">
-          <span className="text-slate-500 font-medium">Música Personalizada</span>
+          <span className="text-slate-500 font-medium">Música Base</span>
           <span className="font-bold text-slate-900">24,99€</span>
         </div>
 
-        <div className="flex justify-between items-center text-sm pb-2 border-b border-slate-50">
-           <span className="text-slate-500 font-medium">Estilo</span>
-           <span className="font-bold text-slate-800 text-xs uppercase">
-             {MUSIC_STYLES.find(s => s.id === formData.styleBase)?.name}
-           </span>
-        </div>
+        {/* MOSTRA O ESTILO ESCOLHIDO */}
+        {hasCustomStyle ? (
+           <div className="flex justify-between items-center text-sm pb-2 border-b border-slate-50 text-amber-600">
+             <span className="flex items-center gap-1 font-medium"><Sparkles size={12}/> Estilo Personalizado</span>
+             <span className="font-bold text-xs uppercase">+9,99€</span>
+           </div>
+        ) : (
+           <div className="flex justify-between items-center text-sm pb-2 border-b border-slate-50">
+             <span className="text-slate-500 font-medium">Estilo</span>
+             <span className="font-bold text-slate-800 text-xs uppercase">
+               {MUSIC_STYLES.find(s => s.id === formData.styleBase)?.name}
+             </span>
+           </div>
+        )}
 
         <div className="space-y-3 pt-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Urgência de Entrega</p>
@@ -332,7 +384,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
         <div className="flex justify-between items-center pt-4 border-t border-slate-100">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total a Pagar</span>
-          <span className="text-4xl font-serif font-bold text-rose-600">{finalPrice.toFixed(2)}€</span>
+          <span className="text-4xl font-serif font-bold text-rose-600">{currentPrice.toFixed(2)}€</span>
         </div>
       </div>
 
