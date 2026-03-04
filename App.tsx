@@ -12,7 +12,7 @@ import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
 import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO HERO ---
-import heroBg from './assets/12qwq.jpeg';
+import heroBg from './assets/pai.jpg';
 import heroAudio from './assets/sofia2.mp3'; 
 
 // --- IMPORTAÇÃO DOS SAMPLES (LOCAIS) ---
