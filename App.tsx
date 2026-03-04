@@ -12,7 +12,6 @@ import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
 import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO HERO ---
-// Certifica-te que estes ficheiros existem na pasta src/assets/
 import heroBg from './assets/pai.jpg';
 import heroAudio from './assets/rock.mp3'; 
 
@@ -22,11 +21,10 @@ import pimbaAudio from './assets/pimba.mp3';
 import almaAudio from './assets/almapai.mp3';     
 
 // --- DADOS DOS SAMPLES ---
-// CORREÇÃO: Os nomes aqui têm de ser iguais aos imports acima
 const SAMPLES: SongSample[] = [
-  { id: 1, title: "O Meu Herói", genre: "Alma e Emoção", url: almaAudio }, // Corrigido de almapaiAudio para almaAudio
+  { id: 1, title: "O Meu Herói", genre: "Alma e Emoção", url: almaAudio },
   { id: 2, title: "O Melhor Pai", genre: "ROCK", url: rockAudio },
-  { id: 3, title: "Pai Brincalhão", genre: "Pimba", url: pimbaAudio },     // Corrigido de pimbaoAudio para pimbaAudio
+  { id: 3, title: "Pai Brincalhão", genre: "Pimba", url: pimbaAudio },
 ];
 
 // --- FAQS ---
@@ -270,7 +268,7 @@ function App() {
                      <div className="bg-white/20 p-2 rounded-full hidden sm:block animate-pulse"><Sparkles className="text-white" size={20} /></div>
                      <div>
                        <p className="text-[10px] md:text-xs text-rose-100 uppercase font-bold tracking-wider">OFERTA ATUAL:</p>
-                       <p className="font-bold text-sm md:text-xl uppercase tracking-tight">19,99€ (48H)</p>
+                       <p className="font-bold text-sm md:text-xl uppercase tracking-tight">24,99€ (48H)</p>
                      </div>
                    </div>
                  </div>
@@ -284,7 +282,7 @@ function App() {
                 <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border border-green-100">60% DESCONTO</span>
               </div>
               <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-6xl font-bold text-rose-600 tracking-tight">19,99€</span>
+                <span className="text-6xl font-bold text-rose-600 tracking-tight">24,99€</span>
                 <span className="text-gray-500 font-medium">/ música</span>
               </div>
               <ul className="space-y-3 mb-10 text-gray-700">
@@ -333,9 +331,9 @@ function App() {
         </div>
       </footer>
       
-      {/* STICKY MOBILE CTA - 19.99€ */}
+      {/* STICKY MOBILE CTA - 24,99€ */}
       <div className="fixed bottom-4 left-4 right-4 z-40 md:hidden">
-         <Button fullWidth className="shadow-2xl border border-white/20 py-4 text-lg bg-rose-600 hover:bg-rose-700 text-white" onClick={startWizard}>Criar Música (19,99€)</Button>
+         <Button fullWidth className="shadow-2xl border border-white/20 py-4 text-lg bg-rose-600 hover:bg-rose-700 text-white" onClick={startWizard}>Criar Música (24,99€)</Button>
       </div>
 
     </div>
