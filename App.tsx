@@ -24,7 +24,7 @@ import almaAudio from './assets/almapai.mp3';
 const SAMPLES: SongSample[] = [
   { id: 1, title: "O Meu Herói", genre: "Alma e Emoção", url: almapaiAudio },
   { id: 2, title: "O Melhor Pai", genre: "ROCK", url: rockAudio },
-  { id: 3, title: "Lugar Seguro", genre: "Pimba", url: pimbaoAudio },
+  { id: 3, title: "Pai Brincalhão", genre: "Pimba", url: pimbaoAudio },
 ];
 
 // --- FAQS ---
