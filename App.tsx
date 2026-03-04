@@ -9,7 +9,6 @@ import { AudioPlayer } from './components/AudioPlayer';
 import { Faq } from './components/Faq';
 import { Wizard } from './components/Wizard';
 import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
-import LuxuryExperience from './components/LuxuryExperience'; // Importante: Tem de estar importado
 import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO HERO ---
@@ -42,27 +41,19 @@ const REVIEWS = [
 ];
 
 function App() {
-  // --- A CORREÇÃO ESTÁ AQUI (Lógica de Inicialização) ---
-  // O site verifica o link ANTES de decidir o que mostrar
-  const [view, setView] = useState<'landing' | 'wizard' | 'terms' | 'privacy' | 'contact' | 'experience'>(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('view') === 'experience') return 'experience';
-    if (params.get('status') === 'success') return 'wizard';
-    return 'landing';
-  });
-
+  // VOLTAMOS AO ESTADO ORIGINAL (SEM EXPERIENCE)
+  const [view, setView] = useState<'landing' | 'wizard' | 'terms' | 'privacy' | 'contact'>('landing');
+  
   const [heroIsPlaying, setHeroIsPlaying] = useState(false);
   const heroAudioRef = useRef<HTMLAudioElement>(null);
   const [textoTopo, setTextoTopo] = useState("✨ O PRESENTE MAIS EMOCIONANTE PARA O DIA DO PAI (19 DE MARÇO) ✨");
 
-  // Hook para garantir que a navegação funciona se mudarmos o URL
+  // Lógica original de retorno do Stripe
   useEffect(() => {
-    const handlePopState = () => {
-       const params = new URLSearchParams(window.location.search);
-       if (params.get('view') === 'experience') setView('experience');
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('status') === 'success') {
+      setView('wizard');
+    }
   }, []);
 
   const toggleHeroAudio = () => {
@@ -85,11 +76,7 @@ function App() {
     setView('wizard');
   };
 
-  // --- RENDERIZAÇÃO CONDICIONAL ---
-  
-  // SE FOR A EXPERIÊNCIA, MOSTRA SÓ ISSO
-  if (view === 'experience') return <LuxuryExperience />;
-
+  // --- RENDERIZAÇÃO CONDICIONAL PADRÃO ---
   if (view === 'wizard') return <Wizard onBack={() => setView('landing')} />;
   if (view === 'contact') return <ContactPage onBack={() => setView('landing')} />;
   if (view === 'terms') return <TermsPage onBack={() => setView('landing')} />;
