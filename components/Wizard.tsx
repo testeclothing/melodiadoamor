@@ -57,8 +57,8 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     deliveryOption: '48h' 
   });
 
-  // --- CÁLCULO DE PREÇO ---
-  const finalPrice = formData.deliveryOption === '12h' ? 29.98 : 19.99;
+  // --- CÁLCULO DE PREÇO (ATUALIZADO: 24.99€ Base | 34.98€ Upsell Tempo) ---
+  const finalPrice = formData.deliveryOption === '12h' ? 34.98 : 24.99;
 
   // --- 1. SEGURANÇA DE DOMÍNIO ---
   useEffect(() => {
@@ -71,7 +71,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
-    const amt = urlParams.get('amt') || '19.99'; 
+    const amt = urlParams.get('amt') || '24.99'; 
     
     if (status === 'success') {
       setStep(5);
@@ -88,7 +88,8 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
         formDataToSend.append("Estilo", estiloFinal);
         
-        const priceStr = data.deliveryOption === '12h' ? "29.98€" : "19.99€";
+        // Strings atualizadas para o Excel
+        const priceStr = data.deliveryOption === '12h' ? "34.98€" : "24.99€";
         const deliveryStr = data.deliveryOption === '12h' ? "12 Horas (URGENTE)" : "48 Horas (Normal)";
 
         formDataToSend.append("Preco", priceStr);
@@ -136,11 +137,11 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     setIsSubmitting(true);
     const is12h = formData.deliveryOption === '12h';
 
-    // --- LINKS REAIS ---
-    const L_NORMAL_19 = "https://buy.stripe.com/aFa4gz80Y8ZD54D2eD7EQ04";
-    const L_URGENTE_29 = "https://buy.stripe.com/5kQ9ATgxugs540zg5t7EQ05";
+    // --- LINKS REAIS ATUALIZADOS ---
+    const L_NORMAL_24 = "https://buy.stripe.com/dRm6oHbdags568H4mL7EQ00";
+    const L_URGENTE_34 = "https://buy.stripe.com/eVq5kD6WU6RvfJh6uT7EQ02";
 
-    const paymentLink = is12h ? L_URGENTE_29 : L_NORMAL_19;
+    const paymentLink = is12h ? L_URGENTE_34 : L_NORMAL_24;
 
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
@@ -192,7 +193,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   );
 
   const renderStep2 = () => (
-    <div className="space-y-6 animate-fadeIn pb-4"> {/* Adicionado padding bottom */}
+    <div className="space-y-6 animate-fadeIn pb-4"> 
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-serif font-bold text-slate-900 italic">A História</h2>
         <p className="text-slate-500 text-sm">Conta-nos os detalhes para a letra.</p>
@@ -230,7 +231,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         </div>
       </div>
 
-      {/* CORREÇÃO: Removemos 'sticky bottom-0' para os botões não taparem os campos */}
       <div className="flex gap-4 pt-8">
         <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest">Voltar</button>
         <button onClick={() => setStep(3)} className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg uppercase tracking-widest text-xs">Próximo Passo</button>
@@ -288,7 +288,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-4">
         <div className="flex justify-between items-center text-sm pb-2 border-b border-slate-50">
           <span className="text-slate-500 font-medium">Música Personalizada</span>
-          <span className="font-bold text-slate-900">19,99€</span>
+          <span className="font-bold text-slate-900">24,99€</span>
         </div>
 
         <div className="flex justify-between items-center text-sm pb-2 border-b border-slate-50">
