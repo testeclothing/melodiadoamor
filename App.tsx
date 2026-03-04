@@ -16,15 +16,15 @@ import heroBg from './assets/pai.jpg';
 import heroAudio from './assets/rock.mp3'; 
 
 // --- IMPORTAÇÃO DOS SAMPLES (LOCAIS) ---
-import sofiaAudio from './assets/sofia2.mp3';     
-import ivandroAudio from './assets/ivandro.mp3'; 
-import vitorAudio from './assets/vitor.mp3';     
+import rockAudio from './assets/rock.mp3';     
+import pimbaAudio from './assets/pimba.mp3'; 
+import almaAudio from './assets/almapai.mp3';     
 
 // --- DADOS DOS SAMPLES ---
 const SAMPLES: SongSample[] = [
-  { id: 1, title: "O Meu Herói", genre: "Pop Acústico", url: vitorAudio },
-  { id: 2, title: "O Melhor Pai", genre: "Alma & Emoção", url: sofiaAudio },
-  { id: 3, title: "Lugar Seguro", genre: "R&B Romântico", url: ivandroAudio },
+  { id: 1, title: "O Meu Herói", genre: "Alma e Emoção", url: almapaiAudio },
+  { id: 2, title: "O Melhor Pai", genre: "ROCK", url: rockAudio },
+  { id: 3, title: "Lugar Seguro", genre: "Pimba", url: pimbaoAudio },
 ];
 
 // --- FAQS ---
