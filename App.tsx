@@ -133,7 +133,7 @@ function App() {
                 <Heart size={14} fill="currentColor" /><span>PARA O MELHOR PAI</span>
               </div>
               <h1 className="text-4xl lg:text-6xl font-serif font-bold leading-[1.1] text-gray-900 tracking-tight">
-                A história do teu herói merece uma <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">banda sonora única.</span>
+                A história do teu pai merece uma <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-amber-500">banda sonora única.</span>
               </h1>
               <p className="text-base lg:text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
                 Este Dia do Pai, oferece mais do que meias ou perfumes. Oferece uma música personalizada com as histórias e memórias dele.
