@@ -40,7 +40,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   const [playing, setPlaying] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false); 
   
-  // ESTADO DO FORMULÁRIO
+  // ESTADO DO FORMULÁRIO (Padrão 48h)
   const [formData, setFormData] = useState({
     senderName: '',    
     recipientName: '', 
@@ -51,11 +51,10 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     extraDetails: '',  
     styleBase: '',        // ID do estilo (botões)
     customStyle: '',      // Texto do estilo personalizado
-    deliveryOption: '48h' // Padrão 48h (Grátis)
+    deliveryOption: '48h' // Opções: '48h' (Normal) | '12h' (Upsell)
   });
 
   // --- CÁLCULO DE PREÇO (19.99€ Base | 29.98€ Upsell Tempo) ---
-  // O estilo personalizado está incluído (não soma valor)
   const finalPrice = formData.deliveryOption === '12h' ? 29.98 : 19.99;
 
   // --- 1. SEGURANÇA DE DOMÍNIO ---
@@ -74,6 +73,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     if (status === 'success') {
       setStep(5);
       
+      // A. ENVIAR PARA GOOGLE SHEETS
       const pendingData = localStorage.getItem('pendingOrder');
       if (pendingData) {
         const data = JSON.parse(pendingData);
@@ -102,7 +102,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Hobbies", data.hobbies);
         formDataToSend.append("Detalhes Extra", data.extraDetails);
 
-        // TEU URL DO SCRIPT (Já inserido)
+        // URL DO SCRIPT (Confirmado)
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmzgu7QrPEf067vfrzY9QZ-obnVNba-NyM6fDLEqzAexABu2PWXeL7MszzIVsWvZm6CQ/exec";
 
         fetch(GOOGLE_SCRIPT_URL, {
@@ -141,7 +141,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
     const is12h = formData.deliveryOption === '12h';
 
-    // --- LINKS REAIS (CONFIRMADOS) ---
+    // --- LINKS REAIS ---
     const L_NORMAL_19 = "https://buy.stripe.com/aFa4gz80Y8ZD54D2eD7EQ04";
     const L_URGENTE_29 = "https://buy.stripe.com/5kQ9ATgxugs540zg5t7EQ05";
 
@@ -226,7 +226,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     <div className="space-y-6 animate-fadeIn">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-serif font-bold text-slate-900 italic">Estilo Musical</h2>
-        <p className="text-slate-500 text-sm">Escolhe um ou escreve o teu.</p>
+        <p className="text-slate-500 text-sm">Escolhe um dos nossos ou diz-nos o que imaginas.</p>
       </div>
       
       {/* OPÇÕES BASE */}
