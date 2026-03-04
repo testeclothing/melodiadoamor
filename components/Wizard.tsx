@@ -205,7 +205,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
       </div>
       <div className="space-y-5">
         <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
-          placeholder="Onde/Quando se conheceram?" value={formData.meeting} onChange={(e) => setFormData({...formData, meeting: e.target.value})} />
+          placeholder="Se o tivesses de descrever em 3 palavras, quais seriam?" value={formData.meeting} onChange={(e) => setFormData({...formData, meeting: e.target.value})} />
         <textarea className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:border-rose-500 outline-none"
           placeholder="Memória favorita juntos?" value={formData.memory} onChange={(e) => setFormData({...formData, memory: e.target.value})} />
         <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
