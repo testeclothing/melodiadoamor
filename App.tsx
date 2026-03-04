@@ -12,6 +12,7 @@ import { ContactPage, TermsPage, PrivacyPage } from './components/LegalPages';
 import { SongSample, FaqItem } from './types';
 
 // --- IMPORTAÇÃO DE IMAGENS E ÁUDIO HERO ---
+// Certifica-te que estes ficheiros existem na pasta src/assets/
 import heroBg from './assets/pai.jpg';
 import heroAudio from './assets/rock.mp3'; 
 
@@ -21,10 +22,11 @@ import pimbaAudio from './assets/pimba.mp3';
 import almaAudio from './assets/almapai.mp3';     
 
 // --- DADOS DOS SAMPLES ---
+// CORREÇÃO: Os nomes aqui têm de ser iguais aos imports acima
 const SAMPLES: SongSample[] = [
-  { id: 1, title: "O Meu Herói", genre: "Alma e Emoção", url: almapaiAudio },
+  { id: 1, title: "O Meu Herói", genre: "Alma e Emoção", url: almaAudio }, // Corrigido de almapaiAudio para almaAudio
   { id: 2, title: "O Melhor Pai", genre: "ROCK", url: rockAudio },
-  { id: 3, title: "Pai Brincalhão", genre: "Pimba", url: pimbaoAudio },
+  { id: 3, title: "Pai Brincalhão", genre: "Pimba", url: pimbaAudio },     // Corrigido de pimbaoAudio para pimbaAudio
 ];
 
 // --- FAQS ---
