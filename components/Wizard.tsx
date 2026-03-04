@@ -53,7 +53,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
     extraDetails: '',  
 
     styleBase: '',        
-    // customStyle removido da UI, mas mantido no state para não quebrar lógica antiga
     customStyle: '',      
     deliveryOption: '48h' 
   });
@@ -85,7 +84,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Nome Cliente", data.senderName);
         formDataToSend.append("Para Quem", data.recipientName);
         
-        // Estilo selecionado
         const estiloFinal = MUSIC_STYLES.find((s: any) => s.id === data.styleBase)?.name || "N/A";
 
         formDataToSend.append("Estilo", estiloFinal);
@@ -96,14 +94,12 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         formDataToSend.append("Preco", priceStr);
         formDataToSend.append("Entrega Rapida", deliveryStr);
         
-        // Perguntas
         formDataToSend.append("3 Palavras", data.meeting);
         formDataToSend.append("Frase de Pai", data.loveMost);
         formDataToSend.append("Licao de Vida", data.hobbies);
         formDataToSend.append("Memoria", data.memory);
         formDataToSend.append("Detalhes Extra", data.extraDetails);
 
-        // URL DO SCRIPT
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzmzgu7QrPEf067vfrzY9QZ-obnVNba-NyM6fDLEqzAexABu2PWXeL7MszzIVsWvZm6CQ/exec";
 
         fetch(GOOGLE_SCRIPT_URL, {
@@ -118,7 +114,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         .catch(err => console.error("Erro Excel:", err));
       }
 
-      // TRACKING
       const lastSaleTime = localStorage.getItem('last_sale_timestamp');
       const now = new Date().getTime();
       const isDuplicate = lastSaleTime && (now - parseInt(lastSaleTime) < 300000); 
@@ -139,20 +134,18 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
 
   const handleStripe = () => {
     setIsSubmitting(true);
-
     const is12h = formData.deliveryOption === '12h';
 
     // --- LINKS REAIS ---
     const L_NORMAL_19 = "https://buy.stripe.com/aFa4gz80Y8ZD54D2eD7EQ04";
     const L_URGENTE_29 = "https://buy.stripe.com/5kQ9ATgxugs540zg5t7EQ05";
 
-    // Seleção de Link
     const paymentLink = is12h ? L_URGENTE_29 : L_NORMAL_19;
 
     localStorage.setItem('pendingOrder', JSON.stringify({
       ...formData,
       styleBase: formData.styleBase,
-      customStyle: formData.customStyle, // Vai vazio
+      customStyle: formData.customStyle, 
       deliveryOption: formData.deliveryOption,
       timestamp: new Date().toISOString()
     }));
@@ -199,14 +192,13 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   );
 
   const renderStep2 = () => (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn pb-4"> {/* Adicionado padding bottom */}
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-serif font-bold text-slate-900 italic">A História</h2>
         <p className="text-slate-500 text-sm">Conta-nos os detalhes para a letra.</p>
       </div>
+      
       <div className="space-y-5">
-        
-        {/* PERGUNTAS */}
         <div className="group">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">3 Palavras que o descrevem</label>
           <input type="text" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-rose-500 outline-none"
@@ -236,9 +228,10 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           <textarea className="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm h-24 resize-none focus:border-rose-500 outline-none"
             placeholder="Conta-nos mais para tornarmos a letra única..." value={formData.extraDetails} onChange={(e) => setFormData({...formData, extraDetails: e.target.value})} />
         </div>
-
       </div>
-      <div className="flex gap-4 pt-4 sticky bottom-0 bg-white pb-2">
+
+      {/* CORREÇÃO: Removemos 'sticky bottom-0' para os botões não taparem os campos */}
+      <div className="flex gap-4 pt-8">
         <button onClick={() => setStep(1)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest">Voltar</button>
         <button onClick={() => setStep(3)} className="flex-1 bg-rose-600 hover:bg-rose-700 text-white p-4 rounded-xl font-bold shadow-lg uppercase tracking-widest text-xs">Próximo Passo</button>
       </div>
@@ -246,13 +239,12 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   );
 
   const renderStep3 = () => (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn pb-4">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-serif font-bold text-slate-900 italic">Estilo Musical</h2>
         <p className="text-slate-500 text-sm">Escolhe a sonoridade da tua música.</p>
       </div>
       
-      {/* OPÇÕES BASE */}
       <div className="grid gap-3">
         {MUSIC_STYLES.map((s) => (
           <div key={s.id} 
@@ -275,7 +267,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
         ))}
       </div>
 
-      <div className="flex gap-4 pt-4">
+      <div className="flex gap-4 pt-8">
         <button onClick={() => setStep(2)} className="px-4 text-slate-400 font-bold text-xs uppercase tracking-widest">Voltar</button>
         <button onClick={() => { if(playing) toggleAudio(playing); setStep(4); }} 
           disabled={!formData.styleBase} 
@@ -287,7 +279,7 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
   );
 
   const renderStep4 = () => (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn pb-4">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-serif font-bold text-slate-900 italic">Resumo Final</h2>
         <p className="text-slate-500 text-sm">Confirma os detalhes.</p>
@@ -299,7 +291,6 @@ export const Wizard: React.FC<WizardProps> = ({ onBack }) => {
           <span className="font-bold text-slate-900">19,99€</span>
         </div>
 
-        {/* MOSTRA O ESTILO ESCOLHIDO */}
         <div className="flex justify-between items-center text-sm pb-2 border-b border-slate-50">
            <span className="text-slate-500 font-medium">Estilo</span>
            <span className="font-bold text-slate-800 text-xs uppercase">
