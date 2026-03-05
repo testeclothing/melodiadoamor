@@ -17,7 +17,7 @@ import heroAudio from './assets/rock.mp3';
 
 // --- IMPORTAÇÃO DOS SAMPLES (LOCAIS) ---
 import rockAudio from './assets/rock.mp3';     
-import pimbaAudio from './assets/pimba.mp3'; 
+import pimbaAudio from './assets/cindy.mp3'; 
 import almaAudio from './assets/almapai.mp3';     
 
 // --- DADOS DOS SAMPLES ---
