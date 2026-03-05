@@ -7,7 +7,7 @@ import {
 // --- IMPORTAÇÃO DOS ÁUDIOS ---
 import almaAudio from '../assets/almapai.mp3';     
 import rockAudio from '../assets/rock.mp3'; 
-import pimbaAudio from '../assets/pimba.mp3';     
+import pimbaAudio from '../assets/cindy.mp3';     
 
 interface WizardProps {
   onBack: () => void;
